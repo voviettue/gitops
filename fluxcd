@@ -2,15 +2,13 @@
 
 set -e
 
-REPO_GIT_HOST=gitlab.com
-REPO_ROOT=$(git rev-parse --show-toplevel)
-REPO_URL="git@gitlab.com:pangara/gigapress/gitops.git"
 CONTEXT=${1:-gigapress}
 CLUSTER=${2:-local}
 
-flux bootstrap git \
-  --components-extra=image-reflector-controller,image-automation-controller \
-  --url=$REPO_URL \
+flux bootstrap gitlab \
+  --owner=pangara/gigapress \
+  --repository=gitops \
   --branch=master \
   --context=$CONTEXT \
-  --path="clusters/${CLUSTER}"
+  --path="clusters/${CLUSTER}" \
+  --components-extra=image-reflector-controller,image-automation-controller
