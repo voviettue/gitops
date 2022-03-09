@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+set -e
+
+for CMD in kubectl flux; do
+    if [[ ! -x "$(command -v $CMD)" ]]; then
+        echo ">>> [INVALID] please install $CMD before start"
+        exit 1
+    fi
+done
+
+USAGE="Elektron Helper
+\033[33mArguments:\033[0m
+  install:minikube          install on minikube
+  fluxcd:install            install fluxcd on exist k8s cluter context
+  kubeseal:fetch-cert       update new sealed cert {context} {namespace}
+  kubeseal:generate-secret  create secret from sealedsecret {context} {namespace} {file.yaml}
+\033[33mOptions:\033[0m
+  -h            show this help text\n"
+
+if [ ${#@} -ne 0 ]; then
+    for arg in "$@"; do
+        if [ "${arg#"-h"}" = "" ]; then
+            printf "$USAGE"
+            exit 0;
+        fi
+    done
+fi;
+
+
+case "$1" in
+    install:minikube)
+        minikube start \
+          --profile ${2} \
+          --cpus 8 \
+          --memory 12g \
+          --disk-size 20g \
+          --dns-proxy \
+          --addons metrics-server
+
+        ./fluxcd ${@:2}
+        ;;
+    fluxcd:install)
+        ./fluxcd ${@:2}
+        ;;
+    kubeseal:fetch-cert)
+        kubeseal --fetch-cert \
+            --controller-name=sealed-secrets-controller \
+            --controller-namespace=$3 \
+            --context elektron-$2 | tee ./clusters/$2/pub-sealed-secrets.pem
+        ;;
+    kubeseal:generate-secret)
+        kubeseal --format=yaml \
+            --context elektron-$2 \
+            --scope namespace-wide \
+            --cert=clusters/$2/pub-sealed-secrets.pem \
+            --namespace $3  \
+            < clusters/$2/$3/secrets/$4 \
+            > clusters/$2/$3/secrets/sealed-$4
+        ;;
+    *)
+        printf "$USAGE"
+        exit 0;
+esac
+
