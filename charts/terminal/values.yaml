@@ -1,0 +1,63 @@
+replicaCount: 1
+
+image:
+pullPolicy: IfNotPresent
+
+noCache: false
+
+serviceAccount:
+  create: true
+  imagePullSecrets:
+    - name: ecr-registry-key
+  # annotations: {}
+  name: terminal
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: LoadBalancer
+  port: 80
+  annotations: {}
+
+env:
+  SENTRY_ENV: sample
+  SENTRY_DSN: sample
+  SENTRY_DISABLED: "true"
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1280Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+readiness:
+  periodSeconds:
+  timeoutSeconds:
+  initialDelaySeconds:
+
+liveness:
+  periodSeconds:
+  timeoutSeconds:
+  initialDelaySeconds:
+
+ingress:
+  enabled: false
+  certManager: false
+  pathType: ImplementationSpecific
+  apiVersion:
+  hostname: magento.local
+  path: /
+  annotations: {}
+  tls: false
+  extraHosts:
+  extraTls: []
+  secrets:
+

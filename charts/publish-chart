@@ -1,0 +1,31 @@
+# !/bin/sh
+set -e
+
+KUBE_CONTEXT=${1:-gigapress-local}
+
+validate_chart () {
+    echo ">>> Validating:  $1"
+    helm lint $1
+    helm template --debug $1
+    helm install test -n test --debug --dry-run --kube-context=$2 $1 || true
+    echo ">>> VALIDATE SUCCESS $1"
+}
+
+package () {
+  helm package $1 -d ./src
+}
+
+echo '>>> Validating'
+validate_chart ./terminal $KUBE_CONTEXT
+
+echo '>>> Packaging'
+package ./terminal
+
+echo '>>> Pushing'
+for f in src/*; do
+  if [[ "$f" == *.tgz ]]
+  then
+    helm s3 push $f --force pangara-charts
+  fi
+done
+

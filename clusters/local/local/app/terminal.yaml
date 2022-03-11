@@ -1,0 +1,32 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: terminal
+spec:
+  releaseName: terminal
+  interval: 1m
+  timeout: 5m
+  chart:
+    spec:
+      chart: terminal-0.1.0.tgz
+      sourceRef:
+        kind: Bucket
+        name: pangara-charts
+        namespace: flux-system
+  values:
+    replicaCount: 1
+    pullPolicy: Always
+    image: 439863445188.dkr.ecr.ap-southeast-1.amazonaws.com/gigapress/core:dev # {"$imagepolicy": "flux-system:terminal"}
+    serviceAccount:
+      create: true
+
+    service:
+      type: LoadBalancer
+
+    readiness:
+      initialDelaySeconds: 30
+      periodSeconds: 120
+
+    liveness:
+      initialDelaySeconds: 30
+      periodSeconds: 120

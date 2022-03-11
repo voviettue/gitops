@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: msteam-url
+  namespace: flux-system
+data:
+  address: aHR0cHM6Ly90ZWFtcGFuZ2FyYS53ZWJob29rLm9mZmljZS5jb20vd2ViaG9va2IyL2NhYjkyMmJiLWU2MjUtNGYwNS1iOGFlLWI1N2NmOWRjOWVkMUAwY2UyZTYwNS1kYTg5LTQ0MGQtOTBkNS1kODkyMTk5MzdjYTQvSW5jb21pbmdXZWJob29rLzJmMDk1ZjQ3MmIxOTQwYjBiZGQwNDQ2MzE3Yjk2YmY1LzdhMGFiZDA4LWMzODYtNGJkNy04YTc1LThlYjk5MzFmOGMyMw==
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Provider
+metadata:
+  name: msteam
+  namespace: flux-system
+spec:
+  type: msteams
+  channel: elektron-alert
+  secretRef:
+    name: msteam-url
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Alert
+metadata:
+  name: alert-error
+  namespace: flux-system
+spec:
+  providerRef:
+    name: msteam
+  eventSeverity: error
+  eventSources:
+    - kind: Kustomization
+      name: '*'
+    - kind: HelmRelease
+      name: '*'
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Alert
+metadata:
+  name: alert-info
+  namespace: flux-system
+spec:
+  providerRef:
+    name: msteam
+  eventSeverity: info
+  eventSources:
+    - kind: GitRepository
+      name: '*'
+    - kind: HelmRelease
+      name: '*'
