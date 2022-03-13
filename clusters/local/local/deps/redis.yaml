@@ -21,4 +21,5 @@ spec:
     master:
       disableCommands: ["FLUSHALL"]
       persistence:
+        size: 1Gi
         enabled: true

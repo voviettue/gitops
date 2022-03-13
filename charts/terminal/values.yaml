@@ -39,11 +39,15 @@ resources:
     memory: 128Mi
 
 readiness:
+  enable: false
+  path:
   periodSeconds:
   timeoutSeconds:
   initialDelaySeconds:
 
 liveness:
+  enable: false
+  path:
   periodSeconds:
   timeoutSeconds:
   initialDelaySeconds:

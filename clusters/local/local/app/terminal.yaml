@@ -24,9 +24,30 @@ spec:
       type: LoadBalancer
 
     readiness:
+      enable: false
       initialDelaySeconds: 30
       periodSeconds: 120
 
     liveness:
+      enable: false
       initialDelaySeconds: 30
       periodSeconds: 120
+
+    env:
+      KEY: 255d861b-5ea1-5996-9aa3-922530ec40b1
+      SECRET: 6116487b-cda1-52c2-b5b5-c8022c45e263
+
+      DB_CLIENT: mysql
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: directus
+      DB_USER: directus
+      DB_PASSWORD: directus
+
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: admin123
+
+      CACHE_ENABLED: true
+      CACHE_STORE: redis
+      CACHE_REDIS: redis://redis-headless:6379
+

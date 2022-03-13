@@ -23,8 +23,21 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         ports:
-          - containerPort: 3000
+          - containerPort: 8055
             name: node
+
+        {{- if .Values.appSecretName }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.appSecretName }}
+        {{- end }}
+
+        env:
+        {{- range $key, $value := .Values.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+
 
       - name: nginx
         image: nginx:stable-alpine
@@ -49,22 +62,26 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
 
+        {{- if .Values.liveness.enable }}
         livenessProbe:
           httpGet:
-            path: /healthcheck
+            path: {{ .Values.liveness.path }}
             port: http2
           periodSeconds: {{ default 180 .Values.liveness.periodSeconds }}
           initialDelaySeconds: {{ default 45 .Values.liveness.initialDelaySeconds }}
           timeoutSeconds: {{ default 5 .Values.liveness.timeoutSeconds }}
+        {{- end }}
 
+        {{- if .Values.readiness.enable }}
         readinessProbe:
           httpGet:
-            path: /healthcheck
+            path: {{ .Values.readiness.path }}
             port: http2
           periodSeconds: {{ default 60 .Values.readiness.periodSeconds }}
           initialDelaySeconds: {{ default 30 .Values.readiness.initialDelaySeconds }}
           timeoutSeconds: {{ default 5 .Values.readiness.timeoutSeconds }}
           failureThreshold: 1
+        {{- end }}
 
       volumes:
       - name: nginx-site

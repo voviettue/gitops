@@ -22,6 +22,6 @@ spec:
       database: directus
       username: directus
       password: directus
-    volumePermissions:
-      enabled: true
-
+    primary:
+      persistence:
+        size: 1Gi

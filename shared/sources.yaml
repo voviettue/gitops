@@ -1,0 +1,59 @@
+# -- BITNAMI --
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: https://charts.bitnami.com/bitnami
+---
+
+# -- SEALED SECRETS --
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: sealed-secrets
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://bitnami-labs.github.io/sealed-secrets
+---
+
+# -- STAKATER --
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: stakater
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: https://stakater.github.io/stakater-charts
+---
+
+# -- PANGARA CHARTS --
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: Bucket
+metadata:
+  name: pangara-charts
+  namespace: flux-system
+spec:
+  interval: 10m
+  provider: aws
+  bucketName: pangara-charts
+  endpoint: s3.amazonaws.com
+  region: ap-southeast-1
+  timeout: 30s
+  secretRef:
+    name: s3-chart-credential
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-chart-credential
+  namespace: flux-system
+type: Opaque
+data:
+  accesskey: QUtJQVdNMlBIUTNDRUhJMjdQNU8=
+  secretkey: enN6TENaeEdJMTIzTnJXQmYwT2lNWVBkMWZaMDZaeGRRckt4NDhaSA==
+---
