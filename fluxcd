@@ -6,7 +6,7 @@ CONTEXT=${1:-gigapress}
 CLUSTER=${2:-local}
 
 flux bootstrap gitlab \
-  --owner=pangara/gigapress \
+  --owner=cate3/gigapress \
   --repository=gitops \
   --branch=master \
   --context=$CONTEXT \
