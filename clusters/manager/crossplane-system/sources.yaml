@@ -4,5 +4,14 @@ metadata:
   name: crossplane
   namespace: flux-system
 spec:
-  interval: 30m
+  interval: 1h
   url: https://charts.crossplane.io/stable
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: sealed-secrets
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://bitnami-labs.github.io/sealed-secrets
