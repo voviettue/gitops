@@ -10,8 +10,10 @@ resource "aws_lightsail_instance" "instance" {
     echo 'eval "$(agent-ssh)"' >> ~/.bashrc
     sudo apt-get update -y
     sudo apt-get install -y nginx docker.io
-    sudo usermod -aG docker $USER && newgrp docker
+    sudo usermod -aG docker ubuntu && newgrp docker
     curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
     sudo install minikube-linux-amd64 /usr/local/bin/minikube
     curl -s https://fluxcd.io/install.sh | sudo bash
     EOF
@@ -27,7 +29,6 @@ resource "aws_lightsail_instance" "instance" {
     inline = [
       "echo '${aws_lightsail_key_pair.instance.private_key}' > ~/.ssh/id_rsa",
       "chmod 400 ~/.ssh/id_rsa",
-      "mkdir /home/ubuntu/playbooks",
     ]
   }
 }
@@ -58,7 +59,7 @@ resource "aws_lightsail_static_ip_attachment" "instance" {
 }
 
 resource "aws_lightsail_key_pair" "instance" {
-  name = "lg_${var.instance_name}"
+  name = "lg_${var.instance_name}_2"
 }
 
 resource "null_resource" "boot" {
@@ -82,7 +83,7 @@ resource "null_resource" "boot" {
     inline = [
       "sudo cp /home/ubuntu/default.conf /etc/nginx/nginx.conf",
       "minikube start --profile=${var.instance_name} --cpus=3 --memory=12g --disk-size=40g --addons merics-server --driver=docker",
-      # "flux bootstrap gitlab --context=${var.instance_name} --owner=cate2/gigapress --path=clusters/${var.instance_name} --repository=gitops --branch=master --components-extra=image-reflector-controller,image-automation-controller"
+      # "flux bootstrap gitlab --context=${var.instance_name} --owner=cate3/gigapress --path=clusters/${var.instance_name} --repository=gitops --branch=master --components-extra=image-reflector-controller,image-automation-controller"
     ]
   }
 }
