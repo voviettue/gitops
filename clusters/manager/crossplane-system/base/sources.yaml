@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta1
 kind: HelmRepository
 metadata:
   name: crossplane
-  namespace: flux-system
+  namespace: crossplane-system
 spec:
   interval: 1h
   url: https://charts.crossplane.io/stable
@@ -11,7 +11,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta1
 kind: HelmRepository
 metadata:
   name: sealed-secrets
-  namespace: flux-system
+  namespace: crossplane-system
 spec:
   interval: 1h
   url: https://bitnami-labs.github.io/sealed-secrets

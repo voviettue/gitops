@@ -47,8 +47,8 @@ case "$1" in
     kubeseal:fetch-cert)
         kubeseal --fetch-cert \
             --controller-name=sealed-secrets-controller \
-            --controller-namespace=$3 \
-            --context elektron-$2 | tee ./clusters/$2/pub-sealed-secrets.pem
+            --controller-namespace=$4 \
+            --context $2 | tee ./clusters/$3/pub-sealed-secrets.pem
         ;;
     kubeseal:generate-secret)
         kubeseal --format=yaml \
