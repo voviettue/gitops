@@ -9,15 +9,17 @@ resource "aws_lightsail_instance" "instance" {
     #!/bin/bash
     echo 'eval "$(agent-ssh)"' >> ~/.bashrc
     sudo apt-get update -y
-    sudo apt-get install -y nginx virtualbox
+    sudo apt-get install -y nginx docker.io
+    sudo usermod -aG docker $USER && newgrp docker
     curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     sudo install minikube-linux-amd64 /usr/local/bin/minikube
+    curl -s https://fluxcd.io/install.sh | sudo bash
     EOF
 
   connection {
-    type     = "ssh"
-    user     = "ubuntu"
-    host     = self.public_ip_address
+    type        = "ssh"
+    user        = "ubuntu"
+    host        = self.public_ip_address
     private_key = aws_lightsail_key_pair.instance.private_key
   }
 
@@ -38,10 +40,16 @@ resource "aws_lightsail_instance_public_ports" "instance" {
     from_port = 9022
     to_port   = 9022
   }
+
+  port_info {
+    protocol  = "tcp"
+    from_port = 22
+    to_port   = 22
+  }
 }
 
 resource "aws_lightsail_static_ip" "instance" {
-  name = "${var.instance_name}"
+  name = "ip-${var.instance_name}"
 }
 
 resource "aws_lightsail_static_ip_attachment" "instance" {
@@ -50,7 +58,7 @@ resource "aws_lightsail_static_ip_attachment" "instance" {
 }
 
 resource "aws_lightsail_key_pair" "instance" {
-  name = "${var.instance_name}"
+  name = "lg_${var.instance_name}"
 }
 
 resource "null_resource" "boot" {
@@ -61,7 +69,7 @@ resource "null_resource" "boot" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    host        = aws_lightsail_static_ip.instance.public_ip
+    host        = aws_lightsail_static_ip.instance.ip_address
     private_key = aws_lightsail_key_pair.instance.private_key
   }
 
@@ -72,9 +80,9 @@ resource "null_resource" "boot" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo cp /home/ubuntu/default.conf /etc/nginx/conf.d/default.conf"
-      "sudo minikube start --profile ${var.instance_name} --cpu 3 --memory 12g --disk-size 40g --adons merics-server",
-      "flux bootstrap gitlab --driver=virtualbox --owner=cate2/gigapress --repository=gitops --branch=master --context=${var.instance_name} --path=clusters/${var.instance_name}"
+      "sudo cp /home/ubuntu/default.conf /etc/nginx/nginx.conf",
+      "minikube start --profile=${var.instance_name} --cpus=3 --memory=12g --disk-size=40g --addons merics-server --driver=docker",
+      # "flux bootstrap gitlab --context=${var.instance_name} --owner=cate2/gigapress --path=clusters/${var.instance_name} --repository=gitops --branch=master --components-extra=image-reflector-controller,image-automation-controller"
     ]
   }
 }

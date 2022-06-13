@@ -14,12 +14,12 @@ variable "instance_name" {
 }
 
 variable "instance_blueprint" {
-  default = "xlarge_2_3"
+  default = "ubuntu_20_04"
   type    = string
 }
 
 variable "instance_type" {
-  default = "ubuntu_20_04"
+  default = "xlarge_2_3"
   type    = string
 }
 
