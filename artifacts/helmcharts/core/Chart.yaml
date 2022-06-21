@@ -1,0 +1,9 @@
+apiVersion: v2
+name: gigapress-core
+description: Gigapress core power by directus
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+maintainers:
+  - email: dev@catex.se
+    name: Catexer

@@ -2,7 +2,7 @@
 set -e
 
 AWS_PROFILE=g
-KUBE_CONTEXT=${1:-gigapress-local}
+KUBE_CONTEXT=${1:-giga-manager-lg}
 
 validate_chart () {
     echo ">>> Validating:  $1"
@@ -17,16 +17,20 @@ package () {
 }
 
 echo '>>> Validating'
-validate_chart ./terminal $KUBE_CONTEXT
+validate_chart ./core $KUBE_CONTEXT
 
 echo '>>> Packaging'
-package ./terminal
+package ./core
 
 echo '>>> Pushing'
+REGISTRY=public.ecr.aws/q4e4m7h8
+
+aws ecr-public get-login-password --profile g --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws
+
 for f in src/*; do
   if [[ "$f" == *.tgz ]]
   then
-    helm s3 push $f --force pangara-charts
+    helm push $f oci://${REGISTRY}
   fi
 done
 
