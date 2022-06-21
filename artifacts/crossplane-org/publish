@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+for CMD in kubectl kubectl-crossplane; do
+    if [[ ! -x "$(command -v $CMD)" ]]; then
+        echo ">>> [INVALID] please install $CMD before start"
+        exit 1
+    fi
+done
+
+VERSION=$(cat version)
+REGISTRY=public.ecr.aws/q4e4m7h8
+REPO=gigapress/crossplane-org
+aws ecr-public get-login-password --profile g --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY &> /dev/null
+kubectl crossplane build configuration
+kubectl crossplane push configuration $REGISTRY/$REPO:${VERSION}

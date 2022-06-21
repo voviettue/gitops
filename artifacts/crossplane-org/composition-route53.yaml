@@ -1,0 +1,20 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: route53
+  labels:
+    provider: aws
+    service: route53
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: gigapress.catex.se/v1beta1
+    kind: Org
+
+  patchSets:
+    - name: common
+      patches:
+        - fromFieldPath: "spec.region"
+          toFieldPath: "spec.forProvider.region"
+
+

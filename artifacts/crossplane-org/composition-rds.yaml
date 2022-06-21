@@ -1,0 +1,19 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: rds
+  labels:
+    provider: aws
+    service: rds
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: gigapress.catex.se/v1beta1
+    kind: Org
+
+  patchSets:
+    - name: common
+      patches:
+        - fromFieldPath: "spec.region"
+          toFieldPath: "spec.forProvider.region"
+

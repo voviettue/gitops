@@ -1,7 +1,7 @@
 apiVersion: meta.pkg.crossplane.io/v1alpha1
 kind: Configuration
 metadata:
-  name: eks-cluster-composition
+  name: gigapress-org
   annotations:
     provider: aws
 spec:
