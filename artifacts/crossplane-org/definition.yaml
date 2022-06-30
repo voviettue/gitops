@@ -11,7 +11,7 @@ spec:
     kind: Org
     plural: orgs
   defaultCompositionRef:
-    name: org-standard
+    name: org-standard.aws.gigapress.catex.se
   connectionSecretKeys:
     - cluster-ca
     - cluster-endpoint

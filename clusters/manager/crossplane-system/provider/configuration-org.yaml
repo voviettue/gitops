@@ -3,7 +3,6 @@ kind: Configuration
 metadata:
   name: org-composition
 spec:
-  ignoreCrossplaneConstraints: false
   package: public.ecr.aws/catext/gigapress/crossplane-org:0.1.1
   packagePullPolicy: IfNotPresent
   revisionActivationPolicy: Automatic
