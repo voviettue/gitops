@@ -1,12 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: orgs.gigapress.catex.se
+  name: xorgs.gigapress.catex.se
 spec:
   group: gigapress.catex.se
   names:
+    kind: XOrg
+    plural: xorgs
+  claimNames:
     kind: Org
     plural: orgs
+  defaultCompositionRef:
+    name: org-standard
   connectionSecretKeys:
     - cluster-ca
     - cluster-endpoint

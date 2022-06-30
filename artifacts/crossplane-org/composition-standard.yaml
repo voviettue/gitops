@@ -1,11 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: eks
+  name: org-standard
   labels:
+    crossplane.io/xrd: xorgs.gigapress.catex.se
     provider: aws
-    service: eks
-    compute: managed
 spec:
   writeConnectionSecretsToNamespace: crossplane-system
   compositeTypeRef:
@@ -17,8 +16,32 @@ spec:
       patches:
         - fromFieldPath: "spec.region"
           toFieldPath: "spec.forProvider.region"
+        - fromFieldPath: "spec.deletionPolity"
+          fromValue: Delete
+
+  # -----------------
+  # RM includes
+  # -----------------
+  # - VPC
+  # - EKS
+  # - S3
+  # - Route53
+  # - Cloudfront
 
   resources:
+
+    #-----------------
+    # VPC
+    #-----------------
+    # - 1 vpc
+    # - 2 public subnet
+    # - 2 private subnet
+    # - 1 routetable for public subnet
+    # - 2 routetable for private subnet
+    # - 1 internet gateway
+    # - 1 nat gateway
+    # - 1 elastic ip
+    #----------------
     - name: vpc
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -398,6 +421,15 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
 
+    #------------------------
+    # EKS
+    #------------------------
+    # - 1 IAM Role for cluster
+    # - 1 IAM Role for developer (read only)
+    # - 1 EKS cluster
+    # - 1 Nodegroup
+    #------------------------
+
     - name: eks-cluster
       base:
         apiVersion: eks.aws.crossplane.io/v1beta1
@@ -405,24 +437,35 @@ spec:
         spec:
           forProvider:
             resourcesVpcConfig:
-              endpointPrivateAccess: false
+              endpointPrivateAccess: true
               endpointPublicAccess: true
               subnetIdSelector:
                 matchLabels:
                   type: subnet
       patches:
+        # GROUPING
         - type: PatchSet
           patchSetName: common
-        - fromFieldPath: "spec.eks.k8s-version"
-          toFieldPath: "spec.forProvider.version"
-        - fromFieldPath: "metadata.uid"
-          toFieldPath: "spec.writeConnectionSecretToRef.name"
+        # - type: CombineFromComposite
+        #   combine:
+        #     variables:
+        #       - fromFieldPath: spec.prefix
+        #       - fromFieldPath: spec.name
+        #     strategy: string
+        #     string:
+        #       fmt: "eks-%s-%s"
+        #   toFieldPath: metadata.name
+        # DYNAMIC
+        - fromFieldPath: spec.eks.k8s-version
+          toFieldPath: spec.forProvider.version
+        - fromFieldPath: metadata.uid
+          toFieldPath: spec.writeConnectionSecretToRef.name
           transforms:
             - type: string
               string:
                 fmt: "eks-%s"
-        - fromFieldPath: "spec.eks.cluster-role"
-          toFieldPath: "spec.forProvider.roleArn"
+        - fromFieldPath: spec.parameters.cluster-role
+          toFieldPath: spec.forProvider.roleArn
       connectionDetails:
         - name: cluster-ca
           fromConnectionSecretKey: clusterCA
@@ -448,18 +491,29 @@ spec:
             clusterNameSelector:
               matchControllerRef: true
       patches:
+        # GROUPING
         - type: PatchSet
           patchSetName: common
-        - fromFieldPath: "spec.eks.workers-size"
-          toFieldPath: "spec.forProvider.scalingConfig.desiredSize"
-        - fromFieldPath: "spec.eks.workers-size"
-          toFieldPath: "spec.forProvider.scalingConfig.maxSize"
-        - fromFieldPath: "spec.eks.workload-type"
-          toFieldPath: "spec.forProvider.amiType"
+        # - type: CombineFromComposite
+        #   combine:
+        #     variables:
+        #       - fromFieldPath: spec.prefix
+        #       - fromFieldPath: spec.name
+        #     strategy: string
+        #     string:
+        #       fmt: "ng-%s-%s"
+        #   toFieldPath: "metadata.name"
+        # DYNAMIC
+        - fromFieldPath: spec.eks.workers-size
+          toFieldPath: spec.forProvider.scalingConfig.desiredSize
+        - fromFieldPath: spec.eks.workers-size
+          toFieldPath: spec.forProvider.scalingConfig.maxSize
+        - fromFieldPath: spec.eks.workload-type
+          toFieldPath: spec.forProvider.amiType
           transforms:
           - type: map
             map:
               gpu: AL2_x86_64_GPU
               non-gpu: AL2_x86_64
-        - fromFieldPath: "spec.eks.workernode-role"
-          toFieldPath: "spec.forProvider.nodeRole"
+        - fromFieldPath: spec.eks.workernode-role
+          toFieldPath: spec.forProvider.nodeRole
