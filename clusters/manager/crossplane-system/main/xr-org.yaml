@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: catex
+---
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Org
 metadata:

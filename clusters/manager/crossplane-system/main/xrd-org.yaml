@@ -1,4 +1,4 @@
-apiVersion: gigapress.catex.se/v1beta1
+apiVersion: gigapress.catex.se/v1alpha1
 kind: XOrg
 metadata:
   name: org-shared
