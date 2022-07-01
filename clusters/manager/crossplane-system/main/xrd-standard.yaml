@@ -1,11 +1,14 @@
 apiVersion: gigapress.catex.se/v1alpha1
 kind: XOrg
 metadata:
-  name: org-shared
+  name: org-standard
+  # annotations:
+  #   crossplane.io/external-name: org-catex
 spec:
-  name: catex
+  name: standard
   region: eu-north-1
   prefix: org
+  deletionPolicy: Delete
 
   eks:
     k8s-version: "1.21"
@@ -38,8 +41,8 @@ spec:
       az: "eu-north-1b"
 
   compositionRef:
-    name: org-composition
+    name: org-standard.aws.gigapress.catex.se
 
   writeConnectionSecretToRef:
-    namespace: catex
-    name: eks-connection
+    namespace: crossplane-system
+    name: org-standard

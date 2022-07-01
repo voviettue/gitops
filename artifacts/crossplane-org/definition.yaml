@@ -28,11 +28,15 @@ spec:
             type: object
             properties:
               name:
-                description: The unique name applied for all resources
+                description: The unique name applied for all RMs
                 type: string
 
               prefix:
-                description: The prefix applied naming for all resources
+                description: The prefix applied naming for all RMs
+                type: string
+
+              deletionPolicy:
+                description: The deletion policy apply for all RMs
                 type: string
 
               region:
@@ -153,8 +157,6 @@ spec:
                   - subnet-private-2
 
             required:
-              - eks
-              - vpc
               - name
               - prefix
               - region
