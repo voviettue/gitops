@@ -62,28 +62,28 @@ resource "aws_lightsail_key_pair" "instance" {
   name = "lg_${var.instance_name}_2"
 }
 
-resource "null_resource" "boot" {
-  triggers = {
-    manager_id = aws_lightsail_instance.instance.public_ip_address
-  }
+# resource "null_resource" "boot" {
+#   triggers = {
+#     manager_id = aws_lightsail_instance.instance.public_ip_address
+#   }
 
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    host        = aws_lightsail_static_ip.instance.ip_address
-    private_key = aws_lightsail_key_pair.instance.private_key
-  }
+#   connection {
+#     type        = "ssh"
+#     user        = "ubuntu"
+#     host        = aws_lightsail_static_ip.instance.ip_address
+#     private_key = aws_lightsail_key_pair.instance.private_key
+#   }
 
-  provisioner "file" {
-    source      = "./nginx.conf"
-    destination = "/home/ubuntu/default.conf"
-  }
+#   provisioner "file" {
+#     source      = "./nginx.conf"
+#     destination = "/home/ubuntu/default.conf"
+#   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo cp /home/ubuntu/default.conf /etc/nginx/nginx.conf",
-      "minikube start --profile=${var.instance_name} --cpus=3 --memory=12g --disk-size=40g --addons merics-server --driver=docker",
-      # "flux bootstrap gitlab --context=${var.instance_name} --owner=cate3/gigapress --path=clusters/${var.instance_name} --repository=gitops --branch=master --components-extra=image-reflector-controller,image-automation-controller"
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     inline = [
+#       "sudo cp /home/ubuntu/default.conf /etc/nginx/nginx.conf",
+#       "minikube start --profile=${var.instance_name} --cpus=3 --memory=12g --disk-size=40g --addons merics-server --driver=docker",
+#       # "flux bootstrap gitlab --context=${var.instance_name} --owner=cate3/gigapress --path=clusters/${var.instance_name} --repository=gitops --branch=master --components-extra=image-reflector-controller,image-automation-controller"
+#     ]
+#   }
+# }

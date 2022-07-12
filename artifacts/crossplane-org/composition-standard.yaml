@@ -439,24 +439,17 @@ spec:
         spec:
           forProvider:
             resourcesVpcConfig:
-              endpointPrivateAccess: true
+              endpointPrivateAccess: false
               endpointPublicAccess: true
               subnetIdSelector:
                 matchLabels:
                   type: subnet
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
       patches:
         # GROUPING
         - type: PatchSet
           patchSetName: common
-        # - type: CombineFromComposite
-        #   combine:
-        #     variables:
-        #       - fromFieldPath: spec.prefix
-        #       - fromFieldPath: spec.name
-        #     strategy: string
-        #     string:
-        #       fmt: "eks-%s-%s"
-        #   toFieldPath: metadata.name
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
@@ -466,8 +459,6 @@ spec:
             - type: string
               string:
                 fmt: "eks-%s"
-        - fromValue: crossplane-system
-          toFieldPath: spec.writeConnectionSecretToRef.namespace
         - fromFieldPath: spec.eks.cluster-role
           toFieldPath: spec.forProvider.roleArn
       connectionDetails:
