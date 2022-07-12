@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: catex
+  name: realm-catex
 ---
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Org
 metadata:
   name: catex
-  namespace: catex
+  namespace: realm-catex
   # annotations:
   #   crossplane.io/external-name: org-catex
 spec:
