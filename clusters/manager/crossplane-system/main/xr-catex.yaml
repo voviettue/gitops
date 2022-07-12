@@ -14,9 +14,11 @@ spec:
   name: catex
   prefix: ctx
   region: eu-north-1
-  writeConnectionSecretToRef:
-    name: org-details
+
   resourceRef:
     apiVersion: gigapress.catex.se/v1alpha1
     kind: XOrg
     name: org-standard
+
+  writeConnectionSecretToRef:
+    name: org-details

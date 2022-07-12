@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - provider-config.yaml
   - xrd-standard.yaml
-  # - xr-org.yaml
+  - xr-catex.yaml
