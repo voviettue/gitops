@@ -269,13 +269,13 @@ spec:
         - type: PatchSet
           patchSetName: common
 
-    - name: natgateway
+    - name: natgateway-1
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
         kind: NATGateway
         metadata:
           labels:
-            type: natgw
+            type: natgw-1
         spec:
           forProvider:
             allocationIdSelector:
@@ -303,8 +303,45 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        # - fromFieldPath: spec.vpc.subnet-public-1.az
-        #   toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
+        - fromFieldPath: spec.vpc.subnet-public-1.az
+          toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
+
+    - name: natgateway-2
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: NATGateway
+        metadata:
+          labels:
+            type: natgw-2
+        spec:
+          forProvider:
+            allocationIdSelector:
+              matchLabels:
+                type: eip
+            vpcIdSelector:
+              matchControllerRef: true
+            subnetIdSelector:
+              matchLabels:
+                type: subnet
+                visibility: public
+            tags:
+              - key: Name
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.prefix
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "natgw-%s-%s"
+          toFieldPath: spec.forProvider.tags[0].value
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.vpc.subnet-public-2.az
+          toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
 
     - name: routetable-public
       base:

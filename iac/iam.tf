@@ -3,7 +3,6 @@ resource "aws_iam_role" "eks" {
   path = "/gigapress/"
   managed_policy_arns   = [
     "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   ]
 
@@ -31,8 +30,8 @@ resource "aws_iam_role" "node_group" {
   path = "/gigapress/"
 
   managed_policy_arns   = [
-    "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
   ]
 
