@@ -4,3 +4,4 @@ resources:
   - provider-config.yaml
   - xrd-standard.yaml
   - xr-catex.yaml
+  - xr-hipnosic.yaml

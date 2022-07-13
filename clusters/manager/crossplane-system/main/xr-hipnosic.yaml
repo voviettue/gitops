@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: realm-hipnosic
+---
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Org
+metadata:
+  name: catex
+  namespace: realm-hipnosic
+  # annotations:
+  #   crossplane.io/external-name: org-catex
+spec:
+  name: hipnosic
+  prefix: hip
+  region: eu-north-1
+
+  resourceRef:
+    apiVersion: gigapress.catex.se/v1alpha1
+    kind: XOrg
+    name: org-standard
+
+  writeConnectionSecretToRef:
+    name: org-details

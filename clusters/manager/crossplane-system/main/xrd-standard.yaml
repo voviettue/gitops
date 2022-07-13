@@ -12,8 +12,9 @@ spec:
 
   eks:
     k8s-version: "1.21"
-    cluster-role: arn:aws:iam::221168245729:role/gigapress/eks-cluster-role
-    workernode-role: arn:aws:iam::221168245729:role/gigapress/node-group-role
+    cluster-role: arn:aws:iam::221168245729:role/eks-cluster-role
+    workernode-role: arn:aws:iam::221168245729:role/node-group-role
+    workernode-type: "t3.medium"
     workers-size: 3
     workload-type: "non-gpu"
 

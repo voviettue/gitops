@@ -412,7 +412,7 @@ spec:
               - destinationCidrBlock: 0.0.0.0/0
                 natGatewayIdSelector:
                   matchLabels:
-                    type: natgw
+                    type: natgw-1
             associations:
               - subnetIdSelector:
                   matchLabels:
@@ -449,7 +449,7 @@ spec:
               - destinationCidrBlock: 0.0.0.0/0
                 natGatewayIdSelector:
                   matchLabels:
-                    type: natgw
+                    type: natgw-2
             associations:
               - subnetIdSelector:
                   matchLabels:
@@ -563,3 +563,5 @@ spec:
               non-gpu: AL2_x86_64
         - fromFieldPath: spec.eks.workernode-role
           toFieldPath: spec.forProvider.nodeRole
+        - fromFieldPath: spec.eks.workernode-type
+          toFieldPath: spec.forProvider.instanceTypes[0]

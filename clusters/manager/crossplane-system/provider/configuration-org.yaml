@@ -3,7 +3,7 @@ kind: Configuration
 metadata:
   name: org-composition
 spec:
-  package: public.ecr.aws/catext/gigapress/crossplane-org:0.1.8
+  package: public.ecr.aws/catext/gigapress/crossplane-org:0.1.10
   packagePullPolicy: Always
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 0

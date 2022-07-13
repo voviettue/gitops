@@ -1,6 +1,6 @@
 resource "aws_iam_role" "eks" {
   name = "eks-cluster-role"
-  path = "/gigapress/"
+  path = "/"
   managed_policy_arns   = [
     "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -27,7 +27,7 @@ resource "aws_iam_role" "eks" {
 
 resource "aws_iam_role" "node_group" {
   name = "node-group-role"
-  path = "/gigapress/"
+  path = "/"
 
   managed_policy_arns   = [
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
