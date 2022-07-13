@@ -41,8 +41,8 @@ spec:
     # - 1 routetable for public subnet
     # - 2 routetable for private subnet
     # - 1 internet gateway
-    # - 1 nat gateway
-    # - 1 elastic ip
+    # - 2 nat gateway
+    # - 2 elastic ip
     #----------------
     - name: vpc
       base:
@@ -255,13 +255,27 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: metadata.labels.zone
 
-    - name: elastic-ip
+    - name: elastic-ip-1
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
         kind: Address
         metadata:
           labels:
-            type: eip
+            type: eip-1
+        spec:
+          forProvider:
+            domain: vpc
+      patches:
+        - type: PatchSet
+          patchSetName: common
+
+    - name: elastic-ip-2
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: Address
+        metadata:
+          labels:
+            type: eip-2
         spec:
           forProvider:
             domain: vpc
@@ -280,7 +294,7 @@ spec:
           forProvider:
             allocationIdSelector:
               matchLabels:
-                type: eip
+                type: eip-1
             vpcIdSelector:
               matchControllerRef: true
             subnetIdSelector:
@@ -317,7 +331,7 @@ spec:
           forProvider:
             allocationIdSelector:
               matchLabels:
-                type: eip
+                type: eip-2
             vpcIdSelector:
               matchControllerRef: true
             subnetIdSelector:
