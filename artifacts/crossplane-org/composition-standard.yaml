@@ -41,8 +41,8 @@ spec:
     # - 1 routetable for public subnet
     # - 2 routetable for private subnet
     # - 1 internet gateway
-    # - 2 nat gateway
-    # - 2 elastic ip
+    # - 1 nat gateway
+    # - 1 elastic ip
     #----------------
     - name: vpc
       base:
@@ -255,13 +255,13 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: metadata.labels.zone
 
-    - name: elastic-ip-1
+    - name: elastic-ip
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
         kind: Address
         metadata:
           labels:
-            type: eip-1
+            type: eip
         spec:
           forProvider:
             domain: vpc
@@ -269,35 +269,23 @@ spec:
         - type: PatchSet
           patchSetName: common
 
-    - name: elastic-ip-2
-      base:
-        apiVersion: ec2.aws.crossplane.io/v1beta1
-        kind: Address
-        metadata:
-          labels:
-            type: eip-2
-        spec:
-          forProvider:
-            domain: vpc
-      patches:
-        - type: PatchSet
-          patchSetName: common
-
-    - name: natgateway-1
+    - name: natgateway
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
         kind: NATGateway
         metadata:
           labels:
-            type: natgw-1
+            type: natgw
         spec:
           forProvider:
             allocationIdSelector:
+              matchControllerRef: true
               matchLabels:
-                type: eip-1
+                type: eip
             vpcIdSelector:
               matchControllerRef: true
             subnetIdSelector:
+              matchControllerRef: true
               matchLabels:
                 type: subnet
                 visibility: public
@@ -320,43 +308,6 @@ spec:
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
 
-    - name: natgateway-2
-      base:
-        apiVersion: ec2.aws.crossplane.io/v1beta1
-        kind: NATGateway
-        metadata:
-          labels:
-            type: natgw-2
-        spec:
-          forProvider:
-            allocationIdSelector:
-              matchLabels:
-                type: eip-2
-            vpcIdSelector:
-              matchControllerRef: true
-            subnetIdSelector:
-              matchLabels:
-                type: subnet
-                visibility: public
-            tags:
-              - key: Name
-      patches:
-        - type: PatchSet
-          patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "natgw-%s-%s"
-          toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-public-2.az
-          toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
-
     - name: routetable-public
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -368,14 +319,17 @@ spec:
             routes:
               - destinationCidrBlock: 0.0.0.0/0
                 gatewayIdSelector:
+                  matchControllerRef: true
                   matchLabels:
                     type: igw
             associations:
               - subnetIdSelector:
+                  matchControllerRef: true
                   matchLabels:
                     type: subnet
                     visibility: public
               - subnetIdSelector:
+                  matchControllerRef: true
                   matchLabels:
                     type: subnet
                     visibility: public
@@ -411,10 +365,12 @@ spec:
             routes:
               - destinationCidrBlock: 0.0.0.0/0
                 natGatewayIdSelector:
+                  matchControllerRef: true
                   matchLabels:
-                    type: natgw-1
+                    type: natgw
             associations:
               - subnetIdSelector:
+                  matchControllerRef: true
                   matchLabels:
                     type: subnet
                     visibility: private
@@ -448,10 +404,12 @@ spec:
             routes:
               - destinationCidrBlock: 0.0.0.0/0
                 natGatewayIdSelector:
+                  matchControllerRef: true
                   matchLabels:
-                    type: natgw-2
+                    type: natgw
             associations:
               - subnetIdSelector:
+                  matchControllerRef: true
                   matchLabels:
                     type: subnet
                     visibility: private
@@ -493,6 +451,7 @@ spec:
               endpointPrivateAccess: false
               endpointPublicAccess: true
               subnetIdSelector:
+                matchControllerRef: true
                 matchLabels:
                   type: subnet
           writeConnectionSecretToRef:
@@ -501,6 +460,15 @@ spec:
         # GROUPING
         - type: PatchSet
           patchSetName: common
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.prefix
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "cluster-%s-%s"
+          toFieldPath: "metadata.name"
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
@@ -531,6 +499,7 @@ spec:
             scalingConfig:
               minSize: 3
             subnetSelector:
+              matchControllerRef: true
               matchLabels:
                 type: subnet
                 visibility: private
@@ -540,15 +509,15 @@ spec:
         # GROUPING
         - type: PatchSet
           patchSetName: common
-        # - type: CombineFromComposite
-        #   combine:
-        #     variables:
-        #       - fromFieldPath: spec.prefix
-        #       - fromFieldPath: spec.name
-        #     strategy: string
-        #     string:
-        #       fmt: "ng-%s-%s"
-        #   toFieldPath: "metadata.name"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.prefix
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "ng-%s-%s"
+          toFieldPath: "metadata.name"
         # DYNAMIC
         - fromFieldPath: spec.eks.workers-size
           toFieldPath: spec.forProvider.scalingConfig.desiredSize
