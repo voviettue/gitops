@@ -65,3 +65,12 @@ ingress:
   extraTls: []
   secrets:
 
+redis:
+  usePassword: false
+  cluster:
+    enabled: false
+  master:
+    disableCommands: ["FLUSHALL"]
+    persistence:
+      size: 1Gi
+      enabled: true

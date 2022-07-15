@@ -1,9 +1,13 @@
 apiVersion: v2
 name: gigapress-core
-description: Gigapress core power by directus
+description: Gigapress app power by directus
 type: application
-version: 0.1.0
-appVersion: 0.1.0
+version: 0.1.1
+appVersion: 9.12.2
+dependencies:
+  - name: redis
+    version: 17.0.1
+    repository: https://charts.bitnami.com/bitnami/redis
 maintainers:
   - email: dev@catex.se
     name: Catexer

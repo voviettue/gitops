@@ -15,8 +15,8 @@ spec:
         {{- include "chart.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
-      containers:
 
+      containers:
       - name: node
         image: {{ .Values.image }}
         imagePullPolicy: {{ .Values.pullPolicy }}
@@ -38,30 +38,6 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
 
-
-      - name: nginx
-        image: nginx:stable-alpine
-        imagePullPolicy: IfNotPresent
-        resources:
-          limits:
-            cpu: 1
-            memory: 1280Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        ports:
-          - containerPort: 80
-            name: http2
-
-        # NGINX Configuration
-        volumeMounts:
-        - name: nginx-site
-          mountPath: /etc/nginx/conf.d/default.conf
-          subPath: default.conf
-        - name: nginx-config
-          mountPath: /etc/nginx/nginx.conf
-          subPath: nginx.conf
-
         {{- if .Values.liveness.enable }}
         livenessProbe:
           httpGet:
@@ -82,17 +58,3 @@ spec:
           timeoutSeconds: {{ default 5 .Values.readiness.timeoutSeconds }}
           failureThreshold: 1
         {{- end }}
-
-      volumes:
-      - name: nginx-site
-        configMap:
-          name: {{ include "chart.fullname" . }}
-          items:
-            - key: site
-              path: default.conf
-      - name: nginx-config
-        configMap:
-          name: {{ include "chart.fullname" . }}
-          items:
-            - key: nginx.conf
-              path: nginx.conf
