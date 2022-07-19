@@ -1,0 +1,42 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xworkspaces.gigapress.catex.se
+spec:
+  group: gigapress.catex.se
+  names:
+    kind: XWorkspace
+    plural: xworkspaces
+  claimNames:
+    kind: Workspace
+    plural: workspace
+  defaultCompositionRef:
+    name: workspace-shared.aws.gigapress.catex.se
+  connectionSecretKeys:
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              rds:
+                type: object
+                properties:
+              s3:
+                type: object
+                properties:
+              route53:
+                type: object
+                properties:
+              release:
+                type: object
+                properties:
+
+
+
+

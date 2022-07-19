@@ -31,10 +31,6 @@ spec:
                 description: The unique name applied for all RMs
                 type: string
 
-              prefix:
-                description: The prefix applied naming for all RMs
-                type: string
-
               deletionPolicy:
                 description: The deletion policy apply for all RMs
                 type: string
@@ -161,5 +157,4 @@ spec:
 
             required:
               - name
-              - prefix
               - region

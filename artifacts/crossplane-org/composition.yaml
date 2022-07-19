@@ -16,30 +16,20 @@ spec:
   patchSets:
     - name: common
       patches:
-        - fromFieldPath: "spec.region"
-          toFieldPath: "spec.forProvider.region"
-        - fromFieldPath: "spec.deletionPolicy"
-          toFieldPath: "spec.deletionPolicy"
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s"
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: spec.name
           toFieldPath: metadata.labels[vpc]
-          policy:
-            fromFieldPath: Required
 
   # -----------------
   # RM includes
   # -----------------
   # - VPC
   # - EKS
-  # - S3
-  # - Route53
-  # - Cloudfront
+  # - EKS OIDC
+  # - HelmProvider: ALB Ingress Controller
 
   resources:
 
@@ -70,17 +60,8 @@ spec:
           patchSetName: common
         - fromFieldPath: spec.vpc.cidrBlock
           toFieldPath: spec.forProvider.cidrBlock
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
 
     - name: igw
       base:
@@ -98,17 +79,12 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "igw-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
+          transforms:
+          - type: string
+            string:
+              fmt: "igw-%s"
 
     - name: subnet-public-1
       base:
@@ -133,12 +109,11 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: spec.prefix
               - fromFieldPath: spec.name
               - fromFieldPath: spec.vpc.subnet-public-1.name
             strategy: string
             string:
-              fmt: "%s-%s-%s"
+              fmt: "%s-%s"
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
@@ -172,12 +147,11 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: spec.prefix
               - fromFieldPath: spec.name
               - fromFieldPath: spec.vpc.subnet-public-2.name
             strategy: string
             string:
-              fmt: "%s-%s-%s"
+              fmt: "%s-%s"
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
@@ -211,12 +185,11 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: spec.prefix
               - fromFieldPath: spec.name
               - fromFieldPath: spec.vpc.subnet-private-1.name
             strategy: string
             string:
-              fmt: "%s-%s-%s"
+              fmt: "%s-%s"
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
@@ -250,12 +223,11 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: spec.prefix
               - fromFieldPath: spec.name
               - fromFieldPath: spec.vpc.subnet-private-2.name
             strategy: string
             string:
-              fmt: "%s-%s-%s"
+              fmt: "%s-%s"
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
@@ -305,17 +277,12 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "natgw-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
+          transforms:
+            - type: string
+              string:
+                fmt: "natgw-%s"
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
 
@@ -349,17 +316,12 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "public-routeable-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-pub-routetable"
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
         - fromFieldPath: spec.vpc.subnet-public-2.az
@@ -390,17 +352,12 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "private-routetable-1-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-private-routetable-1"
         - fromFieldPath: spec.vpc.subnet-private-1.az
           toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
 
@@ -429,17 +386,12 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "private-routetable-2-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
-          policy:
-            fromFieldPath: Required
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-private-routetable-2"
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
 
@@ -471,15 +423,12 @@ spec:
         # GROUPING
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "cluster-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: "metadata.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "cluster-%s"
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
@@ -491,6 +440,9 @@ spec:
                 fmt: "eks-%s"
         - fromFieldPath: spec.eks.cluster-role
           toFieldPath: spec.forProvider.roleArn
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.uid
+          toFieldPath: spec.eks.clusterID
       connectionDetails:
         - name: cluster-ca
           fromConnectionSecretKey: clusterCA
@@ -520,15 +472,12 @@ spec:
         # GROUPING
         - type: PatchSet
           patchSetName: common
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.prefix
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "ng-%s-%s"
+        - fromFieldPath: spec.name
           toFieldPath: "metadata.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "ng-%s"
         # DYNAMIC
         - fromFieldPath: spec.eks.workers-size
           toFieldPath: spec.forProvider.scalingConfig.desiredSize
@@ -546,6 +495,56 @@ spec:
         - fromFieldPath: spec.eks.workernode-type
           toFieldPath: spec.forProvider.instanceTypes[0]
 
+    - name: eks-oidc
+      base:
+        apiVersion: iam.aws.crossplane.io/v1beta1
+        kind: OpenIDConnectProvider
+        spec:
+          forProvider:
+            clientIDList:
+              - sts.amazonaws.com
+            thumbprintList:
+              - "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+      patches:
+        - fromFieldPath: spec.name
+          toFieldPath: "metadata.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "oidc-eks-%s"
+        - fromFieldPath: spec.eks.clusterID
+          toFieldPath: spec.forProvider.url
+          transforms:
+          - type: string
+            string:
+              fmt: 'https://oidc.eks.eu-north-1.amazonaws.com/id/%s'
+
+    # - name: eks-oidc-config
+    #   base:
+    #     apiVersion: eks.aws.crossplane.io/v1alpha1
+    #       kind: IdentityProviderConfig
+    #       metadata:
+    #         name: eks-idp
+    #       spec:
+    #         forProvider:
+    #           clusterNameSelector:
+    #             matchControllerRef: true
+
+    #           oidc:
+    #             clientId: sts.amazonaws.com
+    #             issuerUrl: https://sts.windows.net/example-tenant-id/
+    #   patches:
+    #     # GROUPING
+    #     - type: PatchSet
+    #       patchSetName: common
+    #     - fromFieldPath: spec.eks.clusterID
+    #       toFieldPath: spec.forProvider.oidc
+    #       transforms:
+    #       - type: string
+    #         string:
+    #           fmt: 'https://oidc.eks.eu-north-1.amazonaws.com/ID/%s'
+
+    # Connect to helm-provider
     - name: helm-provider-config
       base:
         apiVersion: helm.crossplane.io/v1beta1
@@ -568,3 +567,36 @@ spec:
                 fmt: "eks-%s"
       readinessChecks:
         - type: None
+
+    # Install ALB Ingress Controller
+    - name: alb-ingress-controller
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          forProvider:
+            chart:
+              name: aws-load-balancer-controller
+              repository: https://aws.github.io/eks-charts
+              version: 2.4.2
+            namespace: default
+            skipCreateNamespace: false
+            values:
+              serviceAccount:
+                create: true
+                name: aws-alb-ingress-controller
+                # annotations:
+                #   eks.amazonaws.com/role-arn: "arn:aws:iam::542535353362:role/alb-ingress-controller"
+      patches:
+        # GROUPING
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: spec.name
+          toFieldPath: spec.providerConfigRef.name
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.values.clusterName
+          transforms:
+            - type: string
+              string:
+                fmt: "cluster-%s"
+

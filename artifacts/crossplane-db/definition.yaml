@@ -1,0 +1,46 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: mysqlinstances.gigapress.catex.se
+spec:
+  group: gigapress.catex.se
+  names:
+    kind: XMySQLInstance
+    plural: xmysqlinstances
+  claimNames:
+    kind: MySQLInstance
+    plural: mysqlinstances
+  connectionSecretKeys:
+    - username
+    - password
+    - endpoint
+    - port
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The db instance name
+              instanceClass:
+                type: string
+                description: The instance type
+              storageGB:
+                type: string
+                description: The allocated storage of db instance
+              dbVersion:
+                type: string
+                description: The version mysql of db instance
+              vpcName:
+                type: string
+                description: The name of vpc
+            required:
+              - name
+              - vpcName
