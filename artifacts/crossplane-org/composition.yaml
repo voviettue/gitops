@@ -432,24 +432,19 @@ spec:
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
-        - fromFieldPath: metadata.uid
+        - fromFieldPath: spec.name
           toFieldPath: spec.writeConnectionSecretToRef.name
           transforms:
             - type: string
               string:
-                fmt: "eks-%s"
+                fmt: "cluster-%s"
         - fromFieldPath: spec.eks.cluster-role
           toFieldPath: spec.forProvider.roleArn
         - type: ToCompositeFieldPath
-          fromFieldPath: metadata.uid
-          toFieldPath: spec.eks.clusterID
-      connectionDetails:
-        - name: cluster-ca
-          fromConnectionSecretKey: clusterCA
-        - name: cluster-endpoint
-          fromConnectionSecretKey: endpoint
-        - name: cluster-value
-          fromConnectionSecretKey: kubeconfig
+          fromFieldPath: status.atProvider.identity.oidc.issuer
+          toFieldPath: status.eksOIDC
+          policy:
+            fromFieldPath: Optional
 
     - name: eks-nodegroup
       base:
@@ -512,37 +507,10 @@ spec:
             - type: string
               string:
                 fmt: "oidc-eks-%s"
-        - fromFieldPath: spec.eks.clusterID
+        - fromFieldPath: status.eksOIDC
           toFieldPath: spec.forProvider.url
-          transforms:
-          - type: string
-            string:
-              fmt: 'https://oidc.eks.eu-north-1.amazonaws.com/id/%s'
-
-    # - name: eks-oidc-config
-    #   base:
-    #     apiVersion: eks.aws.crossplane.io/v1alpha1
-    #       kind: IdentityProviderConfig
-    #       metadata:
-    #         name: eks-idp
-    #       spec:
-    #         forProvider:
-    #           clusterNameSelector:
-    #             matchControllerRef: true
-
-    #           oidc:
-    #             clientId: sts.amazonaws.com
-    #             issuerUrl: https://sts.windows.net/example-tenant-id/
-    #   patches:
-    #     # GROUPING
-    #     - type: PatchSet
-    #       patchSetName: common
-    #     - fromFieldPath: spec.eks.clusterID
-    #       toFieldPath: spec.forProvider.oidc
-    #       transforms:
-    #       - type: string
-    #         string:
-    #           fmt: 'https://oidc.eks.eu-north-1.amazonaws.com/ID/%s'
+          policy:
+            fromFieldPath: Required
 
     # Connect to helm-provider
     - name: helm-provider-config
@@ -554,17 +522,22 @@ spec:
             source: Secret
             secretRef:
               key: kubeconfig
+              namespace: crossplane-system
       patches:
         - fromFieldPath: spec.name
           toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "helm-%s"
         - fromFieldPath: spec.writeConnectionSecretToRef.namespace
           toFieldPath: spec.credentials.secretRef.namespace
-        - fromFieldPath: spec.writeConnectionSecretToRef.name
+        - fromFieldPath: spec.name
           toFieldPath: spec.credentials.secretRef.name
           transforms:
             - type: string
               string:
-                fmt: "eks-%s"
+                fmt: "cluster-%s"
       readinessChecks:
         - type: None
 
@@ -578,7 +551,6 @@ spec:
             chart:
               name: aws-load-balancer-controller
               repository: https://aws.github.io/eks-charts
-              version: 2.4.2
             namespace: default
             skipCreateNamespace: false
             values:
@@ -593,6 +565,10 @@ spec:
           patchSetName: common
         - fromFieldPath: spec.name
           toFieldPath: spec.providerConfigRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "helm-%s"
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.values.clusterName
           transforms:

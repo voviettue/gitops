@@ -7,8 +7,8 @@ apiVersion: gigapress.catex.se/v1alpha1
 kind: XOrg
 metadata:
   name: catex
-  # annotations:
-  #   crossplane.io/external-name: org-catex
+  annotations:
+    crossplane.io/external-name: org-catex
 spec:
   name: catex
   region: eu-north-1
@@ -47,18 +47,14 @@ spec:
 
   compositionRef:
     name: org-standard.aws.gigapress.catex.se
-
-  # writeConnectionSecretToRef:
-  #   namespace: crossplane-system
-  #   name: org-catex
 ---
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Org
 metadata:
   name: catex
   namespace: realm-catex
-  # annotations:
-  #   crossplane.io/external-name: org-catex
+  annotations:
+    crossplane.io/external-name: org-catex
 spec:
   name: catex
   region: eu-north-1
@@ -69,5 +65,5 @@ spec:
     kind: XOrg
     name: catex
 
-  # writeConnectionSecretToRef:
-  #   name: org-details
+  writeConnectionSecretToRef:
+    name: org-details
