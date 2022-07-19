@@ -48,9 +48,9 @@ spec:
   compositionRef:
     name: org-standard.aws.gigapress.catex.se
 
-  writeConnectionSecretToRef:
-    namespace: crossplane-system
-    name: org-catex
+  # writeConnectionSecretToRef:
+  #   namespace: crossplane-system
+  #   name: org-catex
 ---
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Org
@@ -69,5 +69,5 @@ spec:
     kind: XOrg
     name: catex
 
-  writeConnectionSecretToRef:
-    name: org-details
+  # writeConnectionSecretToRef:
+  #   name: org-details
