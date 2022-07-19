@@ -420,9 +420,21 @@ spec:
           writeConnectionSecretToRef:
             namespace: crossplane-system
       patches:
+        # Bug: https://github.com/crossplane/crossplane/issues/3139
+        # ToCompositeFieldPath & patchSet not work together
         # GROUPING
-        - type: PatchSet
-          patchSetName: common
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.identity.oidc.issuer
+          toFieldPath: status.eks.oidc
+          policy:
+            fromFieldPath: Optional
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: spec.name
+          toFieldPath: metadata.labels[vpc]
+        # -- end workaround --
         - fromFieldPath: spec.name
           toFieldPath: "metadata.name"
           transforms:
@@ -440,11 +452,6 @@ spec:
                 fmt: "cluster-%s"
         - fromFieldPath: spec.eks.cluster-role
           toFieldPath: spec.forProvider.roleArn
-        - type: ToCompositeFieldPath
-          fromFieldPath: status.atProvider.identity.oidc.issuer
-          toFieldPath: status.eksOIDC
-          policy:
-            fromFieldPath: Optional
 
     - name: eks-nodegroup
       base:
@@ -507,7 +514,7 @@ spec:
             - type: string
               string:
                 fmt: "oidc-eks-%s"
-        - fromFieldPath: status.eksOIDC
+        - fromFieldPath: status.eks.oidc
           toFieldPath: spec.forProvider.url
           policy:
             fromFieldPath: Required
