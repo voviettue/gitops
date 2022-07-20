@@ -64,7 +64,7 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.ownerId
-          toFieldPath: metadata.labels[crossplane.io/account]
+          toFieldPath: status.ownerId
 
     - name: igw
       base:
@@ -628,8 +628,8 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: metadata.labels[crossplane.io/account]
-              - fromFieldPath: spec.eks.oidc
+              - fromFieldPath: status.ownerId
+              - fromFieldPath: status.eks.oidc
             strategy: string
             string:
               fmt: |
@@ -738,9 +738,9 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: metadata.labels[crossplane.io/account]
-              - fromFieldPath: spec.eks.oidc
-              - fromFieldPath: spec.eks.oidc
+              - fromFieldPath: status.ownerId
+              - fromFieldPath: status.eks.oidc
+              - fromFieldPath: status.eks.oidc
             strategy: string
             string:
               fmt: |
