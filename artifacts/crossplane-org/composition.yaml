@@ -64,7 +64,9 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.ownerId
-          toFieldPath: status.ownerId
+          toFieldPath: status.s3.ownerId
+          policy:
+            fromFieldPath: Optional
 
     - name: igw
       base:
@@ -433,11 +435,6 @@ spec:
                 trim: 'https://'
           policy:
             fromFieldPath: Optional
-        - type: ToCompositeFieldPath
-          fromFieldPath: metadata.uid
-          toFieldPath: status.eks.uid
-          policy:
-            fromFieldPath: Optional
         - type: PatchSet
           patchSetName: common
         - fromFieldPath: spec.name
@@ -449,7 +446,7 @@ spec:
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
-        - fromFieldPath: metadata.uid
+        - fromFieldPath: spec.name
           toFieldPath: spec.writeConnectionSecretToRef.name
           transforms:
             - type: string
@@ -555,7 +552,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: "org-adp26hgQ-%s"
+                fmt: "org-adpxyzhgq-%s"
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.arn
           toFieldPath: status.s3.arn
@@ -588,7 +585,6 @@ spec:
                     - s3:GetObject
                     - s3:GetObjectAcl
                     - s3:DeleteObject
-                    - s3:ListBucketMultipartUploads
                   effect: Allow
                   principal:
                     awsPrincipals:
@@ -606,6 +602,22 @@ spec:
           patchSetName: common
         - fromFieldPath: status.s3.arn
           toFieldPath: spec.forProvider.policy.statements[0].resource[0]
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.s3.arn
+          toFieldPath: spec.forProvider.policy.statements[1].resource[0]
+          transforms:
+            - type: string
+              string:
+                fmt: '%s/*'
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.s3.arn
+          toFieldPath: spec.forProvider.policy.statements[2].resource[0]
+          transforms:
+            - type: string
+              string:
+                fmt: '%s/*'
           policy:
             fromFieldPath: Required
 
@@ -628,7 +640,7 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: status.ownerId
+              - fromFieldPath: status.s3.ownerId
               - fromFieldPath: status.eks.oidc
             strategy: string
             string:
@@ -642,6 +654,7 @@ spec:
                         "Federated": "arn:aws:iam::%s:oidc-provider/%s"
                       },
                       "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {}
                     }
                   ]
                 }
@@ -662,15 +675,17 @@ spec:
       patches:
         - fromFieldPath: spec.deletionPolicy
           toFieldPath: spec.deletionPolicy
-        - fromFieldPath: metadata.uid
+        - fromFieldPath: spec.name
           toFieldPath: metadata.name
           transforms:
             - type: string
               string:
                 fmt: "helm-%s"
+          policy:
+            fromFieldPath: Required
         - fromFieldPath: spec.writeConnectionSecretToRef.namespace
           toFieldPath: spec.credentials.secretRef.namespace
-        - fromFieldPath: status.eks.uid
+        - fromFieldPath: spec.name
           toFieldPath: spec.credentials.secretRef.name
           transforms:
             - type: string
@@ -692,7 +707,7 @@ spec:
               name: aws-load-balancer-controller
               repository: https://aws.github.io/eks-charts
             namespace: default
-            skipCreateNamespace: false
+            skipCreateNamespace: true
             values:
               serviceAccount:
                 create: true
@@ -700,21 +715,25 @@ spec:
       patches:
         - fromFieldPath: spec.deletionPolicy
           toFieldPath: spec.deletionPolicy
-        - type: PatchSet
-          patchSetName: common
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.values.region
         - fromFieldPath: spec.name
           toFieldPath: spec.providerConfigRef.name
           transforms:
             - type: string
               string:
                 fmt: "helm-%s"
+          policy:
+            fromFieldPath: Required
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.values.clusterName
           transforms:
             - type: string
               string:
                 fmt: "cluster-%s"
-        - fromFieldPath: spec.alb.arn
+          policy:
+            fromRequirePath: Required
+        - fromFieldPath: status.alb.arn
           toFieldPath: spec.forProvider.values.serviceAccount.annotations[eks.amazonaws.com/role-arn]
           policy:
             fromFieldPath: Required
@@ -738,7 +757,7 @@ spec:
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: status.ownerId
+              - fromFieldPath: status.s3.ownerId
               - fromFieldPath: status.eks.oidc
               - fromFieldPath: status.eks.oidc
             strategy: string
