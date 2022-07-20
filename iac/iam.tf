@@ -35,7 +35,7 @@ resource "aws_iam_role" "node_group" {
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:aws:iam::221168245729:policy/ALBManagement",
+    # "arn:aws:iam::221168245729:policy/ALBManagement",
   ]
 
   assume_role_policy = jsonencode({
@@ -58,31 +58,6 @@ resource "aws_iam_role" "node_group" {
     Description = "General node_group role"
   }
 }
-
-# resource "aws_iam_role" "alb_role" {
-#   name = "alb-role"
-#   path = "/"
-#   description = "The role using to manage ALB"
-#   assume_role_policy = jsonencode({
-#     "Version": "2012-10-17",
-#     "Statement": [
-#       {
-#         "Action": [
-#           "sts:AssumeRoleWithWebIdentity"
-#         ],
-#         "Effect": "Allow",
-#       }
-#     ],
-#     "Principal": {
-#       "Federated": "arn:aws:iam::542535353362:oidc-provider/oidc.eks.eu-central-1.amazonaws.com/id/DBB951DC30FD171364B2515BA8117082"
-#     },
-#   })
-# }
-
-# resource "aws_iam_role_policy_attachment" "alb_policy_attachment" {
-#   policy_arn = aws_iam_policy.alb_policy.arn
-#   role       = aws_iam_role.alb_role.name
-# }
 
 resource "aws_iam_policy" "alb_policy" {
   name = "ALBManagement"
