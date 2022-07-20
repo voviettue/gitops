@@ -62,6 +62,9 @@ spec:
           toFieldPath: spec.forProvider.cidrBlock
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.ownerId
+          toFieldPath: metadata.labels[crossplane.io/account]
 
     - name: igw
       base:
@@ -420,21 +423,23 @@ spec:
           writeConnectionSecretToRef:
             namespace: crossplane-system
       patches:
-        # Bug: https://github.com/crossplane/crossplane/issues/3139
-        # ToCompositeFieldPath & patchSet not work together
-        # GROUPING
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.identity.oidc.issuer
           toFieldPath: status.eks.oidc
+          transforms:
+            - type: string
+              string:
+                type: TrimPrefix
+                trim: 'https://'
           policy:
             fromFieldPath: Optional
-        - fromFieldPath: spec.region
-          toFieldPath: spec.forProvider.region
-        - fromFieldPath: spec.deletionPolicy
-          toFieldPath: spec.deletionPolicy
-        - fromFieldPath: spec.name
-          toFieldPath: metadata.labels[vpc]
-        # -- end workaround --
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.uid
+          toFieldPath: status.eks.uid
+          policy:
+            fromFieldPath: Optional
+        - type: PatchSet
+          patchSetName: common
         - fromFieldPath: spec.name
           toFieldPath: "metadata.name"
           transforms:
@@ -444,7 +449,7 @@ spec:
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
-        - fromFieldPath: spec.name
+        - fromFieldPath: metadata.uid
           toFieldPath: spec.writeConnectionSecretToRef.name
           transforms:
             - type: string
@@ -497,6 +502,12 @@ spec:
         - fromFieldPath: spec.eks.workernode-type
           toFieldPath: spec.forProvider.instanceTypes[0]
 
+    #---------------------------
+    # EKS OIDC
+    # S3
+    # S3_ROLE
+    # ALB_ROLE & ALB RELEASE
+    #---------------------------
     - name: eks-oidc
       base:
         apiVersion: iam.aws.crossplane.io/v1beta1
@@ -516,10 +527,128 @@ spec:
                 fmt: "oidc-eks-%s"
         - fromFieldPath: status.eks.oidc
           toFieldPath: spec.forProvider.url
+          transforms:
+            - type: string
+              string:
+                fmt: "https://%s"
           policy:
             fromFieldPath: Required
 
-    # Connect to helm-provider
+    - name: s3-bucket
+      base:
+        apiVersion: s3.aws.crossplane.io/v1beta1
+        kind: Bucket
+        metadata:
+          labels:
+            type: org
+        spec:
+          forProvider:
+            acl: private
+            objectLockEnabledForBucket: false
+      patches:
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.locationConstraint
+        - fromFieldPath: spec.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "org-adp26hgQ-%s"
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.arn
+          toFieldPath: status.s3.arn
+
+    - name: s3-bucket-policy
+      base:
+        apiVersion: s3.aws.crossplane.io/v1alpha3
+        kind: BucketPolicy
+        spec:
+          forProvider:
+            bucketNameSelector:
+              matchControllerRef: true
+              matchLabels:
+                type: org
+            policy:
+              version: '2012-10-17'
+              statements:
+                - action:
+                    - s3:ListBucket
+                  effect: Allow
+                  principal:
+                    awsPrincipals:
+                      - iamRoleArnSelector:
+                          matchControllerRef: true
+                          matchLabels:
+                            ability: s3
+                - action:
+                    - s3:PutObject
+                    - s3:PutObjectAcl
+                    - s3:GetObject
+                    - s3:GetObjectAcl
+                    - s3:DeleteObject
+                    - s3:ListBucketMultipartUploads
+                  effect: Allow
+                  principal:
+                    awsPrincipals:
+                      - iamRoleArnSelector:
+                          matchControllerRef: true
+                          matchLabels:
+                            ability: s3
+                - action:
+                    - s3:GetObject
+                  effect: Allow
+                  principal:
+                    allowAnon: true
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: status.s3.arn
+          toFieldPath: spec.forProvider.policy.statements[0].resource[0]
+          policy:
+            fromFieldPath: Required
+
+    - name: role-s3
+      base:
+        apiVersion: iam.aws.crossplane.io/v1beta1
+        kind: Role
+        metadata:
+          labels:
+            ability: s3
+      patches:
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: spec.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "org-%s-s3"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: metadata.labels[crossplane.io/account]
+              - fromFieldPath: spec.eks.oidc
+            strategy: string
+            string:
+              fmt: |
+                {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "arn:aws:iam::%s:oidc-provider/%s"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                    }
+                  ]
+                }
+          toFieldPath: spec.forProvider.assumeRolePolicyDocument
+          policy:
+            fromFieldPath: Required
+
     - name: helm-provider-config
       base:
         apiVersion: helm.crossplane.io/v1beta1
@@ -531,7 +660,9 @@ spec:
               key: kubeconfig
               namespace: crossplane-system
       patches:
-        - fromFieldPath: spec.name
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: metadata.uid
           toFieldPath: metadata.name
           transforms:
             - type: string
@@ -539,12 +670,14 @@ spec:
                 fmt: "helm-%s"
         - fromFieldPath: spec.writeConnectionSecretToRef.namespace
           toFieldPath: spec.credentials.secretRef.namespace
-        - fromFieldPath: spec.name
+        - fromFieldPath: status.eks.uid
           toFieldPath: spec.credentials.secretRef.name
           transforms:
             - type: string
               string:
                 fmt: "cluster-%s"
+          policy:
+            fromFieldPath: Required
       readinessChecks:
         - type: None
 
@@ -564,10 +697,9 @@ spec:
               serviceAccount:
                 create: true
                 name: aws-alb-ingress-controller
-                # annotations:
-                #   eks.amazonaws.com/role-arn: "arn:aws:iam::542535353362:role/alb-ingress-controller"
       patches:
-        # GROUPING
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
         - type: PatchSet
           patchSetName: common
         - fromFieldPath: spec.name
@@ -582,4 +714,75 @@ spec:
             - type: string
               string:
                 fmt: "cluster-%s"
+        - fromFieldPath: spec.alb.arn
+          toFieldPath: spec.forProvider.values.serviceAccount.annotations[eks.amazonaws.com/role-arn]
+          policy:
+            fromFieldPath: Required
 
+    - name: role-alb
+      base:
+        apiVersion: iam.aws.crossplane.io/v1beta1
+        kind: Role
+        metadata:
+          labels:
+            ability: alb
+      patches:
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: spec.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "org-%s-alb"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: metadata.labels[crossplane.io/account]
+              - fromFieldPath: spec.eks.oidc
+              - fromFieldPath: spec.eks.oidc
+            strategy: string
+            string:
+              fmt: |
+                {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "arn:aws:iam::%s:oidc-provider/%s"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {
+                        "StringLike": {
+                          "%s:sub": "system:serviceaccount:default:aws-alb-ingress-controller"
+                        }
+                      }
+                    }
+                  ]
+                }
+          toFieldPath: spec.forProvider.assumeRolePolicyDocument
+          policy:
+            fromFieldPath: Required
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.arn
+          toFieldPath: status.alb.arn
+          policy:
+            fromFieldPath: Optional
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.roleID
+          toFieldPath: status.alb.roleID
+          policy:
+            fromFieldPath: Optional
+
+    - name: role-alb-policy-attachment
+      base:
+        apiVersion: iam.aws.crossplane.io/v1beta1
+        kind: RolePolicyAttachment
+        spec:
+          forProvider:
+            policyArn: arn:aws:iam::221168245729:policy/ALBManagement
+            roleNameSelector:
+              matchControllerRef: true
+              matchLabels:
+                ability: alb
