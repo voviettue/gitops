@@ -22,7 +22,7 @@ spec:
           toFieldPath: spec.deletionPolicy
         - fromFieldPath: spec.name
           toFieldPath: metadata.labels[vpc]
-        - fromFIeldPath: spec.name
+        - fromFieldPath: spec.name
           toFieldPath: metadata.labels[ref.crossplane.io/org-name]
 
   # -----------------
@@ -41,6 +41,7 @@ spec:
     # - 1 vpc
     # - 2 public subnet
     # - 2 private subnet
+    # - 1 security group
     # - 1 routetable for public subnet
     # - 2 routetable for private subnet
     # - 1 internet gateway
@@ -413,6 +414,35 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
 
+    # SG :: eks - rds
+    - name: securityGroup
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: SecurityGroup
+        metadata:
+          labels:
+            type: rds-connection
+        spec:
+          forProvider:
+            vpcIdSelector:
+              matchControllerRef: true
+            description: Allow access to mysql instance
+            ingress:
+              - fromPort: 3306
+                toPort: 3306
+                ipProtocol: tcp
+                ipRanges:
+                  - cidrIp: 0.0.0.0/0
+                    description: Everywhere
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.groupName
+          transforms:
+            - type: string
+              string:
+                fmt: "org-%s-allow-rds"
     #------------------------
     # EKS
     #------------------------

@@ -3,15 +3,15 @@ kind: Composition
 metadata:
   name: mysqlinstance.aws.gigapress.catex.se
   labels:
-    crossplane.io/xrd: mysqlinstances.gigapress.catex.se
+    crossplane.io/xrd: xmysqlinstances.gigapress.catex.se
     provider: aws
     type: db
-    tier: enterprise
+    tier: standard
 spec:
   writeConnectionSecretsToNamespace: crossplane-system
   compositeTypeRef:
     apiVersion: gigapress.catex.se/v1alpha1
-    kind: XMysqlInstance
+    kind: XMySQLInstance
 
   patchSets:
     - name: common
@@ -29,6 +29,7 @@ spec:
         kind: DBSubnetGroup
         spec:
           forProvider:
+            description: "The subnet group of rds"
             subnetIdSelector:
               matchLabels:
                 type: subnet
@@ -56,7 +57,9 @@ spec:
             publicAccessible: false
             vpcSecurityGroupIDSelector:
               matchLabels:
-                visibility: private
+                type: rds-connection
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
       patches:
         - type: PatchSet
           patchSetName: common
@@ -89,7 +92,7 @@ spec:
               - fromFieldPath: spec.name
             strategy: string
             string:
-              fmt: "org-%s-%s"
+              fmt: "dpg-%s-%s"
           toFieldPath: spec.forProvider.dbParameterGroupName
         - fromFieldPath: spec.storageGB
           toFieldPath: spec.forProvider.allocatedStorage
@@ -102,3 +105,29 @@ spec:
       #   - fromConnectionSecretKey: password
       #   - fromConnectionSecretKey: endpoint
       #   - fromConnectionSecretKey: port
+
+    # RDS :: parameter-group
+    - name: db-parameter-group
+      base:
+        apiVersion: rds.aws.crossplane.io/v1alpha1
+        kind: DBParameterGroup
+        spec:
+          forProvider:
+            dbParameterGroupFamilySelector:
+              engine: mariadb
+              engineVersion: "10.4"
+            description: the custom parameter for db instances
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "dpg-%s-%s"
+          toFieldPath: metadata.name
+          policy:
+            fromFieldPath: Required

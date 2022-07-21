@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: mysqlinstance.gigapress.catex.se
+  name: xmysqlinstances.gigapress.catex.se
 spec:
   group: gigapress.catex.se
   names:
@@ -31,6 +31,9 @@ spec:
               name:
                 type: string
                 description: The db instance name
+              deletionPolicy:
+                description: The deletion policy apply for all RMs
+                type: string
               region:
                 type: string
                 description: The region which resource setup to
