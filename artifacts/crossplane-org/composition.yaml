@@ -22,6 +22,8 @@ spec:
           toFieldPath: spec.deletionPolicy
         - fromFieldPath: spec.name
           toFieldPath: metadata.labels[vpc]
+        - fromFIeldPath: spec.name
+          toFieldPath: metadata.labels[ref.crossplane.io/org-name]
 
   # -----------------
   # RM includes
@@ -55,6 +57,7 @@ spec:
             enableDnsHostNames: true
             tags:
               - key: Name
+
       patches:
         - type: PatchSet
           patchSetName: common
@@ -68,6 +71,7 @@ spec:
           policy:
             fromFieldPath: Optional
 
+    # VPC :: Internet Gateway
     - name: igw
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -91,6 +95,7 @@ spec:
             string:
               fmt: "igw-%s"
 
+    # VPC :: Subnet
     - name: subnet-public-1
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -129,6 +134,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: metadata.labels.zone
 
+    # VPC :: Subnet
     - name: subnet-public-2
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -167,6 +173,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-public-2.az
           toFieldPath: metadata.labels.zone
 
+    # VPC :: Subnet
     - name: subnet-private-1
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -205,6 +212,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-1.az
           toFieldPath: metadata.labels.zone
 
+    # VPC :: Subnet
     - name: subnet-private-2
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -243,6 +251,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: metadata.labels.zone
 
+    # VPC :: ElasticIP
     - name: elastic-ip
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -257,6 +266,7 @@ spec:
         - type: PatchSet
           patchSetName: common
 
+    # VPC :: Nate Gateway
     - name: natgateway
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -291,6 +301,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
 
+    # VPC :: RouteTable
     - name: routetable-public
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -332,6 +343,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-public-2.az
           toFieldPath: spec.forProvider.associations[1].subnetIdSelector.matchLabels.zone
 
+    # VPC :: RouteTable
     - name: routetable-private-1
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -366,6 +378,7 @@ spec:
         - fromFieldPath: spec.vpc.subnet-private-1.az
           toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
 
+    # VPC :: RouteTable
     - name: routetable-private-2
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -409,6 +422,7 @@ spec:
     # - 1 Nodegroup
     #------------------------
 
+    # EKS :: Cluster
     - name: eks-cluster
       base:
         apiVersion: eks.aws.crossplane.io/v1beta1
@@ -455,6 +469,7 @@ spec:
         - fromFieldPath: spec.eks.cluster-role
           toFieldPath: spec.forProvider.roleArn
 
+    # EKS :: Node Group
     - name: eks-nodegroup
       base:
         apiVersion: eks.aws.crossplane.io/v1alpha1
@@ -505,6 +520,8 @@ spec:
     # S3_ROLE
     # ALB_ROLE & ALB RELEASE
     #---------------------------
+
+    # IAM OIDC :: EKS
     - name: eks-oidc
       base:
         apiVersion: iam.aws.crossplane.io/v1beta1
@@ -531,6 +548,7 @@ spec:
           policy:
             fromFieldPath: Required
 
+    # S3 :: Bucket
     - name: s3-bucket
       base:
         apiVersion: s3.aws.crossplane.io/v1beta1
@@ -557,6 +575,7 @@ spec:
           fromFieldPath: status.atProvider.arn
           toFieldPath: status.s3.arn
 
+    # S3 :: Bucket Policy
     - name: s3-bucket-policy
       base:
         apiVersion: s3.aws.crossplane.io/v1alpha3
@@ -621,6 +640,7 @@ spec:
           policy:
             fromFieldPath: Required
 
+    # IAM :: Role
     - name: role-s3
       base:
         apiVersion: iam.aws.crossplane.io/v1beta1
@@ -662,6 +682,7 @@ spec:
           policy:
             fromFieldPath: Required
 
+    # Helm :: Config
     - name: helm-provider-config
       base:
         apiVersion: helm.crossplane.io/v1beta1
@@ -696,7 +717,7 @@ spec:
       readinessChecks:
         - type: None
 
-    # Install ALB Ingress Controller
+    # Helm :: ALB Ingress Controller Release
     - name: alb-ingress-controller
       base:
         apiVersion: helm.crossplane.io/v1beta1
@@ -738,6 +759,7 @@ spec:
           policy:
             fromFieldPath: Required
 
+    # IAM :: Role
     - name: role-alb
       base:
         apiVersion: iam.aws.crossplane.io/v1beta1
@@ -794,6 +816,7 @@ spec:
           policy:
             fromFieldPath: Optional
 
+    # IAM :: Role Policy Attachment
     - name: role-alb-policy-attachment
       base:
         apiVersion: iam.aws.crossplane.io/v1beta1
