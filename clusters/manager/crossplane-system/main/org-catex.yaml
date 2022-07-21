@@ -7,8 +7,8 @@ apiVersion: gigapress.catex.se/v1alpha1
 kind: XOrg
 metadata:
   name: catex
-  annotations:
-    crossplane.io/external-name: org-catex
+  # annotations:
+  #   crossplane.io/external-name: org-catex
 spec:
   name: catex
   region: eu-north-1
@@ -53,8 +53,8 @@ kind: Org
 metadata:
   name: catex
   namespace: realm-catex
-  annotations:
-    crossplane.io/external-name: org-catex
+  # annotations:
+  #   crossplane.io/external-name: org-catex
 spec:
   name: catex
   region: eu-north-1
@@ -67,3 +67,40 @@ spec:
 
   writeConnectionSecretToRef:
     name: org-details
+---
+apiVersion: gigapress.catex.se/v1alpha1
+kind: XMySQLInstance
+metadata:
+  name: catex-primary
+  # annotations:
+  #   crossplane.io/external-name: mysql-catex-primary
+spec:
+  orgRefName: catex
+  name: primary
+  region: eu-north-1
+  deletionPolicy: Delete
+  instanceClass: "db.t3.micro"
+  storageGB: 20
+  compositionRef:
+    name: mysqlinstance.aws.gigapress.catex.se
+---
+apiVersion: gigapress.catex.se/v1alpha1
+kind: MySQLInstance
+metadata:
+  name: catex-primary
+  namespace: realm-catex
+  # annotations:
+  #   crossplane.io/external-name: mysql-catex-primary
+spec:
+  orgRefName: catex
+  name: primary
+  region: eu-north-1
+  storageGB: 20
+
+  resourceRef:
+    apiVersion: gigapress.catex.se/v1alpha1
+    kind: XMySQLInstance
+    name: catex-primary
+
+  writeConnectionSecretToRef:
+    name: db-primary-details

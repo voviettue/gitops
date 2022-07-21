@@ -29,6 +29,9 @@ spec:
               name:
                 type: string
                 description: The db instance name
+              region:
+                type: string
+                description: The region which resource setup to
               instanceClass:
                 type: string
                 description: The instance type
@@ -41,5 +44,6 @@ spec:
             required:
               - name
               - storageGB
+              - region
               - orgRefName
 
