@@ -10,11 +10,11 @@ spec:
   claimNames:
     kind: MySQLInstance
     plural: mysqlinstances
-  connectionSecretKeys:
-    - username
-    - password
-    - endpoint
-    - port
+  # connectionSecretKeys:
+  #   - username
+  #   - password
+  #   - endpoint
+  #   - port
   versions:
   - name: v1alpha1
     served: true
@@ -35,12 +35,11 @@ spec:
               storageGB:
                 type: string
                 description: The allocated storage of db instance
-              dbVersion:
+              orgRefName:
                 type: string
-                description: The version mysql of db instance
-              vpcName:
-                type: string
-                description: The name of vpc
+                description: A ref to org resource by name
             required:
               - name
-              - vpcName
+              - storageGB
+              - orgRefName
+

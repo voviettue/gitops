@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: rds.aws.gigapress.catex.se
+  name: mysqlinstance.aws.gigapress.catex.se
   labels:
-    crossplane.io/xrd: xworkspaces.gigapress.catex.se
+    crossplane.io/xrd: mysqlinstances.gigapress.catex.se
     provider: aws
-    type: workspace
+    type: db
     tier: enterprise
 spec:
   writeConnectionSecretsToNamespace: crossplane-system
   compositeTypeRef:
     apiVersion: gigapress.catex.se/v1alpha1
-    kind: XWorkspace
+    kind: XMysqlInstance
 
   patchSets:
     - name: common
@@ -22,7 +22,7 @@ spec:
           toFieldPath: "spec.deletionPolicy"
 
   resources:
-
+    # DB :: Subnet Group
     - name: dbsubnetgroup
       base:
         apiVersion: database.aws.crossplane.io/v1beta1
@@ -36,9 +36,10 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - fromFieldPath: "spec.vpcName"
-          toFieldPath: "spec.forProvider.subnetIdSelector.matchLabels[vpc]"
+        - fromFieldPath: "spec.orgRefName"
+          toFieldPath: "spec.forProvider.subnetIdSelector.matchLabels[ref.crossplane.io/org-name]"
 
+    # DB :: Mysql Instance
     - name: rds
       base:
         apiVersion: database.aws.crossplane.io/v1beta1
@@ -47,47 +48,57 @@ spec:
           forProvider:
             dbSubnetGroupNameSelector:
               matchControllerRef: true
-            allocatedStorage: 20
             dbInstanceClass: db.t3.small
             engine: mariadb
             engineVersion: "10.4"
             masterUsername: master
             skipFinalSnapshotBeforeDeletion: true
+            publicAccessible: false
+            vpcSecurityGroupIDSelector:
+              matchLabels:
+                visibility: private
       patches:
         - type: PatchSet
           patchSetName: common
-        - fromFieldPath: "metadata.uid"
-          toFieldPath: "spec.writeConnectionSecretToRef.name"
-          transforms:
-            - type: string
-              string:
-                fmt: "mysql-%s"
-        - fromFieldPath: "spec.name"
-          toFieldPath: "metadata.name"
-          transforms:
-            - type: string
-              string:
-                fmt: "org-%s"
-        - fromFieldPath: "spec.name"
-          toFieldPath: "spec.forProvider.dbParameterGroupName"
-          transforms:
-            - type: string
-              string:
-                fmt: "org-%s"
-        - fromFieldPath: "spec.storageGB"
-          toFieldPath: "spec.forProvider.allocatedStorage"
-        - fromFieldPath: "spec.dbVersion"
-          toFieldPath: "spec.forProvider.engineVersion"
-        - fromFieldPath: "spec.instanceClass"
-          toFieldPath: "spec.forProvider.dbInstanceClass"
-      connectionDetails:
-        - fromConnectionSecretKey: username
-        - fromConnectionSecretKey: password
-        - fromConnectionSecretKey: endpoint
-        - fromConnectionSecretKey: port
-
-    - name: securitygroup
-      base:
-
-
-
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "org-%s-%s"
+          toFieldPath: spec.writeConnectionSecretToRef.name
+          policy:
+            fromFieldPath: Required
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "org-%s-%s"
+          toFieldPath: metadata.name
+          policy:
+            fromFieldPath: Required
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "org-%s-%s"
+          toFieldPath: spec.forProvider.dbParameterGroupName
+        - fromFieldPath: spec.storageGB
+          toFieldPath: spec.forProvider.allocatedStorage
+        - fromFieldPath: spec.instanceClass
+          toFieldPath: spec.forProvider.dbInstanceClass
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.vpcSecurityGroupIDSelector.matchLabels[ref.crossplane.io/org-name]
+      # connectionDetails:
+      #   - fromConnectionSecretKey: username
+      #   - fromConnectionSecretKey: password
+      #   - fromConnectionSecretKey: endpoint
+      #   - fromConnectionSecretKey: port
