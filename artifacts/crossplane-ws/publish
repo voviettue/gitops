@@ -11,7 +11,7 @@ done
 
 VERSION=$(cat version)
 REGISTRY=public.ecr.aws/catext
-REPO=gigapress/crossplane-org
+REPO=gigapress/crossplane-ws
 aws ecr-public get-login-password --profile g --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY || true
 rm ./*.xpkg || true
 kubectl crossplane build configuration

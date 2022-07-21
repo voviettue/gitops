@@ -12,10 +12,10 @@ spec:
     plural: orgs
   defaultCompositionRef:
     name: org-standard.aws.gigapress.catex.se
-  connectionSecretKeys:
-    - cluster-ca
-    - cluster-endpoint
-    - cluster-value
+  # connectionSecretKeys:
+  #   - cluster-ca
+  #   - cluster-endpoint
+  #   - cluster-value
   versions:
   - name: v1alpha1
     served: true

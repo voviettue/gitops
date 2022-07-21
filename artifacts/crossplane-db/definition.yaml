@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: mysqlinstances.gigapress.catex.se
+  name: mysqlinstance.gigapress.catex.se
 spec:
   group: gigapress.catex.se
   names:
@@ -10,6 +10,8 @@ spec:
   claimNames:
     kind: MySQLInstance
     plural: mysqlinstances
+  defaultCompositionRef:
+    name: mysqlinstance.aws.gigapress.catex.se
   # connectionSecretKeys:
   #   - username
   #   - password
@@ -36,7 +38,7 @@ spec:
                 type: string
                 description: The instance type
               storageGB:
-                type: string
+                type: integer
                 description: The allocated storage of db instance
               orgRefName:
                 type: string
