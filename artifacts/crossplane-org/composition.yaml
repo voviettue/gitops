@@ -432,6 +432,12 @@ spec:
                 ipRanges:
                   - cidrIp: 0.0.0.0/0
                     description: Everywhere
+              - fromPort: 3306
+                toPort: 3306
+                ipProtocol: tcp
+                ipRanges:
+                  - cidrIp: 172.26.0.15/32
+                    description: Everywhere
       patches:
         - type: PatchSet
           patchSetName: common

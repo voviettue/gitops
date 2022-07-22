@@ -41,11 +41,11 @@ spec:
             strategy: string
             string:
               fmt: "database-%s-%s"
-          toFieldPath: spec.credentials.name
+          toFieldPath: spec.credentials.connectionSecretRef.name
           policy:
             fromFieldPath: Required
         - fromFieldPath: spec.writeConnectionSecretToRef.namespace
-          toFieldPath: spec.credentials.namespace
+          toFieldPath: spec.credentials.connectionSecretRef.namespace
 
     # DB :: Create new db schema
     - name: db
@@ -85,6 +85,12 @@ spec:
         apiVersion: mysql.sql.crossplane.io/v1alpha1
         kind: User
         spec:
+          forProvider:
+            resourceOptions:
+              maxQueriesPerHour: 5000
+              maxUpdatesPerHour: 5000
+              maxConnectionsPerHour: 500
+              maxUserConnections: 50
           deletionPolicy: Delete
           writeConnectionSecretToRef:
             namespace: crossplane-system
