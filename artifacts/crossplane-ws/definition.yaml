@@ -7,12 +7,15 @@ spec:
   names:
     kind: XWorkspace
     plural: xworkspaces
+    shortNames:
+      - ws
+    categories:
+      - gigapress
   claimNames:
     kind: Workspace
-    plural: workspace
+    plural: workspaces
   defaultCompositionRef:
-    name: workspace-shared.aws.gigapress.catex.se
-  connectionSecretKeys:
+    name: workspace.aws.gigapress.catex.se
   versions:
   - name: v1alpha1
     served: true
@@ -23,20 +26,39 @@ spec:
         properties:
           spec:
             type: object
+            description: The list extensions installed in workspace
             properties:
-              rds:
-                type: object
-                properties:
-              s3:
-                type: object
-                properties:
-              route53:
-                type: object
-                properties:
-              release:
-                type: object
-                properties:
+              name:
+                type: string
+                description: The name of this workspace
 
+              orgRefName:
+                type: string
+                description: The name of org (XRD) which is this ws belongs to
 
+              dbRefName:
+                type: string
+                description: The name of db (XRD) which is this ws connect to
 
-
+              extensions:
+                type: array
+                items:
+                  desciption: The configuration of extension
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: the name of extension which is extension registered
+                    version:
+                      type: string
+                      description: the current version of this extension
+                    minorAutoUpgrade:
+                      type: boolean
+                      description: the flag detect auto fetch minor version update
+                  required:
+                    - name
+                    - version
+            required:
+              - name
+              - orgRefName
+              - dbRefName

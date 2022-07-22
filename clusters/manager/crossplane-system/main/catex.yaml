@@ -1,18 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: realm-hipnosic
+  name: realm-catex
 ---
 apiVersion: gigapress.catex.se/v1alpha1
-kind: XOrg
+kind: Org
 metadata:
-  name: hipnosic
-  # annotations:
-  #   crossplane.io/external-name: org-hipnosic
+  name: catex
+  namespace: realm-catex
 spec:
-  name: hipnosic
+  name: catex
   region: eu-north-1
-  prefix: hip
   deletionPolicy: Delete
 
   eks:
@@ -50,26 +48,21 @@ spec:
     name: org-standard.aws.gigapress.catex.se
 
   writeConnectionSecretToRef:
-    namespace: crossplane-system
-    name: org-hipnosic
+    name: org
 ---
 apiVersion: gigapress.catex.se/v1alpha1
-kind: Org
+kind: MySQLInstance
 metadata:
-  name: hipnosic
-  namespace: realm-hipnosic
-  # annotations:
-  #   crossplane.io/external-name: org-hipnosic
+  name: catex-primary
+  namespace: realm-catex
 spec:
-  name: hipnosic
+  orgRefName: catex
+  name: primary
   region: eu-north-1
-  prefix: hip
   deletionPolicy: Delete
-
-  resourceRef:
-    apiVersion: gigapress.catex.se/v1alpha1
-    kind: XOrg
-    name: hipnosic
-
+  instanceClass: "db.t3.micro"
+  storageGB: 20
+  compositionRef:
+    name: mysqlinstance.aws.gigapress.catex.se
   writeConnectionSecretToRef:
-    name: org-details
+    name: mysql

@@ -5,8 +5,6 @@ metadata:
   labels:
     crossplane.io/xrd: xmysqlinstances.gigapress.catex.se
     provider: aws
-    type: db
-    tier: standard
 spec:
   writeConnectionSecretsToNamespace: crossplane-system
   compositeTypeRef:
@@ -70,7 +68,7 @@ spec:
               - fromFieldPath: spec.name
             strategy: string
             string:
-              fmt: "org-%s-%s"
+              fmt: "database-%s-%s"
           toFieldPath: spec.writeConnectionSecretToRef.name
           policy:
             fromFieldPath: Required
@@ -81,7 +79,7 @@ spec:
               - fromFieldPath: spec.name
             strategy: string
             string:
-              fmt: "org-%s-%s"
+              fmt: "gigapress-%s-%s"
           toFieldPath: metadata.name
           policy:
             fromFieldPath: Required
@@ -100,11 +98,6 @@ spec:
           toFieldPath: spec.forProvider.dbInstanceClass
         - fromFieldPath: spec.orgRefName
           toFieldPath: spec.forProvider.vpcSecurityGroupIDSelector.matchLabels[ref.crossplane.io/org-name]
-      # connectionDetails:
-      #   - fromConnectionSecretKey: username
-      #   - fromConnectionSecretKey: password
-      #   - fromConnectionSecretKey: endpoint
-      #   - fromConnectionSecretKey: port
 
     # RDS :: parameter-group
     - name: db-parameter-group

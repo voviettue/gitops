@@ -1,0 +1,169 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: workspace.aws.gigapress.catex.se
+  labels:
+    crossplane.io/xrd: xworkspaces.gigapress.catex.se
+    provider: aws
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: gigapress.catex.se/v1alpha1
+    kind: XWorkspace
+
+  resources:
+
+    # ProviderConfig :: create config provider
+    - name: provider
+      base:
+        apiVersion: mysql.sql.crossplane.io/v1alpha1
+        kind: ProviderConfig
+        spec:
+          credentials:
+            source: MySQLConnectionSecret
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: metadata.name
+          policy:
+            fromFieldPath: Required
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "database-%s-%s"
+          toFieldPath: spec.credentials.name
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+          toFieldPath: spec.credentials.namespace
+
+    # DB :: Create new db schema
+    - name: db
+      base:
+        apiVersion: mysql.sql.crossplane.io/v1alpha1
+        kind: Database
+        spec:
+          deletionPolicy: Delete
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: metadata.name
+          policy:
+            fromFieldPath: Required
+
+    # DB :: Create new user for db schema
+    - name: db-user
+      base:
+        apiVersion: mysql.sql.crossplane.io/v1alpha1
+        kind: User
+        spec:
+          deletionPolicy: Delete
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.writeConnectionSecretToRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: metadata.name
+          policy:
+            fromFieldPath: Required
+
+    # DB :: Grant permission for user-database
+    - name: db-grant
+      base:
+        apiVersion: mysql.sql.crossplane.io/v1alpha1
+        kind: Grant
+        spec:
+          deletionPolicy: Delete
+          forProvider:
+            privileges:
+              - ALL
+        patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.userRef.name
+          policy:
+            fromFieldPath: Required
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.databaseRef.name
+          policy:
+            fromFieldPath: Required
+
+    # Release :: Install application for workspace
+    # - name: release
+    #   base:
+    #     apiVersion: helm.crossplane.io/v1beta1
+    #     kind: Release
+    #     spec:
+    #       deletionPolicy: Delete
+    #       forProvider:
+    #         chart:
+    #           name: aws-load-balancer-controller
+    #           repository: https://aws.github.io/eks-charts
+    #         namespace: default
+    #         skipCreateNamespace: true
+    #         values:
+    #           serviceAccount:
+    #             create: true
+    #             name: aws-alb-ingress-controller
+
+

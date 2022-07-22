@@ -9,10 +9,12 @@ for CMD in kubectl kubectl-crossplane; do
     fi
 done
 
-VERSION=$(cat version)
 REGISTRY=public.ecr.aws/catext
-REPO=gigapress/crossplane-db
+REPO=gigapress/$1
 aws ecr-public get-login-password --profile g --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY || true
+
+cd $1
+VERSION=$(cat version)
 rm ./*.xpkg || true
 kubectl crossplane build configuration
 kubectl crossplane push configuration $REGISTRY/$REPO:${VERSION}

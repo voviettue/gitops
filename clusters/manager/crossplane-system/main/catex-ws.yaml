@@ -1,0 +1,12 @@
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-default
+  namespace: realm-catex
+spec:
+  name: default
+  orgRefName: catex
+  dbRefName: primary
+
+  writeConnectionSecretToRef:
+    name: ws

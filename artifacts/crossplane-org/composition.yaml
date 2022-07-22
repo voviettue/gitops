@@ -5,8 +5,6 @@ metadata:
   labels:
     crossplane.io/xrd: xorgs.gigapress.catex.se
     provider: aws
-    vpc: new
-    tier: standard
 spec:
   writeConnectionSecretsToNamespace: crossplane-system
   compositeTypeRef:
@@ -482,11 +480,11 @@ spec:
         - type: PatchSet
           patchSetName: common
         - fromFieldPath: spec.name
-          toFieldPath: "metadata.name"
+          toFieldPath: metadata.name
           transforms:
             - type: string
               string:
-                fmt: "cluster-%s"
+                fmt: "gigapress-%s"
         # DYNAMIC
         - fromFieldPath: spec.eks.k8s-version
           toFieldPath: spec.forProvider.version
@@ -728,12 +726,6 @@ spec:
           toFieldPath: spec.deletionPolicy
         - fromFieldPath: spec.name
           toFieldPath: metadata.name
-          transforms:
-            - type: string
-              string:
-                fmt: "helm-%s"
-          policy:
-            fromFieldPath: Required
         - fromFieldPath: spec.writeConnectionSecretToRef.namespace
           toFieldPath: spec.credentials.secretRef.namespace
         - fromFieldPath: spec.name
@@ -770,18 +762,12 @@ spec:
           toFieldPath: spec.forProvider.values.region
         - fromFieldPath: spec.name
           toFieldPath: spec.providerConfigRef.name
-          transforms:
-            - type: string
-              string:
-                fmt: "helm-%s"
-          policy:
-            fromFieldPath: Required
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.values.clusterName
           transforms:
             - type: string
               string:
-                fmt: "cluster-%s"
+                fmt: "gigapress-%s"
           policy:
             fromRequirePath: Required
         - fromFieldPath: status.alb.arn

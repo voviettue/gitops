@@ -7,6 +7,10 @@ spec:
   names:
     kind: XMySQLInstance
     plural: xmysqlinstances
+    shortNames:
+      - db
+    categories:
+      - gigapress
   claimNames:
     kind: MySQLInstance
     plural: mysqlinstances
