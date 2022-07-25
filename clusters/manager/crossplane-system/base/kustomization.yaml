@@ -4,4 +4,4 @@ resources:
   - sources.yaml
   - crossplane.yaml
   - sealed-secret.yaml
-  - secrets
+  # - secrets

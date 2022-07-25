@@ -29,6 +29,12 @@ module "eks" {
           namespace = "crossplane-system"
         },
         {
+          namespace = "default"
+        },
+        {
+          namespace = "kube-system"
+        },
+        {
           namespace = "flux-system"
         }
       ]
