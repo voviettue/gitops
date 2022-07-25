@@ -3,23 +3,7 @@ variable "region" {
   type    = string
 }
 
-variable "availability_zone" {
-  default = "eu-north-1a"
-  type    = string
-}
-
-variable "instance_name" {
+variable "manager_cluster_name" {
   default = "cluster-manager"
   type    = string
 }
-
-variable "instance_blueprint" {
-  default = "ubuntu_20_04"
-  type    = string
-}
-
-variable "instance_type" {
-  default = "xlarge_2_3"
-  type    = string
-}
-
