@@ -19,6 +19,15 @@ spec:
         - fromFieldPath: "spec.deletionPolicy"
           toFieldPath: "spec.deletionPolicy"
 
+  # -----------------
+  # RM includes
+  # -----------------
+  # - DBSubnetGroup
+  # - RDSInstance
+  # - DBParameterGroup
+  # - VPCEndpoint
+  # -----------------
+
   resources:
     # DB :: Subnet Group
     - name: dbsubnetgroup
@@ -35,8 +44,8 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - fromFieldPath: "spec.orgRefName"
-          toFieldPath: "spec.forProvider.subnetIdSelector.matchLabels[ref.crossplane.io/org-name]"
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.subnetIdSelector.matchLabels[ref.crossplane.io/org-name]
 
     # DB :: Mysql Instance
     - name: rds
@@ -124,3 +133,35 @@ spec:
           toFieldPath: metadata.name
           policy:
             fromFieldPath: Required
+
+    # VPC_ENDPOINT
+    - name: vpc-endpoint
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1alpha1
+        kind: VPCEndpoint
+        spec:
+          forProvider:
+            privateDNSEnabled: true
+            securityGroupIdSelector:
+              matchLabels:
+                type: rds-connection
+            subnetIdSelector:
+              matchLabels:
+                type: subnet
+                visibility: private
+            vpcEndpointType: Interface
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.serviceName
+          transforms:
+            - type: string
+              string:
+                fmt: "com.amazonaws.%s.rds-data"
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.securityGroupIdSelector.matchLabels[ref.crossplane.io/org-name]
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.vpcIdRef.name
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.subnetIdSelector.matchLabels[ref.crossplane.io/org-name]
