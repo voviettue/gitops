@@ -1,3 +1,4 @@
 tags
 aws.yaml
 *.xpkg
+*.pem

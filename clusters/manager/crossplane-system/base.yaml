@@ -12,3 +12,4 @@ spec:
   path: ./clusters/manager/crossplane-system/base
   validation: client
   prune: false
+  timeout: 120s

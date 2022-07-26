@@ -14,3 +14,4 @@ spec:
     namespace: flux-system
   path: ./clusters/manager/crossplane-system/main
   prune: true
+  timeout: 120s

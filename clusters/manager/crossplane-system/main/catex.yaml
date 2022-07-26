@@ -34,6 +34,11 @@ spec:
       cidrBlock: "10.0.2.0/24"
       az: "eu-north-1b"
 
+    subnet-public-3:
+      name: "public-3"
+      cidrBlock: "10.0.3.0/24"
+      az: "eu-north-1c"
+
     subnet-private-1:
       name: "private-1"
       cidrBlock: "10.0.101.0/24"
@@ -43,6 +48,11 @@ spec:
       name: "private-2"
       cidrBlock: "10.0.102.0/24"
       az: "eu-north-1b"
+
+    subnet-private-3:
+      name: "private-3"
+      cidrBlock: "10.0.103.0/24"
+      az: "eu-north-1c"
 
   compositionRef:
     name: org-standard.aws.gigapress.catex.se

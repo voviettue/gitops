@@ -7,8 +7,6 @@ spec:
   names:
     kind: XOrg
     plural: xorgs
-    shortNames:
-      - org
     categories:
       - gigapress
   claimNames:
@@ -114,6 +112,23 @@ spec:
                       - cidrBlock
                       - az
 
+                  subnet-public-3:
+                    type: object
+                    properties:
+                      name:
+                        description: Name for subnet
+                        type: string
+                      cidrBlock:
+                        description: CIDR block for subnet
+                        type: string
+                      az:
+                        decription: AZ for subnet
+                        type: string
+                    required:
+                      - name
+                      - cidrBlock
+                      - az
+
                   subnet-private-1:
                     type: object
                     properties:
@@ -148,12 +163,31 @@ spec:
                       - cidrBlock
                       - az
 
+                  subnet-private-3:
+                    type: object
+                    properties:
+                      name:
+                        description: Name for subnet
+                        type: string
+                      cidrBlock:
+                        description: CIDR block for subnet
+                        type: string
+                      az:
+                        decription: AZ for subnet
+                        type: string
+                    required:
+                      - name
+                      - cidrBlock
+                      - az
+
                 required:
                   - cidrBlock
                   - subnet-public-1
                   - subnet-public-2
+                  - subnet-public-3
                   - subnet-private-1
                   - subnet-private-2
+                  - subnet-private-3
 
             required:
               - name

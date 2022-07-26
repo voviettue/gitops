@@ -7,8 +7,6 @@ spec:
   names:
     kind: XWorkspace
     plural: xworkspaces
-    shortNames:
-      - ws
     categories:
       - gigapress
   claimNames:

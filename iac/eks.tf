@@ -20,24 +20,51 @@ module "eks" {
   tags = {
     Project     = "gigapress"
   }
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts        = "OVERWRITE"
+    }
+  }
 
-  fargate_profiles = {
-    default = {
-      name = "default"
-      selectors = [
-        {
-          namespace = "crossplane-system"
-        },
-        {
-          namespace = "default"
-        },
-        {
-          namespace = "kube-system"
-        },
-        {
-          namespace = "flux-system"
-        }
-      ]
+  node_security_group_additional_rules = {
+    egress_all = {
+      description      = "Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+    ingress_all = {
+      description      = "Node all ingress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "ingress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+  }
+
+  # EKS Managed Node Group(s)
+  eks_managed_node_group_defaults = {
+    disk_size      = 10
+    instance_types = ["t3.medium"]
+  }
+
+  eks_managed_node_groups = {
+    main = {
+      min_size     = 1
+      max_size     = 3
+      desired_size = 2
+
+      instance_types = ["t3.medium"]
+      capacity_type  = "ON_DEMAND"
     }
   }
 

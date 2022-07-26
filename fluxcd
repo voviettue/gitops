@@ -10,5 +10,4 @@ flux bootstrap gitlab \
   --repository=gitops \
   --branch=master \
   --context=$CONTEXT \
-  --path="clusters/${CLUSTER}" \
-  --components-extra=image-reflector-controller,image-automation-controller
+  --path="clusters/${CLUSTER}"
