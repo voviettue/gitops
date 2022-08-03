@@ -432,7 +432,7 @@ spec:
           toFieldPath: spec.forProvider.associations[2].subnetIdSelector.matchLabels.zone
 
     # VPC :: RouteTable
-    - name: routetable-private-1
+    - name: routetable-private
       base:
         apiVersion: ec2.aws.crossplane.io/v1beta1
         kind: RouteTable
@@ -462,79 +462,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: "%s-private-routetable-1"
-        - fromFieldPath: spec.vpc.subnet-private-1.az
-          toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
-
-    # VPC :: RouteTable
-    - name: routetable-private-2
-      base:
-        apiVersion: ec2.aws.crossplane.io/v1beta1
-        kind: RouteTable
-        spec:
-          forProvider:
-            vpcIdSelector:
-              matchControllerRef: true
-            routes:
-              - destinationCidrBlock: 0.0.0.0/0
-                natGatewayIdSelector:
-                  matchControllerRef: true
-                  matchLabels:
-                    type: natgw
-            associations:
-              - subnetIdSelector:
-                  matchControllerRef: true
-                  matchLabels:
-                    type: subnet
-                    visibility: private
-            tags:
-              - key: Name
-      patches:
-        - type: PatchSet
-          patchSetName: common
-        - fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.tags[0].value
-          transforms:
-            - type: string
-              string:
-                fmt: "%s-private-routetable-2"
-        - fromFieldPath: spec.vpc.subnet-private-2.az
-          toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
-
-    # VPC :: RouteTable
-    - name: routetable-private-3
-      base:
-        apiVersion: ec2.aws.crossplane.io/v1beta1
-        kind: RouteTable
-        spec:
-          forProvider:
-            vpcIdSelector:
-              matchControllerRef: true
-            routes:
-              - destinationCidrBlock: 0.0.0.0/0
-                natGatewayIdSelector:
-                  matchControllerRef: true
-                  matchLabels:
-                    type: natgw
-            associations:
-              - subnetIdSelector:
-                  matchControllerRef: true
-                  matchLabels:
-                    type: subnet
-                    visibility: private
-            tags:
-              - key: Name
-      patches:
-        - type: PatchSet
-          patchSetName: common
-        - fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.tags[0].value
-          transforms:
-            - type: string
-              string:
-                fmt: "%s-private-routetable-3"
-        - fromFieldPath: spec.vpc.subnet-private-3.az
-          toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
+                fmt: "%s-private-routetable"
 
     # SG :: eks - rds
     - name: securityGroup
