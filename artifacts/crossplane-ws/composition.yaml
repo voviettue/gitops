@@ -52,8 +52,6 @@ spec:
       base:
         apiVersion: mysql.sql.crossplane.io/v1alpha1
         kind: Database
-        spec:
-          deletionPolicy: Delete
       patches:
         - type: CombineFromComposite
           combine:
@@ -139,42 +137,42 @@ spec:
           forProvider:
             privileges:
               - ALL
-        patches:
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.dbRefName
-            strategy: string
-            string:
-              fmt: "%s-%s"
-          toFieldPath: spec.providerConfigRef.name
-          policy:
-            fromFieldPath: Required
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.dbRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s-%s"
-          toFieldPath: spec.forProvider.userRef.name
-          policy:
-            fromFieldPath: Required
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.dbRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s-%s"
-          toFieldPath: spec.forProvider.databaseRef.name
-          policy:
-            fromFieldPath: Required
+      patches:
+      - type: CombineFromComposite
+        combine:
+          variables:
+            - fromFieldPath: spec.orgRefName
+            - fromFieldPath: spec.dbRefName
+          strategy: string
+          string:
+            fmt: "%s-%s"
+        toFieldPath: spec.providerConfigRef.name
+        policy:
+          fromFieldPath: Required
+      - type: CombineFromComposite
+        combine:
+          variables:
+            - fromFieldPath: spec.orgRefName
+            - fromFieldPath: spec.dbRefName
+            - fromFieldPath: spec.name
+          strategy: string
+          string:
+            fmt: "%s-%s-%s"
+        toFieldPath: spec.forProvider.userRef.name
+        policy:
+          fromFieldPath: Required
+      - type: CombineFromComposite
+        combine:
+          variables:
+            - fromFieldPath: spec.orgRefName
+            - fromFieldPath: spec.dbRefName
+            - fromFieldPath: spec.name
+          strategy: string
+          string:
+            fmt: "%s-%s-%s"
+        toFieldPath: spec.forProvider.databaseRef.name
+        policy:
+          fromFieldPath: Required
 
     # Release :: Install application for workspace
     # - name: release

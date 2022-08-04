@@ -91,7 +91,7 @@ spec:
               matchControllerRef: true
             peerVPCIDSelector:
               matchLabels:
-                ref.crossplane.io/vpc-manager-cluster: 1
+                ref.crossplane.io/vpc-manager-cluster: "true"
             acceptRequest: true
       patches:
         - type: PatchSet
@@ -100,76 +100,6 @@ spec:
           fromFieldPath: status.atProvider.vpcPeeringConnectionID
           toFieldPath: status.vpc.vpcPeeringID
 
-    # VPC :: RouteTable - from current VPC side
-    - name: routetable-peering-this
-      base:
-        apiVersion: ec2.aws.crossplane.io/v1beta1
-        kind: RouteTable
-        spec:
-          forProvider:
-            vpcIdSelector:
-              matchControllerRef: true
-            routes:
-              - destinationCidrBlock: 10.0.0.0/0
-            associations:
-              - subnetIdSelector:
-                  matchControllerRef: true
-                  matchLabels:
-                    type: subnet
-                    visibility: private
-            tags:
-              - key: Name
-      patches:
-        - type: PatchSet
-          patchSetName: common
-        - fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.tags[0].value
-          transforms:
-            - type: string
-              string:
-                fmt: "%s--this-peering-manager"
-        - fromFieldPath: status.vpc.vpcPeeringID
-          toFieldPath: spec.forProvider.routes[0].vpcPeeringConnectionId
-          policy:
-            fromFieldPath: Required
-
-    # VPC :: RouteTable - from manager cluster VPC side
-    - name: routetable-peering-manager
-      base:
-        apiVersion: ec2.aws.crossplane.io/v1beta1
-        kind: RouteTable
-        spec:
-          forProvider:
-            vpcIdSelector:
-              matchLabels:
-                ref.crossplane.io/vpc-manager-cluster: 1
-            associations:
-              - subnetIdSelector:
-                  matchLabels:
-                    vpc: manager
-                    type: subnet
-                    visibility: private
-            tags:
-              - key: Name
-      patches:
-        - type: PatchSet
-          patchSetName: common
-        - fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.tags[0].value
-          transforms:
-            - type: string
-              string:
-                fmt: "%s--manager-peering-this"
-        - fromFieldPath: spec.vpc.cirdClassB
-          toFieldPath: spec.forProvider.routes[0].destinationCidrBlock
-          transforms:
-            - type: string
-              string:
-                fmt: "%s.0.0/16"
-        - fromFieldPath: status.vpc.vpcPeeringID
-          toFieldPath: spec.forProvider.routes[0].vpcPeeringConnectionId
-          policy:
-            fromFieldPath: Required
 
     # VPC :: Internet Gateway
     - name: igw
@@ -503,6 +433,28 @@ spec:
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
 
+    # VPC :: Append route to private manager routetable
+    - name: route-manager-private
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1alpha1
+        kind: Route
+        spec:
+          forProvider:
+            vpcPeeringConnectionIdSelector:
+              matchControllerRef: true
+            routeTableIdSelector:
+              matchLabels:
+                ref.crossplane.io/manager-private-routetable: "true"
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: spec.vpc.cidrClassB
+          toFieldPath: spec.forProvider.destinationCIDRBlock
+          transforms:
+            - type: string
+              string:
+                fmt: "%s.0.0/16"
+
     # VPC :: RouteTable
     - name: routetable-public
       base:
@@ -567,7 +519,18 @@ spec:
                   matchControllerRef: true
                   matchLabels:
                     type: natgw
+              - destinationCidrBlock: 10.0.0.0/16
             associations:
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    type: subnet
+                    visibility: private
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    type: subnet
+                    visibility: private
               - subnetIdSelector:
                   matchControllerRef: true
                   matchLabels:
@@ -584,6 +547,16 @@ spec:
             - type: string
               string:
                 fmt: "%s-private-routetable"
+        - fromFieldPath: spec.vpc.subnet-private-1.az
+          toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
+        - fromFieldPath: spec.vpc.subnet-private-2.az
+          toFieldPath: spec.forProvider.associations[1].subnetIdSelector.matchLabels.zone
+        - fromFieldPath: spec.vpc.subnet-private-3.az
+          toFieldPath: spec.forProvider.associations[2].subnetIdSelector.matchLabels.zone
+        - fromFieldPath: status.vpc.vpcPeeringID
+          toFieldPath: spec.forProvider.routes[1].vpcPeeringConnectionId
+          policy:
+            fromFieldPath: Required
 
     # SG :: eks - rds
     - name: securityGroup

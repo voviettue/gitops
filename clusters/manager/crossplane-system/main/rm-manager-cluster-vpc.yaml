@@ -13,52 +13,19 @@ spec:
     cidrBlock: 10.0.0.0/16
 ---
 apiVersion: ec2.aws.crossplane.io/v1beta1
-kind: Subnet
+kind: RouteTable
 metadata:
-  name: manager-private-1
+  name: manager-private-routetable
   labels:
-    vpc: manager
-    type: subnet
-    visibility: private
+    ref.crossplane.io/manager-private-routetable: "true"
   annotations:
-    crossplane.io/external-name: subnet-07a470ad0ca4c7ead
+    crossplane.io/external-name: rtb-0071b7d408877e423
 spec:
   deletionPolicy: Orphan
   forProvider:
-    vpcId: vpc-098a9be78302ed283
+    ignoreRoutes: true
     region: eu-north-1
-    cidrBlock: 10.0.1.0/24
----
-apiVersion: ec2.aws.crossplane.io/v1beta1
-kind: Subnet
-metadata:
-  name: manager-private-2
-  labels:
-    vpc: manager
-    type: subnet
-    visibility: private
-  annotations:
-    crossplane.io/external-name: subnet-04ab2032ed79a61a7
-spec:
-  deletionPolicy: Orphan
-  forProvider:
-    vpcId: vpc-098a9be78302ed283
-    region: eu-north-1
-    cidrBlock: 10.0.2.0/24
----
-apiVersion: ec2.aws.crossplane.io/v1beta1
-kind: Subnet
-metadata:
-  name: manager-private-3
-  labels:
-    vpc: manager
-    type: subnet
-    visibility: private
-  annotations:
-    crossplane.io/external-name: subnet-001fe1ed71f655998
-spec:
-  deletionPolicy: Orphan
-  forProvider:
-    vpcId: vpc-098a9be78302ed283
-    region: eu-north-1
-    cidrBlock: 10.0.3.0/24
+    associations:
+      - subnetId: subnet-07a470ad0ca4c7ead
+      - subnetId: subnet-04ab2032ed79a61a7
+      - subnetId: subnet-001fe1ed71f655998
