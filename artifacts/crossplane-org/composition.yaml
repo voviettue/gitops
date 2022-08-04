@@ -37,6 +37,8 @@ spec:
     # VPC
     #-----------------
     # - 1 vpc
+    # - External cluster's manager VPC
+    # - VPC Peering between Manager VPC - This VPC
     # - 2 public subnet
     # - 2 private subnet
     # - 1 security group
@@ -60,8 +62,12 @@ spec:
       patches:
         - type: PatchSet
           patchSetName: common
-        - fromFieldPath: spec.vpc.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.0.0/16'
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
           transforms:
@@ -73,6 +79,97 @@ spec:
           toFieldPath: status.s3.ownerId
           policy:
             fromFieldPath: Optional
+
+    # VPC :: VPC Peering connection
+    - name: vpc-peering
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1alpha1
+        kind: VPCPeeringConnection
+        spec:
+          forProvider:
+            vpcIDSelector:
+              matchControllerRef: true
+            peerVPCIDSelector:
+              matchLabels:
+                ref.crossplane.io/vpc-manager-cluster: 1
+            acceptRequest: true
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.vpcPeeringConnectionID
+          toFieldPath: status.vpc.vpcPeeringID
+
+    # VPC :: RouteTable - from current VPC side
+    - name: routetable-peering-this
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: RouteTable
+        spec:
+          forProvider:
+            vpcIdSelector:
+              matchControllerRef: true
+            routes:
+              - destinationCidrBlock: 10.0.0.0/0
+            associations:
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    type: subnet
+                    visibility: private
+            tags:
+              - key: Name
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.tags[0].value
+          transforms:
+            - type: string
+              string:
+                fmt: "%s--this-peering-manager"
+        - fromFieldPath: status.vpc.vpcPeeringID
+          toFieldPath: spec.forProvider.routes[0].vpcPeeringConnectionId
+          policy:
+            fromFieldPath: Required
+
+    # VPC :: RouteTable - from manager cluster VPC side
+    - name: routetable-peering-manager
+      base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: RouteTable
+        spec:
+          forProvider:
+            vpcIdSelector:
+              matchLabels:
+                ref.crossplane.io/vpc-manager-cluster: 1
+            associations:
+              - subnetIdSelector:
+                  matchLabels:
+                    vpc: manager
+                    type: subnet
+                    visibility: private
+            tags:
+              - key: Name
+      patches:
+        - type: PatchSet
+          patchSetName: common
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.tags[0].value
+          transforms:
+            - type: string
+              string:
+                fmt: "%s--manager-peering-this"
+        - fromFieldPath: spec.vpc.cirdClassB
+          toFieldPath: spec.forProvider.routes[0].destinationCidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: "%s.0.0/16"
+        - fromFieldPath: status.vpc.vpcPeeringID
+          toFieldPath: spec.forProvider.routes[0].vpcPeeringConnectionId
+          policy:
+            fromFieldPath: Required
 
     # VPC :: Internet Gateway
     - name: igw
@@ -130,8 +227,12 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-public-1.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.1.0/24'
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-public-1.az
@@ -169,8 +270,12 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-public-2.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.2.0/24'
         - fromFieldPath: spec.vpc.subnet-public-2.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-public-2.az
@@ -208,8 +313,12 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-public-3.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.3.0/24'
         - fromFieldPath: spec.vpc.subnet-public-3.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-public-3.az
@@ -247,8 +356,12 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-private-1.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.101.0/24'
         - fromFieldPath: spec.vpc.subnet-private-1.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-private-1.az
@@ -286,8 +399,12 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-private-2.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.102.0/24'
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-private-2.az
@@ -325,8 +442,12 @@ spec:
           toFieldPath: spec.forProvider.tags[0].value
           policy:
             fromFieldPath: Required
-        - fromFieldPath: spec.vpc.subnet-private-3.cidrBlock
+        - fromFieldPath: spec.vpc.cidrClassB
           toFieldPath: spec.forProvider.cidrBlock
+          transforms:
+            - type: string
+              string:
+                fmt: '%.103.0/24'
         - fromFieldPath: spec.vpc.subnet-private-3.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-private-3.az
@@ -556,6 +677,7 @@ spec:
         kind: NodeGroup
         spec:
           forProvider:
+            amiType: AL2_x86_64
             instanceTypes:
               - m5.large
             scalingConfig:
@@ -582,13 +704,6 @@ spec:
           toFieldPath: spec.forProvider.scalingConfig.desiredSize
         - fromFieldPath: spec.eks.workers-size
           toFieldPath: spec.forProvider.scalingConfig.maxSize
-        - fromFieldPath: spec.eks.workload-type
-          toFieldPath: spec.forProvider.amiType
-          transforms:
-          - type: map
-            map:
-              gpu: AL2_x86_64_GPU
-              non-gpu: AL2_x86_64
         - fromFieldPath: spec.eks.workernode-role
           toFieldPath: spec.forProvider.nodeRole
         - fromFieldPath: spec.eks.workernode-type

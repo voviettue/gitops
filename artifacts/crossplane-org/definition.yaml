@@ -59,23 +59,18 @@ spec:
                   workers-size:
                     description: Desired number of worker nodes
                     type: integer
-                  workload-type:
-                    description: Type of workloads (GPU or non-GPU)"
-                    type: string
-                    enum: ["gpu", "non-gpu"]
 
                 required:
                   - cluster-role
                   - k8s-version
                   - workernode-role
                   - workers-size
-                  - workload-type
 
               vpc:
                 type: object
                 properties:
-                  cidrBlock:
-                    description: CIDR block for VPC
+                  cidrClassB:
+                    description: CIDR block for VPC - only two first of block
                     type: string
 
                   subnet-public-1:
@@ -84,15 +79,11 @@ spec:
                       name:
                         description: Name for subnet
                         type: string
-                      cidrBlock:
-                        description: CIDR block for subnet
-                        type: string
                       az:
                         decription: AZ for subnet
                         type: string
                     required:
                       - name
-                      - cidrBlock
                       - az
 
                   subnet-public-2:
@@ -101,15 +92,11 @@ spec:
                       name:
                         description: Name for subnet
                         type: string
-                      cidrBlock:
-                        description: CIDR block for subnet
-                        type: string
                       az:
                         decription: AZ for subnet
                         type: string
                     required:
                       - name
-                      - cidrBlock
                       - az
 
                   subnet-public-3:
@@ -118,15 +105,11 @@ spec:
                       name:
                         description: Name for subnet
                         type: string
-                      cidrBlock:
-                        description: CIDR block for subnet
-                        type: string
                       az:
                         decription: AZ for subnet
                         type: string
                     required:
                       - name
-                      - cidrBlock
                       - az
 
                   subnet-private-1:
@@ -135,15 +118,11 @@ spec:
                       name:
                         description: Name for subnet
                         type: string
-                      cidrBlock:
-                        description: CIDR block for subnet
-                        type: string
                       az:
                         decription: AZ for subnet
                         type: string
                     required:
                       - name
-                      - cidrBlock
                       - az
 
                   subnet-private-2:
@@ -152,15 +131,11 @@ spec:
                       name:
                         description: Name for subnet
                         type: string
-                      cidrBlock:
-                        description: CIDR block for subnet
-                        type: string
                       az:
                         decription: AZ for subnet
                         type: string
                     required:
                       - name
-                      - cidrBlock
                       - az
 
                   subnet-private-3:
@@ -169,19 +144,15 @@ spec:
                       name:
                         description: Name for subnet
                         type: string
-                      cidrBlock:
-                        description: CIDR block for subnet
-                        type: string
                       az:
                         decription: AZ for subnet
                         type: string
                     required:
                       - name
-                      - cidrBlock
                       - az
 
                 required:
-                  - cidrBlock
+                  - cidrClassB
                   - subnet-public-1
                   - subnet-public-2
                   - subnet-public-3
@@ -196,15 +167,19 @@ spec:
             description: A Status represents the observed state
             properties:
               eks:
-                description: Freeform field containing status information for eks
+                description: Freeform field - infor eks
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
               s3:
-                description: Freeform field containing status information for eks
+                description: Freeform field - infor s3
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
               alb:
-                description: Freeform field containing status information for eks
+                description: Freeform field - infor alb
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              vpc:
+                description: Freeform field - infor vpc
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
             type: object

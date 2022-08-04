@@ -100,6 +100,17 @@ spec:
             variables:
               - fromFieldPath: spec.orgRefName
               - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
               - fromFieldPath: spec.name
             strategy: string
             string:
@@ -129,6 +140,17 @@ spec:
             privileges:
               - ALL
         patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required
         - type: CombineFromComposite
           combine:
             variables:
