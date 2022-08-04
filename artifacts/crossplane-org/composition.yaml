@@ -67,7 +67,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.0.0/16'
+                fmt: "%s.0.0/16"
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.tags[0].value
           transforms:
@@ -232,7 +232,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.1.0/24'
+                fmt: "%s.1.0/24"
         - fromFieldPath: spec.vpc.subnet-public-1.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-public-1.az
@@ -275,7 +275,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.2.0/24'
+                fmt: "%s.2.0/24"
         - fromFieldPath: spec.vpc.subnet-public-2.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-public-2.az
@@ -318,7 +318,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.3.0/24'
+                fmt: "%s.3.0/24"
         - fromFieldPath: spec.vpc.subnet-public-3.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-public-3.az
@@ -361,7 +361,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.101.0/24'
+                fmt: "%s.101.0/24"
         - fromFieldPath: spec.vpc.subnet-private-1.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-private-1.az
@@ -404,7 +404,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.102.0/24'
+                fmt: "%s.102.0/24"
         - fromFieldPath: spec.vpc.subnet-private-2.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-private-2.az
@@ -447,7 +447,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: '%.103.0/24'
+                fmt: "%s.103.0/24"
         - fromFieldPath: spec.vpc.subnet-private-3.az
           toFieldPath: spec.forProvider.availabilityZone
         - fromFieldPath: spec.vpc.subnet-private-3.az

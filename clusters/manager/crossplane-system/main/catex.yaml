@@ -19,7 +19,6 @@ spec:
     workernode-role: arn:aws:iam::221168245729:role/node-group-role
     workernode-type: "t3.medium"
     workers-size: 3
-    workload-type: "non-gpu"
 
   vpc:
     cidrClassB: "10.1"
