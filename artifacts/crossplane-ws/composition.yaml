@@ -128,51 +128,44 @@ spec:
             fromFieldPath: Required
 
     # DB :: Grant permission for user-database
-    - name: db-grant
-      base:
-        apiVersion: mysql.sql.crossplane.io/v1alpha1
-        kind: Grant
-        spec:
-          deletionPolicy: Delete
-          forProvider:
-            privileges:
-              - ALL
-      patches:
-      - type: CombineFromComposite
-        combine:
-          variables:
-            - fromFieldPath: spec.orgRefName
-            - fromFieldPath: spec.dbRefName
-          strategy: string
-          string:
-            fmt: "%s-%s"
-        toFieldPath: spec.providerConfigRef.name
-        policy:
-          fromFieldPath: Required
-      - type: CombineFromComposite
-        combine:
-          variables:
-            - fromFieldPath: spec.orgRefName
-            - fromFieldPath: spec.dbRefName
-            - fromFieldPath: spec.name
-          strategy: string
-          string:
-            fmt: "%s-%s-%s"
-        toFieldPath: spec.forProvider.userRef.name
-        policy:
-          fromFieldPath: Required
-      - type: CombineFromComposite
-        combine:
-          variables:
-            - fromFieldPath: spec.orgRefName
-            - fromFieldPath: spec.dbRefName
-            - fromFieldPath: spec.name
-          strategy: string
-          string:
-            fmt: "%s-%s-%s"
-        toFieldPath: spec.forProvider.databaseRef.name
-        policy:
-          fromFieldPath: Required
+    # - name: db-grant
+    #   base:
+    #     apiVersion: mysql.sql.crossplane.io/v1alpha1
+    #     kind: Grant
+    #     spec:
+    #       deletionPolicy: Delete
+    #       forProvider:
+    #         databaseSelector:
+    #           matchControllerRef: true
+    #         userSelector:
+    #           matchControllerRef: true
+    #         privileges:
+    #           - ALTER
+    #           - CREATE
+    #           - CREATE VIEW
+    #           - DELETE
+    #           - DELETE HISTORY
+    #           - DROP
+    #           - GRANT OPTION
+    #           - INDEX
+    #           - INSERT
+    #           - REFERENCES
+    #           - SELECT
+    #           - SHOW VIEW
+    #           - TRIGGER
+    #           - UPDATE
+    #   patches:
+    #   - type: CombineFromComposite
+    #     combine:
+    #       variables:
+    #         - fromFieldPath: spec.orgRefName
+    #         - fromFieldPath: spec.dbRefName
+    #       strategy: string
+    #       string:
+    #         fmt: "%s-%s"
+    #     toFieldPath: spec.providerConfigRef.name
+    #     policy:
+    #       fromFieldPath: Required
 
     # Release :: Install application for workspace
     # - name: release

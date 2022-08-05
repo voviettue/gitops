@@ -440,6 +440,7 @@ spec:
         kind: Route
         spec:
           forProvider:
+            ignoreRoutes: true
             vpcPeeringConnectionIdSelector:
               matchControllerRef: true
             routeTableIdSelector:
