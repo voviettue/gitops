@@ -1,3 +1,17 @@
+data "aws_vpc" "selected" {
+  id = var.vpc_id
+}
+
+data "aws_subnets" "selected" {
+  filter {
+    name = "vpc-id"
+    values = [var.vpc_id]
+  }
+  tags = {
+    tier = "private"
+  }
+}
+
 resource "aws_iam_user" "eks" {
   name = "eks-manager"
   path = "/"
@@ -13,8 +27,8 @@ module "eks" {
 
   cluster_name     = var.manager_cluster_name
   cluster_version  = "1.21"
-  subnet_ids       = module.vpc.private_subnets
-  vpc_id           = module.vpc.vpc_id
+  subnet_ids       = data.aws_subnets.selected.ids
+  vpc_id           = data.aws_vpc.selected.id
   enable_irsa      = true
 
   tags = {
