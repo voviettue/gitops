@@ -57,7 +57,7 @@ ingress:
   certManager: false
   pathType: ImplementationSpecific
   apiVersion:
-  hostname: magento.local
+  hostname: sample.local
   path: /
   annotations: {}
   tls: false
@@ -66,11 +66,13 @@ ingress:
   secrets:
 
 redis:
-  usePassword: false
+  architecture: standalone
+  auth:
+    enabled: false
   cluster:
     enabled: false
   master:
     disableCommands: ["FLUSHALL"]
     persistence:
-      size: 1Gi
+      size: 500Mi
       enabled: true

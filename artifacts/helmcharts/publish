@@ -23,7 +23,7 @@ echo '>>> Packaging'
 package ./core
 
 echo '>>> Pushing'
-REGISTRY=public.ecr.aws/q4e4m7h8
+REGISTRY=public.ecr.aws/catext
 
 aws ecr-public get-login-password --profile g --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws
 

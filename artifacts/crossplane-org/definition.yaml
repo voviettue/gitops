@@ -12,6 +12,10 @@ spec:
   claimNames:
     kind: Org
     plural: orgs
+  connectionSecretKeys:
+    - clusterCA
+    - endpointEKS
+    - kubeconfig
   defaultCompositionRef:
     name: org-standard.aws.gigapress.catex.se
   versions:

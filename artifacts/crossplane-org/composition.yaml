@@ -643,6 +643,13 @@ spec:
                 fmt: "cluster-%s"
         - fromFieldPath: spec.eks.cluster-role
           toFieldPath: spec.forProvider.roleArn
+      connectionDetails:
+        - name: clusterCA
+          fromConnectionSecretKey: clusterCA
+        - name: kubeconfig
+          fromConnectionSecretKey: kubeconfig
+        - name: endpointEKS
+          fromConnectionSecretKey: endpoint
 
     # EKS :: Node Group
     - name: eks-nodegroup
@@ -739,7 +746,7 @@ spec:
           transforms:
             - type: string
               string:
-                fmt: "org-adpxyzhgq-%s"
+                fmt: "realm-%s.catex.se"
         - type: ToCompositeFieldPath
           fromFieldPath: status.atProvider.arn
           toFieldPath: status.s3.arn

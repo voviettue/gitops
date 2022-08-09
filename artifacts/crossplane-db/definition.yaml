@@ -14,11 +14,6 @@ spec:
     plural: mysqlinstances
   defaultCompositionRef:
     name: mysqlinstance.aws.gigapress.catex.se
-  # connectionSecretKeys:
-  #   - username
-  #   - password
-  #   - endpoint
-  #   - port
   versions:
   - name: v1alpha1
     served: true
