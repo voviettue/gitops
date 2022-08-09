@@ -29,3 +29,16 @@ spec:
       - subnetId: subnet-07a470ad0ca4c7ead
       - subnetId: subnet-04ab2032ed79a61a7
       - subnetId: subnet-001fe1ed71f655998
+---
+apiVersion: route53.aws.crossplane.io/v1alpha1
+kind: HostedZone
+metadata:
+  name: catex.se
+  labels:
+    ref.crossplane.io/hostzone: "catex.se"
+  annotations:
+    crossplane.io/external-name: Z04205131JTMRBN6ZICQR
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: catex.se

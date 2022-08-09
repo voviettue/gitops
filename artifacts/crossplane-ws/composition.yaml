@@ -92,6 +92,15 @@ spec:
           deletionPolicy: Delete
           writeConnectionSecretToRef:
             namespace: crossplane-system
+      connectionDetails:
+        - name: username
+          fromConnectionSecretKey: username
+        - name: password
+          fromConnectionSecretKey: password
+        - name: endpoint
+          fromConnectionSecretKey: endpoint
+        - name: port
+          fromConnectionSecretKey: port
       patches:
         - type: CombineFromComposite
           combine:
@@ -165,22 +174,286 @@ spec:
         policy:
           fromFieldPath: Required
 
+    # ROUTE53-RECORD: create A record point to ALB
+    - name: alb
+      patches:
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.forProvider.name
+      base:
+        apiVersion: elbv2.aws.crossplane.io/v1alpha1
+        kind: LoadBalancer
+
+    # ACM: subdomain.domain
+    - name: acm
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "%s.%s"
+          toFieldPath: spec.forProvider.domainName
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.domain
+              - fromFieldPath: spec.subdomain
+            strategy: string
+            string:
+              fmt: "%s.%s"
+          toFieldPath: spec.forProvider.tags[0].value
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.resourceRecord.name
+          toFieldPath: status.acm.recordName
+          policy:
+            fromFieldPath: Optional
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.resourceRecord.value
+          toFieldPath: status.acm.recordValue
+          policy:
+            fromFieldPath: Optional
+      base:
+        apiVersion: acm.aws.crossplane.io/v1beta1
+        kind: Certificate
+        spec:
+          forProvider:
+            validationMethod: DNS
+            tags:
+            - key: Name
+
+    # ResourceRecord:
+    - name: acm-record-validate
+      patches:
+        - fromFieldPath: status.acm.recordValue
+          toFieldPath: spec.forProvider.resourceRecords[0].value
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.acm.recordName
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          transforms:
+            - type: string
+              string:
+                type: TrimSuffix
+                trim: '.'
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.domain
+          toFieldPath: spec.forProvider.zoneIdSelector.matchLabels[ref.crossplane.io/hostzone]
+      base:
+        apiVersion: route53.aws.crossplane.io/v1alpha1
+        kind: ResourceRecordSet
+        spec:
+          forProvider:
+            type: CNAME
+            ttl: 30
+
     # Release :: Install application for workspace
-    # - name: release
-    #   base:
-    #     apiVersion: helm.crossplane.io/v1beta1
-    #     kind: Release
-    #     spec:
-    #       deletionPolicy: Delete
-    #       forProvider:
-    #         chart:
-    #           name: aws-load-balancer-controller
-    #           repository: https://aws.github.io/eks-charts
-    #         namespace: default
-    #         skipCreateNamespace: true
-    #         values:
-    #           serviceAccount:
-    #             create: true
-    #             name: aws-alb-ingress-controller
+    - name: release
+      patches:
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.providerConfigRef.name
 
+        # PATCHING: CHART VERSION AND APP VERSION
+        - fromFieldPath: spec.app.chartVersion
+          toFieldPath: spec.forProvider.chart.version
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.app.image
+              - fromFieldPath: spec.app.version
+            strategy: string
+            string:
+              fmt: "%s:%s"
+          toFieldPath: spec.value.image
 
+        # PATCHING: INGRESS & SERVICE & DOMAIN
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.forProvider.values.ingress.annotations[alb.ingress.kubernetes/load-balancer-name]
+        - fromFieldPath: spec.defaultHostname
+          toFieldPath: spec.forProvider.values.ingress.hostname
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.namespace
+          transforms:
+            - type: string
+              string:
+                fmt: "realm-%s"
+
+        # PATCHING: ADMIN CONFIG
+        - fromFieldPath: spec.app.adminEmail
+          toFieldPath: spec.forProvider.values[ADMIN_EMAIL]
+        - fromfieldpath: spec.app.adminpassword
+          tofieldpath: spec.forProvider.values[ADMIN_PASSWORD]
+        - fromfieldpath: spec.region
+          tofieldpath: spec.forProvider.values[STORAGE_S3_REGION]
+        - fromfieldpath: spec.orgRefName
+          transforms:
+            - type: string
+              string:
+                fmt: "%s.catex.se"
+          tofieldpath: spec.forProvider.values[STORAGE_S3_BUCKET]
+
+        #  PATCHING: DATABASE CONNECTION FROM SECRETS
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.values.env[DB_DATABASE]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.set[0].valueFrom.secretKeyRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.set[1].valueFrom.secretKeyRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.set[2].valueFrom.secretKeyRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.set[3].valueFrom.secretKeyRef.name
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          deletionPolicy: Delete
+          forProvider:
+            chart:
+              name: gigapress-core
+              repository: public.ecr.aws/catext/gigapress-core
+            skipCreateNamespace: false
+            values:
+              replicaCount: 1
+              pullPolicy: IfNotPresent
+              serviceAccount:
+                create: true
+                annotations:
+                  eks.amazonaws.com/role-arn: xxx
+              service:
+                type: NodePort
+                annotations:
+                  alb.ingress.kubernetes.io/healthcheck-path: /
+                  service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /
+              readiness:
+                enable: true
+                initialDelaySeconds: 30
+                periodSeconds: 120
+              liveness:
+                enable: true
+                initialDelaySeconds: 30
+                periodSeconds: 120
+              ingress:
+                enabled: true
+                pathType: Prefix
+                apiVersion: v1
+                annotations:
+                  kubernetes.io/ingress.class: alb
+                  alb.ingress.kubernetes.io/scheme: internet-facing
+                  alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+                  alb.ingress.kubernetes.io/ssl-redirect: '443'
+                  alb.ingress.kubernetes.io/healthcheck-interval-seconds: 45
+                  alb.ingress.kubernetes.io/healthcheck-timeout-seconds: 30
+                backend:
+                  serviceName: core
+                  servicePort: 8055
+              env:
+                KEY: 255d861b-5ea1-5996-9aa3-922530ec40b1
+                SECRET: 6116487b-cda1-52c2-b5b5-c8022c45e263
+
+                DB_CLIENT: mysql
+                DB_HOST: mariadb
+                DB_PORT: 3306
+                DB_DATABASE: directus
+                DB_USER: directus
+                DB_PASSWORD: directus
+
+                CACHE_ENABLED: true
+                CACHE_STORE: redis
+                CACHE_REDIS_HOST: redis-master
+                CACHE_REDIS_PORT: 6379
+
+                STORAGE_LOCATIONS: s3
+                STORAGE_S3_DRIVER: s3
+                STORAGE_S3_BUCKET:
+                STORAGE_S3_REGION:
+            set:
+              - name: env[DB_HOST]
+                valueFrom:
+                  secretKeyRef:
+                    key: endpoint
+                    namespace: crossplane-system
+              - name: env[DB_PORT]
+                valueFrom:
+                  secretKeyRef:
+                    key: port
+                    namespace: crossplane-system
+              - name: env[DB_USER]
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    namespace: crossplane-system
+              - name: env[DB_PASSWORD]
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    namespace: crossplane-system

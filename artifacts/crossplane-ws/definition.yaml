@@ -12,6 +12,11 @@ spec:
   claimNames:
     kind: Workspace
     plural: workspaces
+  connectionSecretKeys:
+    - username
+    - password
+    - endpoint
+    - port
   defaultCompositionRef:
     name: workspace.aws.gigapress.catex.se
   versions:
@@ -30,6 +35,10 @@ spec:
                 type: string
                 description: The name of this workspace
 
+              region:
+                type: string
+                description: The region of this workspace
+
               orgRefName:
                 type: string
                 description: The name of org (XRD) which is this ws belongs to
@@ -38,10 +47,54 @@ spec:
                 type: string
                 description: The name of db (XRD) which is this ws connect to
 
+              domain:
+                type: string
+                description: the main domain route53 reference
+
+              subdomain:
+                type: string
+                description: The name of subdomain of workspase (empty is remove)
+
+              app:
+                type: object
+                description: The configuration of application
+                properties:
+                  adminEmail:
+                    type: string
+                    description: the admin email
+                  adminPassword:
+                    type: string
+                    description: the admin password
+                  env:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: the name of environment system variable
+                        value:
+                          type: string
+                          description: the value of environment system variable
+                  image:
+                    type: string
+                    description: the core image
+                  version:
+                    type: string
+                    description: the version of core application
+                  chartVersion:
+                    type: string
+                    description: the version of helm chart
+                  size:
+                    type: integer
+                    description: the replica size of application
+                required:
+                  - adminEmail
+                  - adminPassword
               extensions:
                 type: array
                 items:
-                  desciption: The configuration of extension
+                  desciption: The configuration of extensions
                   type: object
                   properties:
                     name:
@@ -53,6 +106,9 @@ spec:
                     minorAutoUpgrade:
                       type: boolean
                       description: the flag detect auto fetch minor version update
+                    devMode:
+                      type: boolean
+                      description: the flag detect is dev environment
                   required:
                     - name
                     - version
@@ -60,3 +116,15 @@ spec:
               - name
               - orgRefName
               - dbRefName
+              - region
+              - domain
+              - subdomain
+              - app
+          status:
+            description: A Status represents the observed state
+            properties:
+              acm:
+                description: Freeform field - infor eks
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+            type: object

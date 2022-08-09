@@ -5,8 +5,19 @@ metadata:
   namespace: realm-catex
 spec:
   name: default
-  orgRefName: catex
   dbRefName: primary
+  orgRefName: catex
 
+  region: eu-north-1
+  subdomain: default
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.0
+    chartVersion: 0.1.2
+    size: 1
   writeConnectionSecretToRef:
     name: ws
