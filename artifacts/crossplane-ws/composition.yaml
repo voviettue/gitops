@@ -21,15 +21,18 @@ spec:
         spec:
           credentials:
             source: MySQLConnectionSecret
+      readinessChecks:
+        - type: None
       patches:
         - type: CombineFromComposite
           combine:
             variables:
               - fromFieldPath: spec.orgRefName
               - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
             strategy: string
             string:
-              fmt: "%s-%s"
+              fmt: "%s-%s-%s"
           toFieldPath: metadata.name
           policy:
             fromFieldPath: Required
@@ -58,9 +61,10 @@ spec:
             variables:
               - fromFieldPath: spec.orgRefName
               - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
             strategy: string
             string:
-              fmt: "%s-%s"
+              fmt: "%s-%s-%s"
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
@@ -107,9 +111,10 @@ spec:
             variables:
               - fromFieldPath: spec.orgRefName
               - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
             strategy: string
             string:
-              fmt: "%s-%s"
+              fmt: "%s-%s-%s"
           toFieldPath: spec.providerConfigRef.name
           policy:
             fromFieldPath: Required
@@ -167,39 +172,13 @@ spec:
           variables:
             - fromFieldPath: spec.orgRefName
             - fromFieldPath: spec.dbRefName
+            - fromFieldPath: spec.name
           strategy: string
           string:
-            fmt: "%s-%s"
+            fmt: "%s-%s-%s"
         toFieldPath: spec.providerConfigRef.name
         policy:
           fromFieldPath: Required
-
-    # ROUTE53-RECORD: create A record point to ALB
-    - name: alb
-      patches:
-        - fromFieldPath: spec.region
-          toFieldPath: spec.forProvider.region
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s"
-          toFieldPath: metadata.annotations[crossplane.io/external-name]
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s"
-          toFieldPath: spec.forProvider.name
-      base:
-        apiVersion: elbv2.aws.crossplane.io/v1alpha1
-        kind: LoadBalancer
 
     # ACM: subdomain.domain
     - name: acm
@@ -243,8 +222,8 @@ spec:
             tags:
             - key: Name
 
-    # ResourceRecord:
-    - name: acm-record-validate
+    # ResourceRecord: ACM Validate CNAME
+    - name: route53-record-acm-validate
       patches:
         - fromFieldPath: status.acm.recordValue
           toFieldPath: spec.forProvider.resourceRecords[0].value
@@ -286,7 +265,7 @@ spec:
             strategy: string
             string:
               fmt: "%s:%s"
-          toFieldPath: spec.value.image
+          toFieldPath: spec.forProvider.values.image
 
         # PATCHING: INGRESS & SERVICE & DOMAIN
         - type: CombineFromComposite
@@ -297,30 +276,54 @@ spec:
             strategy: string
             string:
               fmt: "%s-%s"
-          toFieldPath: spec.forProvider.values.ingress.annotations[alb.ingress.kubernetes/load-balancer-name]
-        - fromFieldPath: spec.defaultHostname
+          toFieldPath: spec.forProvider.values.ingress.annotations[alb.ingress.kubernetes.io/load-balancer-name]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "%s.%s"
           toFieldPath: spec.forProvider.values.ingress.hostname
-        - fromFieldPath: spec.orgRefName
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
           toFieldPath: spec.forProvider.namespace
-          transforms:
-            - type: string
-              string:
-                fmt: "realm-%s"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.connectionDetails[0].namespace
 
         # PATCHING: ADMIN CONFIG
         - fromFieldPath: spec.app.adminEmail
-          toFieldPath: spec.forProvider.values[ADMIN_EMAIL]
-        - fromfieldpath: spec.app.adminpassword
-          tofieldpath: spec.forProvider.values[ADMIN_PASSWORD]
-        - fromfieldpath: spec.region
-          tofieldpath: spec.forProvider.values[STORAGE_S3_REGION]
-        - fromfieldpath: spec.orgRefName
+          toFieldPath: spec.forProvider.values.env[ADMIN_EMAIL]
+        - fromFieldPath: spec.app.adminpassword
+          toFieldPath: spec.forProvider.values.env[ADMIN_PASSWORD]
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.values.env[STORAGE_S3_REGION]
+        - fromFieldPath: spec.orgRefName
           transforms:
             - type: string
               string:
-                fmt: "%s.catex.se"
-          tofieldpath: spec.forProvider.values[STORAGE_S3_BUCKET]
-
+                fmt: "realm-%s.catex.se"
+          toFieldPath: spec.forProvider.values.env[STORAGE_S3_BUCKET]
+        - fromFieldPath: spec.orgRefName
+          transforms:
+            - type: string
+              string:
+                fmt: "arn:aws:iam::221168245729:role/org-%s-s3"
+          toFieldPath: spec.forProvider.values.serviceAccount.annotations[eks.amazonaws.com/role-arn]
         #  PATCHING: DATABASE CONNECTION FROM SECRETS
         - type: CombineFromComposite
           combine:
@@ -372,6 +375,7 @@ spec:
             string:
               fmt: "%s-%s-%s"
           toFieldPath: spec.forProvider.set[3].valueFrom.secretKeyRef.name
+
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -380,45 +384,46 @@ spec:
           forProvider:
             chart:
               name: gigapress-core
-              repository: public.ecr.aws/catext/gigapress-core
+              repository: oci://public.ecr.aws/catext
             skipCreateNamespace: false
+            wait: true
             values:
+              fullnameOverride: core
               replicaCount: 1
               pullPolicy: IfNotPresent
               serviceAccount:
                 create: true
-                annotations:
-                  eks.amazonaws.com/role-arn: xxx
               service:
                 type: NodePort
+                port: 8055
                 annotations:
-                  alb.ingress.kubernetes.io/healthcheck-path: /
-                  service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /
+                  service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /server/health
               readiness:
                 enable: true
-                initialDelaySeconds: 30
-                periodSeconds: 120
+                initialDelaySeconds: 10
+                periodSeconds: 60
               liveness:
                 enable: true
-                initialDelaySeconds: 30
-                periodSeconds: 120
+                initialDelaySeconds: 10
+                periodSeconds: 60
               ingress:
                 enabled: true
-                pathType: Prefix
-                apiVersion: v1
                 annotations:
                   kubernetes.io/ingress.class: alb
                   alb.ingress.kubernetes.io/scheme: internet-facing
                   alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
                   alb.ingress.kubernetes.io/ssl-redirect: '443'
-                  alb.ingress.kubernetes.io/healthcheck-interval-seconds: 45
-                  alb.ingress.kubernetes.io/healthcheck-timeout-seconds: 30
+                  alb.ingress.kubernetes.io/healthcheck-interval-seconds: "45"
+                  alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "30"
+                path: /*
                 backend:
                   serviceName: core
                   servicePort: 8055
               env:
                 KEY: 255d861b-5ea1-5996-9aa3-922530ec40b1
                 SECRET: 6116487b-cda1-52c2-b5b5-c8022c45e263
+
+                AUTH_PROVIDERS: local
 
                 DB_CLIENT: mysql
                 DB_HOST: mariadb
@@ -436,23 +441,25 @@ spec:
                 STORAGE_S3_DRIVER: s3
                 STORAGE_S3_BUCKET:
                 STORAGE_S3_REGION:
+              redis:
+                fullnameOverride: redis
             set:
-              - name: env[DB_HOST]
+              - name: env.DB_HOST
                 valueFrom:
                   secretKeyRef:
                     key: endpoint
                     namespace: crossplane-system
-              - name: env[DB_PORT]
+              - name: env.DB_PORT
                 valueFrom:
                   secretKeyRef:
                     key: port
                     namespace: crossplane-system
-              - name: env[DB_USER]
+              - name: env.DB_USER
                 valueFrom:
                   secretKeyRef:
                     key: username
                     namespace: crossplane-system
-              - name: env[DB_PASSWORD]
+              - name: env.DB_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     key: password

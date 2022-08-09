@@ -917,7 +917,7 @@ spec:
               string:
                 fmt: "gigapress-%s"
           policy:
-            fromRequirePath: Required
+            fromFieldPath: Required
         - fromFieldPath: status.alb.arn
           toFieldPath: spec.forProvider.values.serviceAccount.annotations[eks.amazonaws.com/role-arn]
           policy:
