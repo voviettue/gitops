@@ -248,8 +248,31 @@ spec:
             type: CNAME
             ttl: 30
 
+    # Release :: Install bitnami/dns-external
+    - name: release-dns-external
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          forProvider:
+            chart:
+              name: external-dns
+              repository:  https://charts.bitnami.com/bitnami
+            namespace: default
+            skipCreateNamespace: true
+            values:
+              aws:
+                zoneType: public
+      patches:
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.providerConfigRef.name
+        - fromFieldPath: spec.domain
+          toFieldPath: spec.forProvider.values.domainFilters[0]
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.values.aws.region
+
     # Release :: Install application for workspace
-    - name: release
+    - name: release-app
       patches:
         - fromFieldPath: spec.orgRefName
           toFieldPath: spec.providerConfigRef.name
@@ -285,6 +308,15 @@ spec:
             strategy: string
             string:
               fmt: "%s.%s"
+          toFieldPath: spec.forProvider.values.ingress.annotations[external-dns.alpha.kubernetes.io/hostname]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "%s.%s"
           toFieldPath: spec.forProvider.values.ingress.hostname
         - type: CombineFromComposite
           combine:
@@ -295,20 +327,11 @@ spec:
             string:
               fmt: "%s-%s"
           toFieldPath: spec.forProvider.namespace
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s"
-          toFieldPath: spec.connectionDetails[0].namespace
 
         # PATCHING: ADMIN CONFIG
         - fromFieldPath: spec.app.adminEmail
           toFieldPath: spec.forProvider.values.env[ADMIN_EMAIL]
-        - fromFieldPath: spec.app.adminpassword
+        - fromFieldPath: spec.app.adminPassword
           toFieldPath: spec.forProvider.values.env[ADMIN_PASSWORD]
         - fromFieldPath: spec.region
           toFieldPath: spec.forProvider.values.env[STORAGE_S3_REGION]
@@ -376,6 +399,13 @@ spec:
               fmt: "%s-%s-%s"
           toFieldPath: spec.forProvider.set[3].valueFrom.secretKeyRef.name
 
+        # EXTEND ENV
+        - fromFieldPath: spec.env
+          toFieldPath: spec.forProvider.values.extendEnv
+
+        # PATCH Extensions
+        - fromFieldPath: spec.extensions
+          toFieldPath: spec.forProvider.values.extensions
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -443,6 +473,12 @@ spec:
                 STORAGE_S3_REGION:
               redis:
                 fullnameOverride: redis
+
+              npm:
+                repo: gigapress
+                domain: catex
+                owner: "221168245729"
+                scope: "@giga-extensions"
             set:
               - name: env.DB_HOST
                 valueFrom:

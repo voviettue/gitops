@@ -62,3 +62,14 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Transform extensions array to string
+*/}}
+{{- define "extensions.initContainer" -}}
+{{- if .Values.extensions }}
+  {{- range .Values.extensions }}{{ print .name "@" .version " "}} {{- end}}
+{{- else }}
+  {{ print "" }}
+{{- end }}
+{{- end }}

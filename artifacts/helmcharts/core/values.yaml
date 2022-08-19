@@ -30,6 +30,8 @@ env:
   SENTRY_DSN: sample
   SENTRY_DISABLED: "true"
 
+extendEnv:
+
 resources:
   limits:
     cpu: 1
@@ -64,6 +66,16 @@ ingress:
   extraHosts:
   extraTls: []
   secrets:
+
+extensions: []
+# - name
+#   version
+
+npm:
+  repo: gigapress
+  domain: catex
+  owner: "221168245729"
+  scope: "@giga-extensions"
 
 redis:
   architecture: standalone

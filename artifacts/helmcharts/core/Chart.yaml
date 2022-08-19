@@ -2,7 +2,7 @@ apiVersion: v2
 name: gigapress-core
 description: Gigapress app power by directus
 type: application
-version: 0.1.6
+version: 0.1.18
 appVersion: 9.15.0
 dependencies:
   - name: common

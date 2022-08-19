@@ -47,9 +47,6 @@ spec:
       name: "private-3"
       az: "eu-north-1c"
 
-  compositionRef:
-    name: org-standard.aws.gigapress.catex.se
-
   writeConnectionSecretToRef:
     name: org
 ---
@@ -65,7 +62,6 @@ spec:
   deletionPolicy: Delete
   instanceClass: "db.t3.micro"
   storageGB: 20
-  compositionRef:
-    name: mysqlinstance.aws.gigapress.catex.se
+
   writeConnectionSecretToRef:
     name: mysql

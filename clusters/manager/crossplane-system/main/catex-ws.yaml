@@ -16,12 +16,15 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.0
-    chartVersion: 0.1.6
+    version: 2.0.1
+    chartVersion: 0.1.18
     size: 1
 
-  compositionRef:
-    name: workspace.aws.gigapress.catex.se
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.0
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
 
   writeConnectionSecretToRef:
     name: catex-default

@@ -35,7 +35,8 @@ resource "aws_iam_role" "node_group" {
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    # "arn:aws:iam::221168245729:policy/ALBManagement",
+    "arn:aws:iam::221168245729:policy/Route53Writeable",
+    "arn:aws:iam::221168245729:policy/CodeArtifactReadonly"
   ]
 
   assume_role_policy = jsonencode({
@@ -57,6 +58,64 @@ resource "aws_iam_role" "node_group" {
   tags = {
     Description = "General node_group role"
   }
+}
+
+resource "aws_iam_policy" "route53_writeable" {
+  name = "Route53Writeable"
+  description = "The permission allow write on route53 record"
+  path = "/"
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "route53:ChangeResourceRecordSets"
+            ],
+            "Resource": [
+                "arn:aws:route53:::hostedzone/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "route53:ListHostedZones",
+                "route53:ListResourceRecordSets"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "codeartifact_policy" {
+  name = "CodeArtifactReadonly"
+  description = "The permissions that are required to download codeartifact's repo"
+  path = "/"
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Resource": "*",
+            "Action": [
+                "codeartifact:DescribePackageVersion",
+                "codeartifact:DescribeRepository",
+                "codeartifact:GetPackageVersionReadme",
+                "codeartifact:GetRepositoryEndpoint",
+                "codeartifact:GetAuthorizationToken",
+                "codeartifact:ListPackageVersionAssets",
+                "codeartifact:ListPackageVersionDependencies",
+                "codeartifact:ListPackageVersions",
+                "codeartifact:ListPackages",
+                "codeartifact:ReadFromRepository",
+                "sts:GetServiceBearerToken"
+            ]
+        }
+    ]
+  })
 }
 
 resource "aws_iam_policy" "alb_policy" {

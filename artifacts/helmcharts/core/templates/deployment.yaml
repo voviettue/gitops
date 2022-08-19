@@ -16,45 +16,118 @@ spec:
     spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
 
+      volumes:
+        - name: ext-dir
+          emptyDir: {}
+
+      initContainers:
+        - name: load
+          image: node:16
+          command:
+            - /bin/bash
+            - "-c"
+            - |
+              if [ "$EXTENSIONS" = "" ]; then
+                echo "extensions not found: exit"
+                exit 0
+              fi
+
+              # INSTALL curl + aws_cli + pnpm
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip && ./aws/install
+              aws codeartifact login --tool npm --repository $NPM_REPO --domain $NPM_DOMAIN --domain-owner $NPM_OWNER --namespace $NPM_SCOPE
+
+              # PREPARE extensions.json file
+              cd /extensions
+              echo "{" >> ./extensions.json
+
+              # INTALL & PACK extensions
+              IFS=", " read -ra exts <<< $EXTENSIONS
+              for ext in "${exts[@]}"
+              do
+                tarball=$(npm pack ${ext} -s)
+                IFS="@" read -ra package <<< $ext
+
+                if [[ $ext == ${exts[-1]} ]]; then
+                  echo "\"@${package[1]}\": \"file:${tarball%%*( )}\"" >> /extensions/extensions.json
+                else
+                  echo "\"@${package[1]}\": \"file:${tarball%%*( )}\"," >> /extensions/extensions.json
+                fi
+              done
+              echo "}" >> /extensions/extensions.json
+          env:
+            - name: NPM_REPO
+              value: {{ .Values.npm.repo | quote }}
+            - name: NPM_DOMAIN
+              value: {{ .Values.npm.domain | quote }}
+            - name: NPM_OWNER
+              value: {{ .Values.npm.owner | quote }}
+            - name: NPM_SCOPE
+              value: {{ .Values.npm.scope | quote }}
+            - name: EXTENSIONS
+              value: {{ include "extensions.initContainer" . | quote }}
+
+          volumeMounts:
+            - name: ext-dir
+              mountPath: /extensions
+
       containers:
-      - name: node
-        image: {{ .Values.image }}
-        imagePullPolicy: {{ .Values.pullPolicy }}
-        resources:
-          {{- toYaml .Values.resources | nindent 12 }}
-        ports:
-          - containerPort: 8055
-            name: node
+        - name: node
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - containerPort: 8055
+              name: node
+          command:
+            - /bin/sh
+            - "-c"
+            - |
+              cp /extensions/* .
+              node -e "
+                const { writeFileSync } = require('fs');
+                const packageJson = require('./package.json')
+                const extensionJson = require('./extensions.json')
+                Object.assign(packageJson.dependencies, extensionJson)
+                writeFileSync('./package.json', JSON.stringify(packageJson, null, 4))
+              "
+              npm install
+              npx directus bootstrap
+              npx directus start
+          {{- if .Values.appSecretName }}
+          envFrom:
+          - secretRef:
+              name: {{ .Values.appSecretName }}
+          {{- end }}
 
-        {{- if .Values.appSecretName }}
-        envFrom:
-        - secretRef:
-            name: {{ .Values.appSecretName }}
-        {{- end }}
+          env:
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
 
-        env:
-        {{- range $key, $value := .Values.env }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
-        {{- end }}
+          {{- if .Values.liveness.enable }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.liveness.path }}
+              port: 8055
+            periodSeconds: {{ default 180 .Values.liveness.periodSeconds }}
+            initialDelaySeconds: {{ default 45 .Values.liveness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.liveness.timeoutSeconds }}
+          {{- end }}
 
-        {{- if .Values.liveness.enable }}
-        livenessProbe:
-          httpGet:
-            path: {{ .Values.liveness.path }}
-            port: 8055
-          periodSeconds: {{ default 180 .Values.liveness.periodSeconds }}
-          initialDelaySeconds: {{ default 45 .Values.liveness.initialDelaySeconds }}
-          timeoutSeconds: {{ default 5 .Values.liveness.timeoutSeconds }}
-        {{- end }}
+          {{- if .Values.readiness.enable }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readiness.path }}
+              port: 8055
+            periodSeconds: {{ default 60 .Values.readiness.periodSeconds }}
+            initialDelaySeconds: {{ default 30 .Values.readiness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.readiness.timeoutSeconds }}
+            failureThreshold: 1
+          {{- end }}
 
-        {{- if .Values.readiness.enable }}
-        readinessProbe:
-          httpGet:
-            path: {{ .Values.readiness.path }}
-            port: 8055
-          periodSeconds: {{ default 60 .Values.readiness.periodSeconds }}
-          initialDelaySeconds: {{ default 30 .Values.readiness.initialDelaySeconds }}
-          timeoutSeconds: {{ default 5 .Values.readiness.timeoutSeconds }}
-          failureThreshold: 1
-        {{- end }}
+          volumeMounts:
+            - name: ext-dir
+              mountPath: /extensions
