@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-db
+  namespace: catex- # INPUT
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: mysql
+        image: ubuntu
+        env:
+        - name: FILE
+          value:  # INPUT
+        - name: DB_HOST
+          value: gigapress-catex-primary.cseks2czrr78.eu-north-1.rds.amazonaws.com
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          value: # INPUT
+        - name: DB_USER
+          value:
+        - name: DB_PASSWORD
+          value:
+        command:
+          - sh
+          - -c
+          - |
+            apt-get update && apt-get install -y mariadb-client wget
+            wget -O backup.sql $FILE
+            echo ">>> RECREATE DATABASE"
+            mysql -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASSWORD -e "DROP DATABASE \`${DB_NAME}\`; CREATE DATABASE \`${DB_NAME}\`"
+            echo ">>> IMPORT"
+            mysql -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASSWORD "$DB_NAME" < backup.sql
