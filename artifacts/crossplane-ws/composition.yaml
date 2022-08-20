@@ -335,11 +335,14 @@ spec:
           toFieldPath: spec.forProvider.values.env[ADMIN_PASSWORD]
         - fromFieldPath: spec.region
           toFieldPath: spec.forProvider.values.env[STORAGE_S3_REGION]
-        - fromFieldPath: spec.orgRefName
-          transforms:
-            - type: string
-              string:
-                fmt: "realm-%s.catex.se"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+                fmt: "realm-%s.catex.se/%s"
           toFieldPath: spec.forProvider.values.env[STORAGE_S3_BUCKET]
         - fromFieldPath: spec.orgRefName
           transforms:
