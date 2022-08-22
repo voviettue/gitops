@@ -59,6 +59,20 @@ spec:
                 type: object
                 description: The configuration of application
                 properties:
+                  includeWebapp:
+                    type: boolean
+                    description: the flag for determine webapp attached
+                  webapp:
+                    type: object
+                    description: the configuration of webapp attached (when includeWebapp set true)
+                    properties:
+                      image:
+                        type: string
+                        description: the webapp's docker image
+                      version:
+                        type: string
+                        description: the version of webapp's docker image
+
                   adminEmail:
                     type: string
                     description: the admin email

@@ -55,6 +55,8 @@ spec:
       base:
         apiVersion: mysql.sql.crossplane.io/v1alpha1
         kind: Database
+        spec:
+          deletionPolicy: Orphan
       patches:
         - type: CombineFromComposite
           combine:
@@ -89,10 +91,10 @@ spec:
         spec:
           forProvider:
             resourceOptions:
-              maxQueriesPerHour: 5000
-              maxUpdatesPerHour: 5000
-              maxConnectionsPerHour: 500
-              maxUserConnections: 50
+              maxQueriesPerHour: 50000
+              maxUpdatesPerHour: 50000
+              maxConnectionsPerHour: 5000
+              maxUserConnections: 500
           deletionPolicy: Delete
           writeConnectionSecretToRef:
             namespace: crossplane-system
@@ -409,6 +411,11 @@ spec:
         # PATCH Extensions
         - fromFieldPath: spec.extensions
           toFieldPath: spec.forProvider.values.extensions
+        - fromFieldPath: spec.webapp
+          toFieldPath: spec.forProvider.values.webapp
+        - fromFieldPath: spec.includeWebapp
+          toFieldPath: spec.forProvider.values.includeWebapp
+
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -443,6 +450,7 @@ spec:
                 enabled: true
                 annotations:
                   kubernetes.io/ingress.class: alb
+                  alb.ingress.kubernetes.io/healthcheck-path: /server/health
                   alb.ingress.kubernetes.io/scheme: internet-facing
                   alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
                   alb.ingress.kubernetes.io/ssl-redirect: '443'
