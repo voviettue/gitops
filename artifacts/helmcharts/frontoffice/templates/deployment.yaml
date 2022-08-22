@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+
+      containers:
+        - name: node
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - containerPort: 3000
+              name: node
+          {{- if .Values.appSecretName }}
+          envFrom:
+          - secretRef:
+              name: {{ .Values.appSecretName }}
+          {{- end }}
+
+          env:
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- if .Values.liveness.enable }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.liveness.path }}
+              port: 3000
+            periodSeconds: {{ default 180 .Values.liveness.periodSeconds }}
+            initialDelaySeconds: {{ default 45 .Values.liveness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.liveness.timeoutSeconds }}
+          {{- end }}
+
+          {{- if .Values.readiness.enable }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readiness.path }}
+              port: 3000
+            periodSeconds: {{ default 60 .Values.readiness.periodSeconds }}
+            initialDelaySeconds: {{ default 30 .Values.readiness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.readiness.timeoutSeconds }}
+            failureThreshold: 1
+          {{- end }}
+

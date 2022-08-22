@@ -2,7 +2,7 @@
 set -e
 
 AWS_PROFILE=g
-KUBE_CONTEXT=${1:-giga-manager-lg}
+KUBE_CONTEXT=${1:-giga-manager-cluster}
 
 validate_chart () {
     echo ">>> Validating:  $1"
@@ -17,10 +17,12 @@ package () {
 }
 
 echo '>>> Validating'
-validate_chart ./core $KUBE_CONTEXT
+validate_chart ./backoffice $KUBE_CONTEXT
+validate_chart ./frontoffice $KUBE_CONTEXT
 
 echo '>>> Packaging'
-package ./core
+package ./backoffice
+package ./frontoffice
 
 echo '>>> Pushing'
 REGISTRY=public.ecr.aws/catext

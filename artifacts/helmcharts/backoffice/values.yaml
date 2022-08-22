@@ -21,8 +21,8 @@ securityContext:
   runAsUser: 1000
 
 service:
-  type: LoadBalancer
-  port: 80
+  type: NodePort
+  port: 8055
   annotations: {}
 
 env:
