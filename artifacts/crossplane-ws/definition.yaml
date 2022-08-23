@@ -55,24 +55,24 @@ spec:
                 type: string
                 description: The name of subdomain of workspase (empty is remove)
 
+              webapp:
+                type: object
+                description: the configuration of webapp attached
+                properties:
+                  enabled:
+                    type: boolean
+                    description: the flag for determine webapp attached
+                  image:
+                    type: string
+                    description: the webapp's docker image
+                  version:
+                    type: string
+                    description: the version of webapp's docker image
+
               app:
                 type: object
                 description: The configuration of application
                 properties:
-                  includeWebapp:
-                    type: boolean
-                    description: the flag for determine webapp attached
-                  webapp:
-                    type: object
-                    description: the configuration of webapp attached (when includeWebapp set true)
-                    properties:
-                      image:
-                        type: string
-                        description: the webapp's docker image
-                      version:
-                        type: string
-                        description: the version of webapp's docker image
-
                   adminEmail:
                     type: string
                     description: the admin email

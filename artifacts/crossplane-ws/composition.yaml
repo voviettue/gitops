@@ -273,8 +273,74 @@ spec:
         - fromFieldPath: spec.region
           toFieldPath: spec.forProvider.values.aws.region
 
+    - name: release-frontoffice
+      patches:
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.providerConfigRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "https://app.%s.%s"
+          toFieldPath: spec.forProvider.values.env[NUXT_TERMINAL_ADMIN_URL]
+        - fromFieldPath: spec.webapp.image
+          toFieldPath: spec.forProvider.values.image
+        - fromFieldPath: spec.webapp.version
+          toFieldPath: spec.forProvider.values.version
+        - fromFieldPath: spec.webapp.enabled
+          toFieldPath: spec.forProvider.values.enabled
+
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          deletionPolicy: Delete
+          forProvider:
+            chart:
+              name: giga-frontoffice
+              repository: oci://public.ecr.aws/catext
+            skipCreateNamespace: false
+            wait: true
+            values:
+              fullnameOverride: frontoffice
+              replicaCount: 1
+              pullPolicy: IfNotPresent
+              serviceAccount:
+                create: true
+              service:
+                type: NodePort
+                port: 3000
+              readiness:
+                enable: true
+                initialDelaySeconds: 10
+                periodSeconds: 60
+              liveness:
+                enable: true
+                initialDelaySeconds: 10
+                periodSeconds: 60
+              ingress:
+                enabled: true
+                annotations:
+                  kubernetes.io/ingress.class: alb
+                  alb.ingress.kubernetes.io/healthcheck-path: /
+                  alb.ingress.kubernetes.io/scheme: internet-facing
+                  alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+                  alb.ingress.kubernetes.io/ssl-redirect: '443'
+                  alb.ingress.kubernetes.io/healthcheck-interval-seconds: "45"
+                  alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "30"
+                path: /*
+                backend:
+                  serviceName: frontoffice
+                  servicePort: 3000
+              env:
+                NUXT_URL: localhost:3000
+                NUXT_API_BASE_URL: http://backoffice:8055
+
     # Release :: Install application for workspace
-    - name: release-app
+    - name: release-backoffice
       patches:
         - fromFieldPath: spec.orgRefName
           toFieldPath: spec.providerConfigRef.name
@@ -423,12 +489,12 @@ spec:
           deletionPolicy: Delete
           forProvider:
             chart:
-              name: gigapress-core
+              name: giga-backoffice
               repository: oci://public.ecr.aws/catext
             skipCreateNamespace: false
             wait: true
             values:
-              fullnameOverride: core
+              fullnameOverride: backoffice
               replicaCount: 1
               pullPolicy: IfNotPresent
               serviceAccount:
@@ -458,7 +524,7 @@ spec:
                   alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "30"
                 path: /*
                 backend:
-                  serviceName: core
+                  serviceName: backoffice
                   servicePort: 8055
               env:
                 KEY: 255d861b-5ea1-5996-9aa3-922530ec40b1

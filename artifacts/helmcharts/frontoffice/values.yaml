@@ -4,7 +4,7 @@ image:
 pullPolicy: IfNotPresent
 
 noCache: false
-
+enabled: false
 serviceAccount:
   create: true
   imagePullSecrets:
@@ -64,8 +64,4 @@ ingress:
   extraHosts:
   extraTls: []
   secrets:
-
-extensions: []
-# - name
-#   version
 

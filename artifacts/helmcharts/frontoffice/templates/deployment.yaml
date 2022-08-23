@@ -1,3 +1,4 @@
+{{- if .Values.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,6 +26,7 @@ spec:
           ports:
             - containerPort: 3000
               name: node
+
           {{- if .Values.appSecretName }}
           envFrom:
           - secretRef:
@@ -57,4 +59,4 @@ spec:
             timeoutSeconds: {{ default 5 .Values.readiness.timeoutSeconds }}
             failureThreshold: 1
           {{- end }}
-
+{{- end }}
