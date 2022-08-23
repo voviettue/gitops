@@ -224,6 +224,48 @@ spec:
             tags:
             - key: Name
 
+    # ACM: app.subdomain.domain
+    - name: acm-webapp
+      patches:
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "app.%s.%s"
+          toFieldPath: spec.forProvider.domainName
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.domain
+              - fromFieldPath: spec.subdomain
+            strategy: string
+            string:
+              fmt: "app.%s.%s"
+          toFieldPath: spec.forProvider.tags[0].value
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.resourceRecord.name
+          toFieldPath: status.acm.recordNameWebapp
+          policy:
+            fromFieldPath: Optional
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.atProvider.resourceRecord.value
+          toFieldPath: status.acm.recordValueWebapp
+          policy:
+            fromFieldPath: Optional
+      base:
+        apiVersion: acm.aws.crossplane.io/v1beta1
+        kind: Certificate
+        spec:
+          forProvider:
+            validationMethod: DNS
+            tags:
+            - key: Name
+
     # ResourceRecord: ACM Validate CNAME
     - name: route53-record-acm-validate
       patches:
@@ -250,29 +292,32 @@ spec:
             type: CNAME
             ttl: 30
 
-    # Release :: Install bitnami/dns-external
-    - name: release-dns-external
+    - name: route53-record-acm-validate-webapp
+      patches:
+        - fromFieldPath: status.acm.recordValueWebapp
+          toFieldPath: spec.forProvider.resourceRecords[0].value
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: status.acm.recordNameWebapp
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
+          transforms:
+            - type: string
+              string:
+                type: TrimSuffix
+                trim: '.'
+          policy:
+            fromFieldPath: Required
+        - fromFieldPath: spec.domain
+          toFieldPath: spec.forProvider.zoneIdSelector.matchLabels[ref.crossplane.io/hostzone]
       base:
-        apiVersion: helm.crossplane.io/v1beta1
-        kind: Release
+        apiVersion: route53.aws.crossplane.io/v1alpha1
+        kind: ResourceRecordSet
         spec:
           forProvider:
-            chart:
-              name: external-dns
-              repository:  https://charts.bitnami.com/bitnami
-            namespace: default
-            skipCreateNamespace: true
-            values:
-              aws:
-                zoneType: public
-      patches:
-        - fromFieldPath: spec.orgRefName
-          toFieldPath: spec.providerConfigRef.name
-        - fromFieldPath: spec.domain
-          toFieldPath: spec.forProvider.values.domainFilters[0]
-        - fromFieldPath: spec.region
-          toFieldPath: spec.forProvider.values.aws.region
+            type: CNAME
+            ttl: 30
 
+    # Release :: Webapp
     - name: release-frontoffice
       patches:
         - fromFieldPath: spec.orgRefName
@@ -285,14 +330,64 @@ spec:
             strategy: string
             string:
               fmt: "https://app.%s.%s"
-          toFieldPath: spec.forProvider.values.env[NUXT_TERMINAL_ADMIN_URL]
-        - fromFieldPath: spec.webapp.image
-          toFieldPath: spec.forProvider.values.image
-        - fromFieldPath: spec.webapp.version
-          toFieldPath: spec.forProvider.values.version
+          toFieldPath: spec.forProvider.values.env[NUXT_PUBLIC_URL]
         - fromFieldPath: spec.webapp.enabled
           toFieldPath: spec.forProvider.values.enabled
+        - fromFieldPath: spec.webapp.chartVersion
+          toFieldPath: spec.forProvider.chart.version
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.webapp.image
+              - fromFieldPath: spec.webapp.version
+            strategy: string
+            string:
+              fmt: "%s:%s"
+          toFieldPath: spec.forProvider.values.image
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.forProvider.namespace
 
+        # PATCHING: INGRESS & SERVICE & DOMAIN
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.values.serviceAccount.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-frontoffice"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "app-%s-%s"
+          toFieldPath: spec.forProvider.values.ingress.annotations[alb.ingress.kubernetes.io/load-balancer-name]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "app.%s.%s"
+          toFieldPath: spec.forProvider.values.ingress.annotations[external-dns.alpha.kubernetes.io/hostname]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "app.%s.%s"
+          toFieldPath: spec.forProvider.values.ingress.hostname
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -302,6 +397,7 @@ spec:
             chart:
               name: giga-frontoffice
               repository: oci://public.ecr.aws/catext
+              version: 0.1.1
             skipCreateNamespace: false
             wait: true
             values:
@@ -337,7 +433,7 @@ spec:
                   servicePort: 3000
               env:
                 NUXT_URL: localhost:3000
-                NUXT_API_BASE_URL: http://backoffice:8055
+                NUXT_PUBLIC_API_BASE_URL: http://backoffice:8055
 
     # Release :: Install application for workspace
     - name: release-backoffice
@@ -359,6 +455,12 @@ spec:
           toFieldPath: spec.forProvider.values.image
 
         # PATCHING: INGRESS & SERVICE & DOMAIN
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.values.serviceAccount.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-backoffice"
         - type: CombineFromComposite
           combine:
             variables:

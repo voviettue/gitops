@@ -17,8 +17,14 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.1
-    chartVersion: 0.1.18
+    chartVersion: 0.1.1
     size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
+    chartVersion: 0.1.1
 
   extensions:
     - name: "@giga-extensions/base"

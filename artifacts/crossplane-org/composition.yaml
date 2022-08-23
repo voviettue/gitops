@@ -900,6 +900,29 @@ spec:
       readinessChecks:
         - type: None
 
+    # Release :: Install bitnami/dns-external
+    - name: release-dns-external
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          forProvider:
+            chart:
+              name: external-dns
+              repository:  https://charts.bitnami.com/bitnami
+            namespace: default
+            skipCreateNamespace: true
+            values:
+              aws:
+                zoneType: public
+              domainFilters:
+                - catex.se
+      patches:
+        - fromFieldPath: spec.name
+          toFieldPath: spec.providerConfigRef.name
+        - fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.values.aws.region
+
     # Helm :: ALB Ingress Controller Release
     - name: alb-ingress-controller
       base:

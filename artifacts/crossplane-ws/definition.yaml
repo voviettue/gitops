@@ -67,7 +67,10 @@ spec:
                     description: the webapp's docker image
                   version:
                     type: string
-                    description: the version of webapp's docker image
+                    description: the version of frontoffice's docker image
+                  chartVersion:
+                    type: string
+                    description: the version of frontoffice's chart
 
               app:
                 type: object

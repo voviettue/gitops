@@ -18,7 +18,7 @@ spec:
     cluster-role: arn:aws:iam::221168245729:role/eks-cluster-role
     workernode-role: arn:aws:iam::221168245729:role/node-group-role
     workernode-type: "t3.medium"
-    workers-size: 3
+    workers-size: 5
 
   vpc:
     cidrClassB: "10.1"
