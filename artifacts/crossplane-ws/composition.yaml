@@ -444,6 +444,8 @@ spec:
         # PATCHING: CHART VERSION AND APP VERSION
         - fromFieldPath: spec.app.chartVersion
           toFieldPath: spec.forProvider.chart.version
+        - fromFieldPath: spec.app.size
+          toFieldPath: spec.forProvider.values.replicaCount
         - type: CombineFromComposite
           combine:
             variables:

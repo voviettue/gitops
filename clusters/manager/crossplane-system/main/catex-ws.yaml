@@ -28,9 +28,84 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.0
+      version: 1.0.1
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
   writeConnectionSecretToRef:
     name: catex-default
+---
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-baoanh
+  namespace: realm-catex
+spec:
+  name: baoanh
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: baoanh
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.1
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+    chartVersion: 0.1.1
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.1
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: catex-baoanh
+---
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: hipgnosis
+  namespace: realm-catex
+spec:
+  name: hipgnosis
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: hipgnosis
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.1
+    chartVersion: 0.1.1
+    size: 3
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.1
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/hipgnosis"
+      version: 1.0.0
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  writeConnectionSecretToRef:
+    name: hipgnosis

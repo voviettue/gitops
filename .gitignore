@@ -2,3 +2,4 @@ tags
 aws.yaml
 *.xpkg
 *.pem
+hack/*.yaml
