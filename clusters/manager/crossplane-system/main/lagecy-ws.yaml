@@ -27,7 +27,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
@@ -63,7 +63,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
@@ -99,7 +99,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
@@ -130,7 +130,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/hipgnosis"
@@ -173,7 +173,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
@@ -209,7 +209,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
@@ -245,7 +245,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
@@ -281,7 +281,7 @@ spec:
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.1
+      version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
 

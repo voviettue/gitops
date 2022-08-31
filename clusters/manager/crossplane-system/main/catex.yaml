@@ -60,7 +60,7 @@ spec:
   name: primary
   region: eu-north-1
   deletionPolicy: Delete
-  instanceClass: "db.t3.micro"
+  instanceClass: "db.t3.medium"
   storageGB: 20
 
   writeConnectionSecretToRef:
