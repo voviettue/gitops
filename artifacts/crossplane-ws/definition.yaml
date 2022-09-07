@@ -71,6 +71,9 @@ spec:
                   chartVersion:
                     type: string
                     description: the version of frontoffice's chart
+                  env:
+                    type: object
+                    description: the free property:value
 
               app:
                 type: object
@@ -83,16 +86,8 @@ spec:
                     type: string
                     description: the admin password
                   env:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: the name of environment system variable
-                        value:
-                          type: string
-                          description: the value of environment system variable
+                    type: object
+                    description: the free property:value
                   image:
                     type: string
                     description: the core image

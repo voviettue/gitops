@@ -107,6 +107,13 @@ spec:
             value: {{ $value | quote }}
           {{- end }}
 
+          {{- if .Values.extendEnv }}
+          {{- range $key, $value := .Values.extendEnv }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+
           {{- if .Values.liveness.enable }}
           livenessProbe:
             httpGet:

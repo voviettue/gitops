@@ -147,3 +147,45 @@ spec:
 
   writeConnectionSecretToRef:
     name: stag-hipgnosis
+---
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: internal-app-dev
+  namespace: realm-catex
+spec:
+  name: internal-app-dev
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: dev.app.internal
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.3
+    chartVersion: 0.1.1
+    size: 1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/hipgnosis"
+      version: 1.0.0
+    - name: "@giga-extensions/front-office"
+      version: 1.0.1-dev
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
+
+  writeConnectionSecretToRef:
+    name: internal-app-dev

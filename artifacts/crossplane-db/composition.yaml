@@ -119,6 +119,10 @@ spec:
               engine: mariadb
               engineVersion: "10.4"
             description: the custom parameter for db instances
+            parameters:
+              - parameterName: table_definition_cache
+                parameterValue: "1024"
+                applyMethod: immediate
       patches:
         - type: PatchSet
           patchSetName: common
