@@ -167,7 +167,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.3
-    chartVersion: 0.1.1
+    chartVersion: 0.1.2
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -180,7 +180,7 @@ spec:
     - name: "@giga-extensions/hipgnosis"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.1-dev
+      version: 1.0.2-dev
 
   webapp:
     version: dev

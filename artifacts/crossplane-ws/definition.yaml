@@ -74,6 +74,7 @@ spec:
                   env:
                     type: object
                     description: the free property:value
+                    x-kubernetes-preserve-unknown-fields: true
 
               app:
                 type: object
@@ -88,6 +89,7 @@ spec:
                   env:
                     type: object
                     description: the free property:value
+                    x-kubernetes-preserve-unknown-fields: true
                   image:
                     type: string
                     description: the core image
