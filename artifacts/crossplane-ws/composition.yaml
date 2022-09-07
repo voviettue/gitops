@@ -407,7 +407,7 @@ spec:
             values:
               fullnameOverride: frontoffice
               replicaCount: 1
-              pullPolicy: IfNotPresent
+              pullPolicy: Always
               serviceAccount:
                 create: true
               service:
@@ -494,6 +494,15 @@ spec:
             string:
               fmt: "%s.%s"
           toFieldPath: spec.forProvider.values.ingress.hostname
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "https://%s.%s"
+          toFieldPath: spec.forProvider.values.env[NUXT_PUBLIC_API_BASE_URL]
         - type: CombineFromComposite
           combine:
             variables:

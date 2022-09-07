@@ -1,153 +1,50 @@
+###########################################
+# DEV & INTERNAL
+# ########################################
+
+---
+### song.template.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
-  name: catex-default
+  name: internal-template-song
   namespace: realm-catex
 spec:
-  name: default
+  name: internal-template-song
   dbRefName: primary
   orgRefName: catex
 
   region: eu-north-1
-  subdomain: default
+  subdomain: song.template
   domain: catex.se
 
-  app:
-    adminEmail: admin@catex.se
-    adminPassword: admin123
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
-    chartVersion: 0.1.1
-    size: 1
-
   webapp:
-    version: dev
+    version: staging
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
-    chartVersion: 0.1.1
-
-  extensions:
-    - name: "@giga-extensions/base"
-      version: 1.0.2
-    - name: "@giga-extensions/pro"
-      version: 1.0.0
-
-  writeConnectionSecretToRef:
-    name: catex-default
----
-apiVersion: gigapress.catex.se/v1alpha1
-kind: Workspace
-metadata:
-  name: catex-baoanh
-  namespace: realm-catex
-spec:
-  name: baoanh
-  dbRefName: primary
-  orgRefName: catex
-
-  region: eu-north-1
-  subdomain: baoanh
-  domain: catex.se
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.0.3
     chartVersion: 0.1.1
     size: 1
-
-  webapp:
-    version: dev
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
-    chartVersion: 0.1.1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   extensions:
     - name: "@giga-extensions/base"
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-
-  writeConnectionSecretToRef:
-    name: catex-baoanh
----
-apiVersion: gigapress.catex.se/v1alpha1
-kind: Workspace
-metadata:
-  name: hipgnosis
-  namespace: realm-catex
-spec:
-  name: hipgnosis
-  dbRefName: primary
-  orgRefName: catex
-
-  region: eu-north-1
-  subdomain: hipgnosis
-  domain: catex.se
-
-  app:
-    adminEmail: admin@catex.se
-    adminPassword: admin123
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
-    chartVersion: 0.1.1
-    size: 3
-
-  extensions:
-    - name: "@giga-extensions/base"
+    - name: "@giga-extensions/front-office"
       version: 1.0.2
-    - name: "@giga-extensions/pro"
-      version: 1.0.0
-    - name: "@giga-extensions/hipgnosis"
-      version: 1.0.0
-
-  webapp:
-    version: dev
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
 
   writeConnectionSecretToRef:
-    name: hipgnosis
+    name: internal-template-song
 ---
-apiVersion: gigapress.catex.se/v1alpha1
-kind: Workspace
-metadata:
-  name: stag-hipgnosis
-  namespace: realm-catex
-spec:
-  name: stag-hipgnosis
-  dbRefName: primary
-  orgRefName: catex
-
-  region: eu-north-1
-  subdomain: stag-hipgnosis
-  domain: catex.se
-
-  app:
-    adminEmail: admin@catex.se
-    adminPassword: admin123
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
-    chartVersion: 0.1.1
-    size: 1
-
-  extensions:
-    - name: "@giga-extensions/base"
-      version: 1.0.2
-    - name: "@giga-extensions/pro"
-      version: 1.0.0
-    - name: "@giga-extensions/hipgnosis"
-      version: 1.0.0
-
-  webapp:
-    version: dev
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
-
-  writeConnectionSecretToRef:
-    name: stag-hipgnosis
----
+# dev.app.internal.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
@@ -189,3 +86,433 @@ spec:
 
   writeConnectionSecretToRef:
     name: internal-app-dev
+---
+# hr.template.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: internal-template-hr
+  namespace: realm-catex
+spec:
+  name: internal-template-hr
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: hr.template
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: internal-template-hr
+
+---
+# sales.template.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: internal-template-sales
+  namespace: realm-catex
+spec:
+  name: internal-template-sales
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: sales.template
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: internal-template-sales
+
+
+
+###########################################
+# SOLO PLAN
+# ########################################
+
+
+---
+# default.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-default
+  namespace: realm-catex
+spec:
+  name: default
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: default
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
+    chartVersion: 0.1.1
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: catex-default
+---
+# baoanh.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-baoanh
+  namespace: realm-catex
+spec:
+  name: baoanh
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: baoanh
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+    chartVersion: 0.1.1
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: catex-baoanh
+---
+# hipgnosis.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: hipgnosis
+  namespace: realm-catex
+spec:
+  name: hipgnosis
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: hipgnosis
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 3
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/hipgnosis"
+      version: 1.0.0
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  writeConnectionSecretToRef:
+    name: hipgnosis
+
+---
+# stag-hipgnosis.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: stag-hipgnosis
+  namespace: realm-catex
+spec:
+  name: stag-hipgnosis
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: stag-hipgnosis
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/hipgnosis"
+      version: 1.0.0
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  writeConnectionSecretToRef:
+    name: stag-hipgnosis
+
+---
+# barohouse.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: barohouse
+  namespace: realm-catex
+spec:
+  name: barohouse
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: barohouse
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: barohouse
+
+---
+# demo-bjorn.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: demo-bjorn
+  namespace: realm-catex
+spec:
+  name: demo-bjorn
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: demo-bjorn
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: demo-bjorn
+
+---
+# demo-abba.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: demo-abba
+  namespace: realm-catex
+spec:
+  name: demo-abba
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: demo-abba
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: demo-abba
+
+---
+# latest.app.internal.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: internal-app-latest
+  namespace: realm-catex
+spec:
+  name: internal-app-latest
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: latest.app.internal
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/hipgnosis"
+      version: 1.0.0
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  writeConnectionSecretToRef:
+    name: internal-app-latest
+
+---
+# console.internal.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: internal-admin
+  namespace: realm-catex
+spec:
+  name: internal-admin
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: console.internal
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.1.1
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: internal-admin
