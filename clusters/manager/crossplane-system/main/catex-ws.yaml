@@ -28,7 +28,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.3
-    chartVersion: 0.1.1
+    chartVersion: 0.1.2
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
