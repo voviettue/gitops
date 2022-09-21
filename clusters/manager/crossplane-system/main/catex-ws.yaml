@@ -39,7 +39,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.2
+      version: 1.0.3-dev
 
   writeConnectionSecretToRef:
     name: internal-template-song
