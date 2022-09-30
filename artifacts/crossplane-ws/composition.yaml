@@ -91,7 +91,7 @@ spec:
         spec:
           forProvider:
             resourceOptions:
-              maxQueriesPerHour: 50000
+              maxQueriesPerHour: 150000
               maxUpdatesPerHour: 50000
               maxConnectionsPerHour: 5000
               maxUserConnections: 500
