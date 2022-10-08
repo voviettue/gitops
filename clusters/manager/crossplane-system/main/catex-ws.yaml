@@ -516,3 +516,45 @@ spec:
 
   writeConnectionSecretToRef:
     name: internal-admin
+
+---
+# lido.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-lido
+  namespace: realm-catex
+spec:
+  name: lido
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: lido
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.4
+    chartVersion: 0.1.1
+    size: 1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
+
+  webapp:
+    version: staging
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/front-office"
+      version: 1.0.3-dev
+
+  writeConnectionSecretToRef:
+    name: catex-lido
