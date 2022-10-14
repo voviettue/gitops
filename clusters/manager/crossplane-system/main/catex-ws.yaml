@@ -18,6 +18,8 @@ spec:
   subdomain: song.template
   domain: catex.se
 
+  deletionProtection: true
+
   webapp:
     version: staging
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
@@ -58,6 +60,8 @@ spec:
   region: eu-north-1
   subdomain: dev.app.internal
   domain: catex.se
+
+  deletionProtection: true
 
   app:
     adminEmail: admin@catex.se
@@ -102,6 +106,8 @@ spec:
   subdomain: hr.template
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -139,6 +145,8 @@ spec:
   region: eu-north-1
   subdomain: sales.template
   domain: catex.se
+
+  deletionProtection: true
 
   app:
     adminEmail: admin@catex.se
@@ -185,6 +193,8 @@ spec:
   subdomain: default
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -223,6 +233,8 @@ spec:
   subdomain: baoanh
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -260,6 +272,8 @@ spec:
   region: eu-north-1
   subdomain: hipgnosis
   domain: catex.se
+
+  deletionProtection: true
 
   app:
     adminEmail: admin@catex.se
@@ -301,6 +315,8 @@ spec:
   subdomain: stag-hipgnosis
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -341,6 +357,8 @@ spec:
   subdomain: barohouse
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -378,6 +396,8 @@ spec:
   region: eu-north-1
   subdomain: demo-bjorn
   domain: catex.se
+
+  deletionProtection: true
 
   app:
     adminEmail: admin@catex.se
@@ -417,6 +437,8 @@ spec:
   subdomain: demo-abba
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -454,6 +476,8 @@ spec:
   region: eu-north-1
   subdomain: latest.app.internal
   domain: catex.se
+
+  deletionProtection: true
 
   app:
     adminEmail: admin@catex.se
@@ -495,6 +519,8 @@ spec:
   subdomain: console.internal
   domain: catex.se
 
+  deletionProtection: true
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -532,6 +558,8 @@ spec:
   region: eu-north-1
   subdomain: lido
   domain: catex.se
+
+  deletionProtection: true
 
   app:
     adminEmail: admin@catex.se
