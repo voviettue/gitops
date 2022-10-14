@@ -55,6 +55,10 @@ spec:
                 type: string
                 description: The name of subdomain of workspase (empty is remove)
 
+              deletionProtection:
+                type: boolean
+                description: The flag use to protect from delete action
+
               webapp:
                 type: object
                 description: the configuration of webapp attached
