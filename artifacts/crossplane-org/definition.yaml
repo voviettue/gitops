@@ -37,6 +37,10 @@ spec:
                 description: The deletion policy apply for all RMs
                 type: string
 
+              deletionProtection:
+                description: The attribute used to protected delete action
+                type: boolean
+
               region:
                 description: Geographic location of this VPC
                 type: string
