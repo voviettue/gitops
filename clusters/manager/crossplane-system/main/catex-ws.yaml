@@ -41,7 +41,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.3-dev
+      version: 1.0.4
 
   writeConnectionSecretToRef:
     name: internal-template-song
@@ -155,17 +155,21 @@ spec:
     version: 2.0.2
     chartVersion: 0.1.1
     size: 1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: dev
+    version: staging
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
+    enabled: true
 
   extensions:
     - name: "@giga-extensions/base"
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
+    - name: "@giga-extensions/front-office"
+      version: 1.0.4
 
   writeConnectionSecretToRef:
     name: internal-template-sales
@@ -406,17 +410,21 @@ spec:
     version: 2.0.2
     chartVersion: 0.1.1
     size: 1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: dev
+    version: staging
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
+    enabled: true
 
   extensions:
     - name: "@giga-extensions/base"
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
+    - name: "@giga-extensions/front-office"
+      version: 1.0.4
 
   writeConnectionSecretToRef:
     name: demo-bjorn
@@ -446,17 +454,21 @@ spec:
     version: 2.0.2
     chartVersion: 0.1.1
     size: 1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: dev
+    version: staging
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
+    enabled: true
 
   extensions:
     - name: "@giga-extensions/base"
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
+    - name: "@giga-extensions/front-office"
+      version: 1.0.4
 
   writeConnectionSecretToRef:
     name: demo-abba
@@ -582,7 +594,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.4-dev
+      version: 1.0.4
 
   writeConnectionSecretToRef:
     name: catex-lido
