@@ -582,7 +582,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.3-dev
+      version: 1.0.4-dev
 
   writeConnectionSecretToRef:
     name: catex-lido
