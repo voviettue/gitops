@@ -135,10 +135,10 @@ spec:
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
-  name: internal-template-sales
+  name: template-sales
   namespace: realm-catex
 spec:
-  name: internal-template-sales
+  name: template-sales
   dbRefName: primary
   orgRefName: catex
 
@@ -172,9 +172,7 @@ spec:
       version: 1.0.4
 
   writeConnectionSecretToRef:
-    name: internal-template-sales
-
-
+    name: template-sales
 
 ###########################################
 # SOLO PLAN
