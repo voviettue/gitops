@@ -751,6 +751,55 @@ spec:
           fromFieldPath: status.atProvider.arn
           toFieldPath: status.s3.arn
 
+    # S3 :: Bucket Policy for catex-templates
+    - name: s3-catex-template-bucket-policy
+      base:
+        apiVersion: s3.aws.crossplane.io/v1alpha3
+        kind: BucketPolicy
+        spec:
+          forProvider:
+            bucketNameRef:
+              name: catex-templates
+            policy:
+              version: '2012-10-17'
+              statements:
+                - action:
+                    - s3:ListBucket
+                  effect: Allow
+                  principal:
+                    awsPrincipals:
+                      - iamRoleArnSelector:
+                          matchControllerRef: true
+                          matchLabels:
+                            ability: s3
+                  resource:
+                    - "arn:aws:s3:::catex-templates"
+                - action:
+                    - s3:PutObject
+                    - s3:PutObjectAcl
+                    - s3:GetObject
+                    - s3:GetObjectAcl
+                    - s3:DeleteObject
+                  effect: Allow
+                  principal:
+                    awsPrincipals:
+                      - iamRoleArnSelector:
+                          matchControllerRef: true
+                          matchLabels:
+                            ability: s3
+                  resource:
+                    - "arn:aws:s3:::catex-templates/*"
+                - action:
+                    - s3:GetObject
+                  effect: Allow
+                  principal:
+                    allowAnon: true
+                  resource:
+                    - "arn:aws:s3:::catex-templates/*"
+      patches:
+        - type: PatchSet
+          patchSetName: common
+
     # S3 :: Bucket Policy
     - name: s3-bucket-policy
       base:
