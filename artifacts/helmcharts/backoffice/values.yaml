@@ -3,8 +3,6 @@ replicaCount: 1
 image:
 pullPolicy: IfNotPresent
 
-noCache: false
-
 serviceAccount:
   create: true
   imagePullSecrets:
@@ -88,3 +86,16 @@ redis:
     persistence:
       size: 500Mi
       enabled: true
+
+actions:
+  cronSnapshot:
+    schedule: "0 0 * * *"
+    enabled: false
+    s3Bucket: ""
+    runAt: ""
+  cronPublishTpl:
+    name: ""
+    schedule: "0 0 * * *"
+    enabled: false
+    s3Bucket: "catex-template"
+    runAt: ""

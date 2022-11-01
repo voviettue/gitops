@@ -1,0 +1,83 @@
+{{- if .Values.actions.cronSnapshot.enabled }}
+{{- with .Values.actions.cronSnapshot }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "chart.fullname" . }}-snapshot
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: db-backup
+            image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.6.0
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: AWS_DEFAULT_REGION
+                value: eu-north-1
+              - name: AWS_BUCKET_NAME
+                value: {{ .s3Bucket }}
+              - name: AWS_BUCKET_BACKUP_PATH
+                value: snapshot/{{ $.env.DB_NAME }}
+              - name: TARGET_DATABASE_HOST
+                value: {{ $.env.DB_HOST }}
+              - name: TARGET_DATABASE_PORT
+                value: "3306"
+              - name: TARGET_DATABASE_NAMES
+                value: {{ $.env.DB_NAME }}
+              - name: TARGET_DATABASE_USER
+                value: {{ $.env.DB_USER }}
+              - name: TARGET_DATABASE_PASSWORD
+                value: {{ $.env.DB_PASSWORD }}
+              - name: BACKUP_TIMESTAMP
+                value: "%Y%m%d_%H%m"
+
+          restartPolicy: OnFailure
+{{- end }}
+{{- end }}
+---
+{{- if .Values.actions.cronSnapshot.enabled }}
+{{- if .Values.actions.cronSnapshot.runAt }}
+{{- with .Values.actions.cronSnapshot }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "chart.fullname" . }}-snapshot
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    runtAt: {{ .runAt }}
+spec:
+  ttlSecondsAfterFinished: 0
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+      - name: db-backup
+        image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.6.0
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: AWS_DEFAULT_REGION
+            value: eu-north-1
+          - name: AWS_BUCKET_NAME
+            value: {{ .s3Bucket }}
+          - name: AWS_BUCKET_BACKUP_PATH
+            value: database/{{ $.env.DB_NAME }}
+          - name: TARGET_DATABASE_HOST
+            value: {{ $.env.DB_HOST }}
+          - name: TARGET_DATABASE_PORT
+            value: "3306"
+          - name: TARGET_DATABASE_NAMES
+            value: {{ $.env.DB_NAME }}
+          - name: TARGET_DATABASE_USER
+            value: {{ $.env.DB_USER }}
+          - name: TARGET_DATABASE_PASSWORD
+            value: {{ $.env.DB_PASSWORD }}
+          - name: BACKUP_TIMESTAMP
+            value: "%Y%m%d_%H%m"
+{{- end }}
+{{- end }}
+{{- end }}

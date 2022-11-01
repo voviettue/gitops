@@ -1,0 +1,101 @@
+{{- if .Values.actions.cronPublishTpl.enabled }}
+{{- with .Values.actions.cronPublishTpl }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "chart.fullname" . }}-publish-tpl
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: node
+            image: {{ $.Values.image }}
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip && ./aws/install
+              npx directus schema snapshot --yes ./snapshot.yaml
+              aws s3 cp ./snapshot s3://{{ .s3Bucket }}/{{ .name }}
+
+            {{- if $.Values.appSecretName }}
+            envFrom:
+            - secretRef:
+                name: {{ $.Values.appSecretName }}
+            {{- end }}
+
+            env:
+            {{- range $key, $value := $.Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+
+            {{- if $.Values.extendEnv }}
+            {{- range $key, $value := $.Values.extendEnv }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+
+          restartPolicy: OnFailure
+{{- end }}
+{{- end }}
+---
+{{- if .Values.actions.cronPublishTpl.enabled }}
+{{- if .Values.actions.cronPublishTpl.runAt }}
+{{- with .Values.actions.cronPublishTpl }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "chart.fullname" . }}-publish-tpl
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    runtAt: {{ .runAt }}
+spec:
+  ttlSecondsAfterFinished: 0
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+      - name: node
+        image: {{ $.Values.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip && ./aws/install
+          npx directus schema snapshot --yes ./snapshot.yaml
+          aws s3 cp ./snapshot s3://{{ .s3Bucket }}/{{ .name }}
+
+        {{- if $.Values.appSecretName }}
+        envFrom:
+        - secretRef:
+            name: {{ $.Values.appSecretName }}
+        {{- end }}
+
+        env:
+        {{- range $key, $value := $.Values.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+
+        {{- if $.Values.extendEnv }}
+        {{- range $key, $value := $.Values.extendEnv }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+
+      restartPolicy: OnFailure
+{{- end }}
+{{- end }}
+{{- end }}
