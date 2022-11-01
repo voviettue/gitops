@@ -599,6 +599,31 @@ spec:
         - fromFieldPath: spec.includeWebapp
           toFieldPath: spec.forProvider.values.includeWebapp
 
+        # PATCH Publish Template
+        - fromFieldPath: spec.actions.publishTpl.enabled
+          toFieldPath: spec.forProvider.values.actions.cronPublishTpl.enabled
+        - fromFieldPath: spec.actions.publishTpl.s3Bucket
+          toFieldPath: spec.forProvider.values.actions.cronPublishTpl.s3Bucket
+        - fromFieldPath: spec.actions.publishTpl.name
+          toFieldPath: spec.forProvider.values.actions.cronPublishTpl.name
+        - fromFieldPath: spec.actions.publishTpl.runAt
+          toFieldPath: spec.forProvider.values.actions.cronPublishTpl.runAt
+        - fromFieldPath: spec.actions.publishTpl.schedule
+          toFieldPath: spec.forProvider.values.actions.cronPublishTpl.schedule
+
+        # PATCH Snapshot
+        - fromFieldPath: spec.actions.snapshot.enabled
+          toFieldPath: spec.forProvider.values.actions.cronSnapshot.enabled
+        - fromFieldPath: spec.actions.snapshot.schedule
+          toFieldPath: spec.forProvider.values.actions.cronSnapshot.schedule
+        - fromFieldPath: spec.actions.snapshot.runAt
+          toFieldPath: spec.forProvider.values.actions.cronSnapshot.runAt
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.values.actions.cronSnapshot.s3Bucket
+          transforms:
+            - type: string
+              string:
+                fmt: "realm-%s.catex.se"
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -673,6 +698,18 @@ spec:
                 domain: catex
                 owner: "221168245729"
                 scope: "@giga-extensions"
+              actions:
+                cronPublishTpl:
+                  name:
+                  enabled: false
+                  schedule: "0 0 * * *"
+                  s3Bucket: "catex-templates"
+                  runAt: ""
+                cronSnapshot:
+                  enabled: false
+                  schedule: "0 0 * * *"
+                  s3Bucket:
+                  runAt: ""
             set:
               - name: env.DB_HOST
                 valueFrom:

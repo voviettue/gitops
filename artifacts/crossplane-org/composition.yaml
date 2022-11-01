@@ -758,8 +758,7 @@ spec:
         kind: BucketPolicy
         spec:
           forProvider:
-            bucketNameRef:
-              name: catex-templates
+            bucketName: catex-templates
             policy:
               version: '2012-10-17'
               statements:

@@ -65,7 +65,7 @@ spec:
           - name: AWS_BUCKET_NAME
             value: {{ .s3Bucket }}
           - name: AWS_BUCKET_BACKUP_PATH
-            value: database/{{ $.env.DB_NAME }}
+            value: snapshot/{{ $.env.DB_NAME }}
           - name: TARGET_DATABASE_HOST
             value: {{ $.env.DB_HOST }}
           - name: TARGET_DATABASE_PORT
@@ -77,7 +77,7 @@ spec:
           - name: TARGET_DATABASE_PASSWORD
             value: {{ $.env.DB_PASSWORD }}
           - name: BACKUP_TIMESTAMP
-            value: "%Y%m%d_%H%m"
+            value: "manual-%Y%m%d_%H%m"
 {{- end }}
 {{- end }}
 {{- end }}

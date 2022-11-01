@@ -130,6 +130,46 @@ spec:
                   required:
                     - name
                     - version
+            actions:
+              type: object
+              description: the actions of workspace
+              properties:
+                publishTpl:
+                  type: object
+                  description: attribute of publish template action
+                  properties:
+                    name:
+                      type: string
+                      description: the name of template
+                    schedule:
+                      type: string
+                      description: the cronjob schedule definition
+                    enabled:
+                      type: boolean
+                      description: enable action
+                    s3Bucket:
+                      type: string
+                      description: the destination s3 bucket
+                    runAt:
+                      type: string
+                      description: the trigger time job run
+                snapshot:
+                  type: object
+                  description: attribute of take snapshot action
+                  properties:
+                    schedule:
+                      type: string
+                      description: the cronjob schedule definition
+                    enabled:
+                      type: boolean
+                      description: enable action
+                    s3Bucket:
+                      type: string
+                      description: the destination s3 bucket
+                    runAt:
+                      type: string
+                      description: the trigger time job run
+
             required:
               - name
               - orgRefName
