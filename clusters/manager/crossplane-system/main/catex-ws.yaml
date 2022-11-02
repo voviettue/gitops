@@ -202,7 +202,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.2.7
     size: 1
 
   webapp:
@@ -216,7 +216,14 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-
+  actions:
+    publishTpl:
+      enabled: true
+      name: "default"
+      runAt: "stable"
+    snapshot:
+      enabled: true
+      runAt: "trigger"
   writeConnectionSecretToRef:
     name: catex-default
 ---
