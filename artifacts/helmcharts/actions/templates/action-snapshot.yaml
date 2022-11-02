@@ -1,4 +1,4 @@
-{{- if .Values.actions.cronSnapshot.enabled }}
+{{- if .Values.cronSnapshot.enabled }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.actions.cronSnapshot.schedule }}
+  schedule: {{ .Values.cronSnapshot.schedule }}
   jobTemplate:
     spec:
       template:
@@ -17,37 +17,37 @@ spec:
           - name: db-backup
             image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.6.0
             imagePullPolicy: IfNotPresent
-            env:
+           .cronSnapshot:
               - name: AWS_DEFAULT_REGION
                 value: eu-north-1
               - name: AWS_BUCKET_NAME
-                value: {{ .Values.actions.cronSnapshot.s3Bucket }}
+                value: {{ .Values.cronSnapshot.s3Bucket }}
               - name: AWS_BUCKET_BACKUP_PATH
-                value: snapshot/{{ .Values.env.DB_DATABASE }}
+                value: snapshot/{{ .Values.cronSnapshot.dbDatabase }}
               - name: TARGET_DATABASE_HOST
-                value: {{ .Values.env.DB_HOST }}
+                value: {{ .Values.cronSnapshot.dbHost }}
               - name: TARGET_DATABASE_PORT
-                value: "3306"
+                value: {{ .Values.cronSnapshot.dbPort }}
               - name: TARGET_DATABASE_NAMES
-                value: {{ .Values.env.DB_DATABASE }}
+                value: {{ .Values.cronSnapshot.dbDatabase }}
               - name: TARGET_DATABASE_USER
-                value: {{ .Values.env.DB_USER }}
+                value: {{ .Values.cronSnapshot.dbUser }}
               - name: TARGET_DATABASE_PASSWORD
-                value: {{ .Values.env.DB_PASSWORD }}
+                value: {{ .Values.cronSnapshot.dbPassword }}
               - name: BACKUP_TIMESTAMP
                 value: "%Y%m%d_%H%m"
 
 {{- end }}
 ---
-{{- if .Values.actions.cronSnapshot.enabled }}
-{{- if .Values.actions.cronSnapshot.runAt }}
+{{- if .Values.cronSnapshot.enabled }}
+{{- if .Values.cronSnapshot.runAt }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "chart.fullname" . }}-snapshot
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-    runtAt: {{ .Values.actions.cronSnapshot.runAt }}
+    runtAt: {{ .Values.cronSnapshot.runAt }}
 spec:
   ttlSecondsAfterFinished: 300
   backoffLimit: 1
@@ -59,23 +59,23 @@ spec:
       - name: db-backup
         image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.6.0
         imagePullPolicy: IfNotPresent
-        env:
+       .cronSnapshot:
           - name: AWS_DEFAULT_REGION
             value: eu-north-1
           - name: AWS_BUCKET_NAME
-            value: {{ .Values.actions.cronSnapshot.s3Bucket }}
+            value: {{ .Values.cronSnapshot.s3Bucket }}
           - name: AWS_BUCKET_BACKUP_PATH
-            value: snapshot/{{ .Values.env.DB_DATABASE }}
+            value: snapshot/{{ .Values.cronSnapshot.dbDatabase }}
           - name: TARGET_DATABASE_HOST
-            value: {{ .Values.env.DB_HOST }}
+            value: {{ .Values.cronSnapshot.dbHost }}
           - name: TARGET_DATABASE_PORT
-            value: "3306"
+            value: {{ .Values.cronSnapshot.dbPort }}
           - name: TARGET_DATABASE_NAMES
-            value: {{ .Values.env.DB_DATABASE }}
+            value: {{ .Values.cronSnapshot.dbDatabase }}
           - name: TARGET_DATABASE_USER
-            value: {{ .Values.env.DB_USER }}
+            value: {{ .Values.cronSnapshot.dbUser }}
           - name: TARGET_DATABASE_PASSWORD
-            value: {{ .Values.env.DB_PASSWORD }}
+            value: {{ .Values.cronSnapshot.dbPassword }}
           - name: BACKUP_TIMESTAMP
             value: "manual-%Y%m%d_%H%m"
 {{- end }}

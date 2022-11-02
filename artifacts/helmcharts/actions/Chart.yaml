@@ -1,18 +1,15 @@
 apiVersion: v2
-name: giga-backoffice
-description: Gigapress app power by directus
+name: giga-actions
+description: The list of actions release
 type: application
-version: 0.2.8
-appVersion: 9.15.0
+version: 0.1.0
+appVersion: 0.1.0
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
       - bitnami-common
     version: 1.x.x
-  - name: redis
-    version: 17.0.1
-    repository: https://charts.bitnami.com/bitnami/redis
 maintainers:
   - email: dev@catex.se
     name: Catexer

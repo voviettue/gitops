@@ -1,0 +1,12 @@
+serviceAccount:
+  name:
+cronSnapshot:
+  schedule: "0 0 * * *"
+  enabled: false
+  s3Bucket: ""
+  runAt: ""
+  dbHost:
+  dbPort: 3306
+  dbDatabase:
+  dbUser:
+  dbPassword:

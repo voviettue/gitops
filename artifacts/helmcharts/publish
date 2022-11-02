@@ -19,10 +19,12 @@ package () {
 echo '>>> Validating'
 validate_chart ./backoffice $KUBE_CONTEXT
 validate_chart ./frontoffice $KUBE_CONTEXT
+validate_chart ./actions $KUBE_CONTEXT
 
 echo '>>> Packaging'
 package ./backoffice
 package ./frontoffice
+package ./actions
 
 echo '>>> Pushing'
 REGISTRY=public.ecr.aws/catext
