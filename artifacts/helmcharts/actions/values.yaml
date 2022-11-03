@@ -1,5 +1,4 @@
-serviceAccount:
-  name:
+serviceAccountName:
 cronSnapshot:
   schedule: "0 0 * * *"
   enabled: false

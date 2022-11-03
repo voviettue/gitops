@@ -11,23 +11,23 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: {{ include "chart.serviceAccountName" . }}
+          serviceAccountName: {{ .Values.serviceAccountName }}
           restartPolicy: OnFailure
           containers:
           - name: db-backup
             image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.6.0
             imagePullPolicy: IfNotPresent
-           .cronSnapshot:
+            env:
               - name: AWS_DEFAULT_REGION
                 value: eu-north-1
               - name: AWS_BUCKET_NAME
                 value: {{ .Values.cronSnapshot.s3Bucket }}
               - name: AWS_BUCKET_BACKUP_PATH
-                value: snapshot/{{ .Values.cronSnapshot.dbDatabase }}
+                value: /snapshot/{{ .Values.cronSnapshot.dbDatabase }}
               - name: TARGET_DATABASE_HOST
                 value: {{ .Values.cronSnapshot.dbHost }}
               - name: TARGET_DATABASE_PORT
-                value: {{ .Values.cronSnapshot.dbPort }}
+                value: {{ .Values.cronSnapshot.dbPort | quote }}
               - name: TARGET_DATABASE_NAMES
                 value: {{ .Values.cronSnapshot.dbDatabase }}
               - name: TARGET_DATABASE_USER
@@ -53,23 +53,23 @@ spec:
   backoffLimit: 1
   template:
     spec:
-      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
       restartPolicy: OnFailure
       containers:
       - name: db-backup
         image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.6.0
         imagePullPolicy: IfNotPresent
-       .cronSnapshot:
+        env:
           - name: AWS_DEFAULT_REGION
             value: eu-north-1
           - name: AWS_BUCKET_NAME
             value: {{ .Values.cronSnapshot.s3Bucket }}
           - name: AWS_BUCKET_BACKUP_PATH
-            value: snapshot/{{ .Values.cronSnapshot.dbDatabase }}
+            value: /snapshot/{{ .Values.cronSnapshot.dbDatabase }}
           - name: TARGET_DATABASE_HOST
             value: {{ .Values.cronSnapshot.dbHost }}
           - name: TARGET_DATABASE_PORT
-            value: {{ .Values.cronSnapshot.dbPort }}
+            value: {{ .Values.cronSnapshot.dbPort | quote }}
           - name: TARGET_DATABASE_NAMES
             value: {{ .Values.cronSnapshot.dbDatabase }}
           - name: TARGET_DATABASE_USER
@@ -77,6 +77,6 @@ spec:
           - name: TARGET_DATABASE_PASSWORD
             value: {{ .Values.cronSnapshot.dbPassword }}
           - name: BACKUP_TIMESTAMP
-            value: "manual-%Y%m%d_%H%m"
+            value: "-on-demand-%Y%m%d_%H%m"
 {{- end }}
 {{- end }}

@@ -439,6 +439,129 @@ spec:
                 NUXT_URL: localhost:3000
                 NUXT_PUBLIC_API_BASE_URL: http://backoffice:8055
 
+    # Release :: Install actions for workspace
+    - name: release-action
+      patches:
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.providerConfigRef.name
+        - fromFieldPath: spec.actions.chartVersion
+          toFieldPath: spec.forProvider.chart.version
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.forProvider.namespace
+
+        #  PATCHING: DATABASE CONNECTION FROM SECRETS
+        - fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.values.serviceAccountName
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-backoffice"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s-%s"
+          toFieldPath: spec.forProvider.values.cronSnapshot.dbDatabase
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "database-%s-%s"
+          toFieldPath: spec.forProvider.set[0].valueFrom.secretKeyRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "database-%s-%s"
+          toFieldPath: spec.forProvider.set[1].valueFrom.secretKeyRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "database-%s-%s"
+          toFieldPath: spec.forProvider.set[2].valueFrom.secretKeyRef.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.dbRefName
+            strategy: string
+            string:
+              fmt: "database-%s-%s"
+          toFieldPath: spec.forProvider.set[3].valueFrom.secretKeyRef.name
+
+        # PATCH SNAPSHOT
+        - fromFieldPath: spec.actions.snapshot.enabled
+          toFieldPath: spec.forProvider.values.cronSnapshot.enabled
+        - fromFieldPath: spec.actions.snapshot.schedule
+          toFieldPath: spec.forProvider.values.cronSnapshot.schedule
+        - fromFieldPath: spec.actions.snapshot.runAt
+          toFieldPath: spec.forProvider.values.cronSnapshot.runAt
+        - fromFieldPath: spec.orgRefName
+          toFieldPath: spec.forProvider.values.cronSnapshot.s3Bucket
+          transforms:
+            - type: string
+              string:
+                fmt: "realm-%s.catex.se"
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          deletionPolicy: Delete
+          forProvider:
+            chart:
+              name: giga-actions
+              repository: oci://public.ecr.aws/catext
+              version: 0.1.4
+            skipCreateNamespace: true
+            wait: true
+            values:
+              cronSnapshot:
+                enabled: false
+                schedule: "0 0 * * *"
+                dbPort: "3306"
+            set:
+              - name: cronSnapshot.dbHost
+                valueFrom:
+                  secretKeyRef:
+                    key: endpoint
+                    namespace: crossplane-system
+              - name: cronSnapshot.dbPort
+                valueFrom:
+                  secretKeyRef:
+                    key: port
+                    namespace: crossplane-system
+              - name: cronSnapshot.dbUser
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    namespace: crossplane-system
+              - name: cronSnapshot.dbPassword
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    namespace: crossplane-system
+
     # Release :: Install application for workspace
     - name: release-backoffice
       patches:
@@ -600,30 +723,17 @@ spec:
           toFieldPath: spec.forProvider.values.includeWebapp
 
         # PATCH Publish Template
-        - fromFieldPath: spec.actions.publishTpl.enabled
+        - fromFieldPath: spec.publishTpl.enabled
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.enabled
-        - fromFieldPath: spec.actions.publishTpl.s3Bucket
+        - fromFieldPath: spec.publishTpl.s3Bucket
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.s3Bucket
-        - fromFieldPath: spec.actions.publishTpl.name
+        - fromFieldPath: spec.publishTpl.name
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.name
-        - fromFieldPath: spec.actions.publishTpl.runAt
+        - fromFieldPath: spec.publishTpl.runAt
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.runAt
-        - fromFieldPath: spec.actions.publishTpl.schedule
+        - fromFieldPath: spec.publishTpl.schedule
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.schedule
 
-        # PATCH Snapshot
-        - fromFieldPath: spec.actions.snapshot.enabled
-          toFieldPath: spec.forProvider.values.actions.cronSnapshot.enabled
-        - fromFieldPath: spec.actions.snapshot.schedule
-          toFieldPath: spec.forProvider.values.actions.cronSnapshot.schedule
-        - fromFieldPath: spec.actions.snapshot.runAt
-          toFieldPath: spec.forProvider.values.actions.cronSnapshot.runAt
-        - fromFieldPath: spec.orgRefName
-          toFieldPath: spec.forProvider.values.actions.cronSnapshot.s3Bucket
-          transforms:
-            - type: string
-              string:
-                fmt: "realm-%s.catex.se"
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -704,11 +814,6 @@ spec:
                   enabled: false
                   schedule: "0 0 * * *"
                   s3Bucket: "catex-templates"
-                  runAt: ""
-                cronSnapshot:
-                  enabled: false
-                  schedule: "0 0 * * *"
-                  s3Bucket:
                   runAt: ""
             set:
               - name: env.DB_HOST

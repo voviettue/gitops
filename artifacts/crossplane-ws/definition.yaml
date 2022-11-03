@@ -130,29 +130,32 @@ spec:
                   required:
                     - name
                     - version
+              publishTpl:
+                type: object
+                description: configuration for publish template action
+                properties:
+                  name:
+                    type: string
+                    description: the name of template
+                  schedule:
+                    type: string
+                    description: the cronjob schedule definition
+                  enabled:
+                    type: boolean
+                    description: enable action
+                  s3Bucket:
+                    type: string
+                    description: the destination s3 bucket
+                  runAt:
+                    type: string
+                    description: the trigger time job run
               actions:
                 type: object
                 description: the actions of workspace
                 properties:
-                  publishTpl:
-                    type: object
-                    description: attribute of publish template action
-                    properties:
-                      name:
-                        type: string
-                        description: the name of template
-                      schedule:
-                        type: string
-                        description: the cronjob schedule definition
-                      enabled:
-                        type: boolean
-                        description: enable action
-                      s3Bucket:
-                        type: string
-                        description: the destination s3 bucket
-                      runAt:
-                        type: string
-                        description: the trigger time job run
+                  chartVersion:
+                    type: string
+                    description: chart version of action release
                   snapshot:
                     type: object
                     description: attribute of take snapshot action

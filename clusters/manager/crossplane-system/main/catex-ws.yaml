@@ -35,6 +35,9 @@ spec:
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
 
+  actions:
+    chartVersion: 0.1.0
+
   extensions:
     - name: "@giga-extensions/base"
       version: 1.0.2
@@ -62,6 +65,9 @@ spec:
   domain: catex.se
 
   deletionProtection: true
+
+  actions:
+    chartVersion: 0.1.0
 
   app:
     adminEmail: admin@catex.se
@@ -108,6 +114,9 @@ spec:
 
   deletionProtection: true
 
+  actions:
+    chartVersion: 0.1.0
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -147,6 +156,9 @@ spec:
   domain: catex.se
 
   deletionProtection: true
+
+  actions:
+    chartVersion: 0.1.0
 
   app:
     adminEmail: admin@catex.se
@@ -197,12 +209,15 @@ spec:
 
   deletionProtection: true
 
+  actions:
+    chartVersion: 0.1.0
+
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.2.7
+    chartVersion: 0.2.8
     size: 1
 
   webapp:
@@ -216,11 +231,12 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
+  publishTpl:
+    enabled: true
+    name: "default"
+    runAt: "stable"
   actions:
-    publishTpl:
-      enabled: true
-      name: "default"
-      runAt: "stable"
+    chartVersion: 0.1.4
     snapshot:
       enabled: true
       runAt: "trigger"
@@ -243,6 +259,9 @@ spec:
   domain: catex.se
 
   deletionProtection: true
+
+  actions:
+    chartVersion: 0.1.0
 
   app:
     adminEmail: admin@catex.se
