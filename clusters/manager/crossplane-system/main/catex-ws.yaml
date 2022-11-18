@@ -21,7 +21,7 @@ spec:
   deletionProtection: true
 
   webapp:
-    version: staging
+    version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
 
@@ -47,7 +47,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.1.0-dev
+      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: internal-template-song
@@ -167,14 +167,14 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.4
+    version: 2.0.5
     chartVersion: 0.1.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: staging
+    version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
 
@@ -184,7 +184,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.4
+      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: template-sales
@@ -310,9 +310,16 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.0.5
     chartVersion: 0.1.1
     size: 3
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
+  
+  webapp:
+    version: 1.1.0
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
 
   extensions:
     - name: "@giga-extensions/base"
@@ -321,11 +328,8 @@ spec:
       version: 1.0.0
     - name: "@giga-extensions/hipgnosis"
       version: 1.0.0
-
-  webapp:
-    version: dev
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
+    - name: "@giga-extensions/front-office"
+      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: hipgnosis
@@ -434,14 +438,14 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.4
+    version: 2.0.5
     chartVersion: 0.1.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: staging
+    version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
 
@@ -451,7 +455,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.4
+      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: demo-bjorn
@@ -478,14 +482,14 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.4
+    version: 2.0.5
     chartVersion: 0.1.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: staging
+    version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
 
@@ -495,7 +499,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.4
+      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: demo-abba
@@ -604,14 +608,14 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.4
+    version: 2.0.5
     chartVersion: 0.1.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
-    version: staging
+    version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
 
@@ -621,7 +625,7 @@ spec:
     - name: "@giga-extensions/pro"
       version: 1.0.0
     - name: "@giga-extensions/front-office"
-      version: 1.0.4
+      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: catex-lido
