@@ -36,7 +36,10 @@ spec:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   actions:
-    chartVersion: 0.1.0
+    chartVersion: 0.1.4
+    snapshot:
+      enabled: true
+      runAt: "trigger"
 
   extensions:
     - name: "@giga-extensions/base"
