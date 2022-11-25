@@ -149,6 +149,22 @@ spec:
                   runAt:
                     type: string
                     description: the trigger time job run
+              installFromTpl:
+                type: object
+                description: the optional to install new ws from template
+                properties:
+                  enabled:
+                    type: boolean
+                    description: active the option
+                  name:
+                    type: string
+                    description: the name of template
+                  version:
+                    type: string
+                    description: the version of template
+                  s3Bucket:
+                    type: string
+                    description: the bucket name of template
               actions:
                 type: object
                 description: the actions of workspace

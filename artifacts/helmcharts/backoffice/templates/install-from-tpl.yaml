@@ -1,0 +1,56 @@
+{{- if .Values.installFromTpl.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "chart.fullname" . }}-install-from-tpl
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 1
+  template:
+    spec:
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      restartPolicy: OnFailure
+      containers:
+        - name: node
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          command:
+            - /bin/sh
+            - "-c"
+            - |
+              # Install awscli
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip && ./aws/install
+
+              # Download template from s3
+              aws s3 cp s3://{{ .Values.installFromTpl.s3Bucket }}/{{ .Values.installFromTpl.name }}/{{ .Values.installFromTpl.version }}.json snapshot.json
+
+              # Restore from snapshot
+              npm install
+              npx directus schema apply --yes ./snapshot.json
+
+          {{- if .Values.appSecretName }}
+          envFrom:
+          - secretRef:
+              name: {{ .Values.appSecretName }}
+          {{- end }}
+
+          env:
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- if .Values.extendEnv }}
+          {{- range $key, $value := .Values.extendEnv }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+{{- end }}

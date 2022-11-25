@@ -94,3 +94,9 @@ actions:
     enabled: false
     s3Bucket: "catex-template"
     runAt: ""
+
+installFromTpl:
+  enabled: false
+  s3Bucket: "catex-template"
+  name:
+  version:

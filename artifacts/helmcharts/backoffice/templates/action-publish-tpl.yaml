@@ -21,10 +21,25 @@ spec:
             - /bin/sh
             - "-c"
             - |
+              # Install awscli to connect to s3
               curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
               unzip awscliv2.zip && ./aws/install
-              npx directus schema snapshot --yes ./snapshot.yaml
-              aws s3 cp ./snapshot.yaml s3://{{ .Values.actions.cronPublishTpl.s3Bucket }}/{{.Values.actions.cronPublishTpl.name}}/{{ now }}.yaml
+
+              # Take snapshot
+              npx directus schema snapshot --yes --format=json ./snapshot.json
+              # Prepare extensions
+
+              # Make snapshot.json file
+              node -e "
+                const { writeFileSync } = require('fs');
+                const snapshotJson = require('./snapshot.json');
+                const extString = process.env.EXTENSIONS
+                snapshotJson.extensions = extString.split(' ')
+                writeFileSync('./snapshot.json', JSON.stringify(snapshotJson, null, 4));
+              "
+
+              # Upload to s3
+              aws s3 cp ./snapshot.json s3://{{ .Values.actions.cronPublishTpl.s3Bucket }}/{{.Values.actions.cronPublishTpl.name}}/{{ now }}.json
 
             {{- if .Values.appSecretName }}
             envFrom:
@@ -33,6 +48,8 @@ spec:
             {{- end }}
 
             env:
+            - name: EXTENSIONS
+              value: {{ include "extensions.initContainer" . | quote }}
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -70,10 +87,28 @@ spec:
         - /bin/sh
         - -c
         - |
+          # -- START NOTE --
+          # THIS SECTION COPIED FROM CRONJOB
+
+          # Install awscli to connect to s3
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip && ./aws/install
-          npx directus schema snapshot --yes ./snapshot.yaml
-          aws s3 cp ./snapshot.yaml s3://{{ .Values.actions.cronPublishTpl.s3Bucket }}/{{ .Values.actions.cronPublishTpl.name }}/{{ .Values.actions.cronPublishTpl.runAt }}.yaml
+
+          # Take snapshot
+          npx directus schema snapshot --yes --format=json ./snapshot.json
+          # Prepare extensions
+
+          # Make snapshot.json file
+          node -e "
+            const { writeFileSync } = require('fs');
+            const snapshotJson = require('./snapshot.json');
+            const extString = process.env.EXTENSIONS
+            snapshotJson.extensions = extString.split(' ')
+            writeFileSync('./snapshot.json', JSON.stringify(snapshotJson, null, 4));
+          "
+          # -- END NOTE --
+
+          aws s3 cp ./snapshot.json s3://{{ .Values.actions.cronPublishTpl.s3Bucket }}/{{ .Values.actions.cronPublishTpl.name }}/{{ .Values.actions.cronPublishTpl.runAt }}.json
 
         {{- if .Values.appSecretName }}
         envFrom:
@@ -82,6 +117,8 @@ spec:
         {{- end }}
 
         env:
+        - name: EXTENSIONS
+          value: {{ include "extensions.initContainer" . | quote }}
         {{- range $key, $value := .Values.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}

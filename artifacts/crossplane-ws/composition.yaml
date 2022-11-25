@@ -734,6 +734,15 @@ spec:
         - fromFieldPath: spec.publishTpl.schedule
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.schedule
 
+        # PATCH install from template
+        - fromFieldPath: spec.installFromTpl.enabled
+          toFieldPath: spec.forProvider.values.installFromTpl.enabled
+        - fromFieldPath: spec.installFromTpl.s3Bucket
+          toFieldPath: spec.forProvider.values.installFromTpl.s3Bucket
+        - fromFieldPath: spec.installFromTpl.name
+          toFieldPath: spec.forProvider.values.installFromTpl.name
+        - fromFieldPath: spec.installFromTpl.version
+          toFieldPath: spec.forProvider.values.installFromTpl.version
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -778,6 +787,9 @@ spec:
                 backend:
                   serviceName: backoffice
                   servicePort: 8055
+              installFromTpl:
+                enabled: false
+                s3Bucket: catex-templates
               env:
                 KEY: 255d861b-5ea1-5996-9aa3-922530ec40b1
                 SECRET: 6116487b-cda1-52c2-b5b5-c8022c45e263
