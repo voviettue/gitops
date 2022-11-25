@@ -212,9 +212,6 @@ spec:
 
   deletionProtection: true
 
-  actions:
-    chartVersion: 0.1.0
-
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
@@ -234,10 +231,12 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
+
   publishTpl:
     enabled: true
     name: "default"
     runAt: "stable"
+
   actions:
     chartVersion: 0.1.4
     snapshot:
