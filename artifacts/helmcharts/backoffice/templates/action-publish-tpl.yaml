@@ -39,7 +39,7 @@ spec:
               "
 
               # Upload to s3
-              aws s3 cp ./snapshot.json s3://{{ .Values.actions.cronPublishTpl.s3Bucket }}/{{.Values.actions.cronPublishTpl.name}}/{{ now }}.json
+              aws s3 cp ./snapshot.json s3://{{ .Values.actions.cronPublishTpl.s3Bucket }}/{{.Values.actions.cronPublishTpl.name}}/{{ now | date "2006-01-02" }}.json
 
             {{- if .Values.appSecretName }}
             envFrom:

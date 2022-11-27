@@ -6,12 +6,12 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": pre-install
+    "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
-  ttlSecondsAfterFinished: 30
-  backoffLimit: 1
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 5
   template:
     spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
@@ -26,10 +26,9 @@ spec:
             - |
               # Install awscli
               curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip && ./aws/install
-
+              unzip awscliv2.zip && ./aws/install -b ./ -i ./
               # Download template from s3
-              aws s3 cp s3://{{ .Values.installFromTpl.s3Bucket }}/{{ .Values.installFromTpl.name }}/{{ .Values.installFromTpl.version }}.json snapshot.json
+              ./aws s3 cp s3://{{ .Values.installFromTpl.s3Bucket }}/{{ .Values.installFromTpl.name }}/{{ .Values.installFromTpl.version }}.json snapshot.json
 
               # Restore from snapshot
               npm install

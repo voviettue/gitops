@@ -217,7 +217,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.2.8
+    chartVersion: 0.2.12
     size: 1
 
   webapp:
@@ -235,7 +235,7 @@ spec:
   publishTpl:
     enabled: true
     name: "default"
-    runAt: "stable"
+    runAt: "manual23"
 
   actions:
     chartVersion: 0.1.4
@@ -314,7 +314,7 @@ spec:
     size: 3
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
-  
+
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office

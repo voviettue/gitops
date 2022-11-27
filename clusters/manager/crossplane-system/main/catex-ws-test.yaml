@@ -1,0 +1,43 @@
+---
+# test-install.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: test-install
+  namespace: realm-catex
+spec:
+  name: test-install
+  dbRefName: sec
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: test-install
+  domain: catex.se
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.6
+    chartVersion: 0.2.20
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+    chartVersion: 0.1.1
+
+  installFromTpl:
+    enabled: true
+    name: default
+    version: manual23
+    s3Bucket: catex-templates
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: test-install
