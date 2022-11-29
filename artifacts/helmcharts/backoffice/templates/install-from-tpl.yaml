@@ -16,6 +16,29 @@ spec:
     spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
       restartPolicy: OnFailure
+
+      volumes:
+        - name: shared
+          emptyDir: {}
+
+      initContainers:
+        - name: load
+          image: node:16
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - "-c"
+            - |
+              # Install awscli to connect to s3
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip && ./aws/install
+              # Download template from s3
+              aws s3 cp s3://{{ .Values.installFromTpl.s3Bucket }}/{{ .Values.installFromTpl.name }}/{{ .Values.installFromTpl.version }}.json /tpl/tpl.json
+
+          volumeMounts:
+            - name: shared
+              mountPath: /tpl
+
       containers:
         - name: node
           image: {{ .Values.image }}
@@ -24,32 +47,29 @@ spec:
             - /bin/sh
             - "-c"
             - |
-              # Install awscli
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip && ./aws/install -b ./ -i ./
-              # Download template from s3
-              ./aws s3 cp s3://{{ .Values.installFromTpl.s3Bucket }}/{{ .Values.installFromTpl.name }}/{{ .Values.installFromTpl.version }}.json snapshot.json
-
               # Restore from snapshot
               npm install
-              npx directus schema apply --yes ./snapshot.json
+              npx directus schema apply --yes /tpl/tpl.json
 
           {{- if .Values.appSecretName }}
           envFrom:
-          - secretRef:
-              name: {{ .Values.appSecretName }}
-          {{- end }}
+            - secretRef:
+                name: {{ .Values.appSecretName }}
+            {{- end }}
 
           env:
-          {{- range $key, $value := .Values.env }}
-          - name: {{ $key }}
-            value: {{ $value | quote }}
-          {{- end }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
 
-          {{- if .Values.extendEnv }}
-          {{- range $key, $value := .Values.extendEnv }}
-          - name: {{ $key }}
-            value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- if .Values.extendEnv }}
+            {{- range $key, $value := .Values.extendEnv }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            - name: shared
+              mountPath: /tpl
 {{- end }}

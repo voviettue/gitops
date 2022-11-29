@@ -3,23 +3,23 @@
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
-  name: test-install
+  name: itest1
   namespace: realm-catex
 spec:
-  name: test-install
+  name: itest1
   dbRefName: sec
   orgRefName: catex
 
   region: eu-north-1
-  subdomain: test-install
+  subdomain: itest1
   domain: catex.se
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.6
-    chartVersion: 0.2.20
+    version: 2.1.0
+    chartVersion: 0.2.35
 
   webapp:
     version: dev
@@ -40,4 +40,4 @@ spec:
       version: 1.0.0
 
   writeConnectionSecretToRef:
-    name: test-install
+    name: itest1

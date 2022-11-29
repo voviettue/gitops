@@ -1,6 +1,6 @@
 replicaCount: 1
 
-image:
+image: 2.1.0
 pullPolicy: IfNotPresent
 
 serviceAccount:
