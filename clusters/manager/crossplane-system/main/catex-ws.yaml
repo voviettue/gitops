@@ -628,3 +628,47 @@ spec:
 
   writeConnectionSecretToRef:
     name: catex-lido
+
+---
+# bjorn.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-bjorn
+  namespace: realm-catex
+spec:
+  name: bjorn
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: bjorn
+  domain: catex.se
+
+  deletionProtection: true
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.1.0
+    chartVersion: 0.3.4
+    size: 1
+    env:
+      HIDDEN_COLLECTION_PREFIXES: "cms_"
+
+  webapp:
+    version: 1.1.0
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+    - name: "@giga-extensions/front-office"
+      version: 1.1.0
+
+  writeConnectionSecretToRef:
+    name: catex-bjorn
