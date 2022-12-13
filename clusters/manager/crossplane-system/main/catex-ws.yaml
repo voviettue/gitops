@@ -23,7 +23,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   app:
     adminEmail: admin@catex.se
@@ -95,7 +95,7 @@ spec:
   webapp:
     version: dev
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   writeConnectionSecretToRef:
     name: internal-app-dev
@@ -176,7 +176,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   extensions:
     - name: "@giga-extensions/base"
@@ -223,7 +223,7 @@ spec:
   webapp:
     version: dev
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
     chartVersion: 0.1.1
 
   extensions:
@@ -318,7 +318,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   extensions:
     - name: "@giga-extensions/base"
@@ -446,7 +446,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   extensions:
     - name: "@giga-extensions/base"
@@ -458,7 +458,6 @@ spec:
 
   writeConnectionSecretToRef:
     name: demo-bjorn
-
 ---
 # demo-abba.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
@@ -490,7 +489,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   extensions:
     - name: "@giga-extensions/base"
@@ -616,7 +615,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   extensions:
     - name: "@giga-extensions/base"
@@ -660,7 +659,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: true
+    enabled: false
 
   extensions:
     - name: "@giga-extensions/base"
