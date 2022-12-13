@@ -1,13 +1,11 @@
 replicaCount: 1
 
-image: 2.1.0
+image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core@latest
 pullPolicy: IfNotPresent
 
 serviceAccount:
   create: true
-  imagePullSecrets:
-    - name: ecr-registry-key
-  # annotations: {}
+  annotations: {}
   name: terminal
 
 securityContext:
@@ -100,3 +98,98 @@ installFromTpl:
   s3Bucket: "catex-templates"
   name:
   version:
+
+# External services
+ledger:
+  enabled: false
+  image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/ledger@latest
+  pullPolicy: Always
+  replicaCount: 1
+  resource:
+    limits:
+      cpu: 1
+      memory: 1280Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    LEDGER_NAME:
+    LEDGER_REGION:
+    PORT: 8080
+  svc:
+    name: ledger
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+  sa:
+    create: true
+    annotations: {}
+  readiness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+  liveness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+  ext:
+    name: ledger
+    version: stable
+
+# External services
+webapp:
+  enabled: false
+  image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office@latest
+  pullPolicy: Always
+  replicaCount: 1
+  resource:
+    limits:
+      cpu: 1
+      memory: 1280Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    SENTRY_ENV: sample
+    SENTRY_DSN: sample
+    SENTRY_DISABLED: "true"
+  svc:
+    name: frontoffice
+    type: NodePort
+    port: 3000
+    annotations: {}
+  sa:
+    create: true
+    annotations: {}
+  readiness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+
+  liveness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+
+  ingress:
+    certManager: false
+    pathType: ImplementationSpecific
+    apiVersion:
+    hostname: sample.local
+    path: /
+    annotations: {}
+    tls: false
+    extraHosts:
+    extraTls: []
+    secrets:
+  ext:
+    name: front-office
+    version: stable

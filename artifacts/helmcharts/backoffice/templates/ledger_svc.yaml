@@ -1,0 +1,23 @@
+{{- if .Values.ledger.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chart.fullname" . }}-ledger
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    gigapress.catex.se/app-name: ledger-apiserver
+  {{- with .Values.ledger.svc.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.ledger.svc.type }}
+  ports:
+    - port: {{ .Values.ledger.svc.port }}
+      targetPort: apiserver
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "chart.selectorLabels" . | nindent 4 }}
+    gigapress.catex.se/app-name: ledger-apiserver
+{{- end -}}

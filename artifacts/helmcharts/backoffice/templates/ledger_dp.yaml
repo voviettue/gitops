@@ -1,0 +1,59 @@
+{{- if .Values.ledger.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-ledger
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    gigapress.catex.se/app-name: ledger-apiserver
+spec:
+  replicas: {{ .Values.ledger.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+      gigapress.catex.se/app-name: ledger-apiserver
+  template:
+    metadata:
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        gigapress.catex.se/app-name: ledger-apiserver
+    spec:
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}-ledger
+
+      containers:
+        - name: server
+          image: {{ .Values.ledger.image }}
+          imagePullPolicy: {{ .Values.ledger.pullPolicy }}
+          resources:
+            {{- toYaml .Values.ledger.resources | nindent 12 }}
+          ports:
+            - containerPort: 8080
+              name: apiserver
+
+          env:
+          {{- range $key, $value := .Values.ledger.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- if .Values.ledger.liveness.enable }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.ledger.liveness.path }}
+              port: 8080
+            periodSeconds: {{ default 180 .Values.ledger.liveness.periodSeconds }}
+            initialDelaySeconds: {{ default 45 .Values.ledger.liveness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.ledger.liveness.timeoutSeconds }}
+          {{- end }}
+
+          {{- if .Values.ledger.readiness.enable }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.ledger.readiness.path }}
+              port: 8080
+            periodSeconds: {{ default 60 .Values.ledger.readiness.periodSeconds }}
+            initialDelaySeconds: {{ default 30 .Values.ledger.readiness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.ledger.readiness.timeoutSeconds }}
+            failureThreshold: 1
+          {{- end }}
+{{- end }}

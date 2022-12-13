@@ -49,7 +49,7 @@ spec:
 
             env:
             - name: EXTENSIONS
-              value: {{ include "extensions.initContainer" . | quote }}
+              value: {{ include "extensionList" . | quote }}
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -64,8 +64,7 @@ spec:
 
 {{- end }}
 ---
-{{- if .Values.actions.cronPublishTpl.enabled }}
-{{- if .Values.actions.cronPublishTpl.runAt }}
+{{- if (and .Values.actions.cronPublishTpl.enabled .Values.actions.cronPublishTpl.runAt) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -118,7 +117,7 @@ spec:
 
         env:
         - name: EXTENSIONS
-          value: {{ include "extensions.initContainer" . | quote }}
+          value: {{ include "extensionList" . | quote }}
         {{- range $key, $value := .Values.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
@@ -130,5 +129,4 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- end }}
-{{- end }}
 {{- end }}

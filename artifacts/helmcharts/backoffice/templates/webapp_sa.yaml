@@ -1,0 +1,39 @@
+{{- if (and .Values.webapp.enabled .Values.webapp.sa.create) -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "chart.serviceAccountName" . }}-webapp
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  {{- with .Values.webapp.sa.annotations }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-10"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- with .Values.webapp.sa.imagePullSecrets }}
+imagePullSecrets:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "chart.serviceAccountName" . }}-webapp-role
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "chart.serviceAccountName" . }}-webapp-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "chart.serviceAccountName" . }}-webapp-role
+subjects:
+- kind: ServiceAccount
+  name: {{ include "chart.serviceAccountName" . }}-webapp
+{{- end -}}

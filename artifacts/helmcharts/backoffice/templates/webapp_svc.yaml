@@ -1,0 +1,27 @@
+{{- if .Values.webapp.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if .Values.webapp.svc.name }}
+  name: {{ .Values.webapp.svc.name }}
+  {{- else }}
+  name: {{ include "chart.fullname" . }}-webapp
+  {{- end }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    gigapress.catex.se/app-name: webapp
+  {{- with .Values.webapp.svc.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.webapp.svc.type }}
+  ports:
+    - port: {{ .Values.webapp.svc.port }}
+      targetPort: node
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "chart.selectorLabels" . | nindent 4 }}
+    gigapress.catex.se/app-name: webapp
+{{- end -}}

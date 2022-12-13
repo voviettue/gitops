@@ -1,0 +1,72 @@
+{{- if .Values.webapp.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-webapp
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    gigapress.catex.se/app_name: webapp
+spec:
+  replicas: {{ .Values.webapp.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+      gigapress.catex.se/app_name: webapp
+  template:
+    metadata:
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        gigapress.catex.se/app_name: webapp
+    spec:
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}-webapp
+
+      containers:
+        - name: node
+          image: {{ .Values.webapp.image }}
+          imagePullPolicy: {{ .Values.webapp.pullPolicy }}
+          resources:
+            {{- toYaml .Values.webapp.resources | nindent 12 }}
+          ports:
+            - containerPort: 3000
+              name: node
+
+          {{- if .Values.webapp.appSecretName }}
+          envFrom:
+          - secretRef:
+              name: {{ .Values.webapp.appSecretName }}
+          {{- end }}
+
+          env:
+          {{- range $key, $value := .Values.webapp.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- if .Values.webapp.extendEnv }}
+          {{- range $key, $value := .Values.webapp.extendEnv }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+
+          {{- if .Values.webapp.liveness.enable }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.webapp.liveness.path }}
+              port: 3000
+            periodSeconds: {{ default 180 .Values.webapp.liveness.periodSeconds }}
+            initialDelaySeconds: {{ default 45 .Values.webapp.liveness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.webapp.liveness.timeoutSeconds }}
+          {{- end }}
+
+          {{- if .Values.webapp.readiness.enable }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.webapp.readiness.path }}
+              port: 3000
+            periodSeconds: {{ default 60 .Values.webapp.readiness.periodSeconds }}
+            initialDelaySeconds: {{ default 30 .Values.webapp.readiness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.webapp.readiness.timeoutSeconds }}
+            failureThreshold: 1
+          {{- end }}
+{{- end }}

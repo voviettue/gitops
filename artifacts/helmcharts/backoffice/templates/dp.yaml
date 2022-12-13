@@ -65,7 +65,7 @@ spec:
             - name: NPM_SCOPE
               value: {{ .Values.npm.scope | quote }}
             - name: EXTENSIONS
-              value: {{ include "extensions.initContainer" . | quote }}
+              value: {{ include "extensionList" . | quote }}
 
           volumeMounts:
             - name: ext-dir
