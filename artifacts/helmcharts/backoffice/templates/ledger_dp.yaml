@@ -5,18 +5,18 @@ metadata:
   name: {{ include "chart.fullname" . }}-ledger
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-    gigapress.catex.se/app-name: ledger-apiserver
+    gigapress.catex.se/app_name: ledger-apiserver
 spec:
   replicas: {{ .Values.ledger.replicaCount }}
   selector:
     matchLabels:
       {{- include "chart.selectorLabels" . | nindent 6 }}
-      gigapress.catex.se/app-name: ledger-apiserver
+      gigapress.catex.se/app_name: ledger-apiserver
   template:
     metadata:
       labels:
         {{- include "chart.selectorLabels" . | nindent 8 }}
-        gigapress.catex.se/app-name: ledger-apiserver
+        gigapress.catex.se/app_name: ledger-apiserver
     spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}-ledger
 

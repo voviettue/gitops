@@ -4,18 +4,18 @@ metadata:
   name: {{ include "chart.fullname" . }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-    gigapress.catex.se/app-name: terminal
+    gigapress.catex.se/app_name: terminal
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "chart.selectorLabels" . | nindent 6 }}
-      gigapress.catex.se/app-name: terminal
+      gigapress.catex.se/app_name: terminal
   template:
     metadata:
       labels:
         {{- include "chart.selectorLabels" . | nindent 8 }}
-      gigapress.catex.se/app-name: terminal
+        gigapress.catex.se/app_name: terminal
     spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
 

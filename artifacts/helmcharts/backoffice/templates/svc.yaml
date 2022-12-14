@@ -4,7 +4,7 @@ metadata:
   name: {{ include "chart.fullname" . }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-    gigapress.catex.se/app-name: terminal
+    gigapress.catex.se/app_name: terminal
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -18,5 +18,5 @@ spec:
       name: http
   selector:
     {{- include "chart.selectorLabels" . | nindent 4 }}
-    gigapress.catex.se/app-name: terminal
+    gigapress.catex.se/app_name: terminal
 

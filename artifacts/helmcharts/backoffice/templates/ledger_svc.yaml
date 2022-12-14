@@ -2,10 +2,14 @@
 apiVersion: v1
 kind: Service
 metadata:
+  {{- if .Values.webapp.svc.name }}
+  name: {{ .Values.webapp.svc.name }}
+  {{- else }}
   name: {{ include "chart.fullname" . }}-ledger
+  {{- end }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-    gigapress.catex.se/app-name: ledger-apiserver
+    gigapress.catex.se/app_name: ledger-apiserver
   {{- with .Values.ledger.svc.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -19,5 +23,5 @@ spec:
       name: http
   selector:
     {{- include "chart.selectorLabels" . | nindent 4 }}
-    gigapress.catex.se/app-name: ledger-apiserver
+    gigapress.catex.se/app_name: ledger-apiserver
 {{- end -}}
