@@ -65,21 +65,72 @@ spec:
                 properties:
                   enabled:
                     type: boolean
-                    description: the flag for determine webapp attached
+                    description: the flag use determine webapp attached
                   image:
                     type: string
                     description: the webapp's docker image
                   version:
                     type: string
                     description: the version of frontoffice's docker image
-                  chartVersion:
-                    type: string
-                    description: the version of frontoffice's chart
+                  size:
+                    type: integer
+                    description: the replica size of ledger apiserver
+                  sa:
+                    type: object
+                    description: the service account configuration
+                    properties:
+                      create:
+                        type: boolean
+                        description: determine create this service account or not
+                      annotation:
+                        type: object
+                        description: the service account's annotations
+                        x-kubernetes-preserve-unknown-fields: true
                   env:
                     type: object
                     description: the free property:value
                     x-kubernetes-preserve-unknown-fields: true
+                  extVersion:
+                    type: string
+                    description: the version of frontoffice extension
 
+              ledger:
+                type: object
+                description: the configuration of ledger attached
+                properties:
+                  enabled:
+                    type: boolean
+                    description: the flag use determine ledger attached
+                  image:
+                    type: string
+                    description: the ledger apiserver image's link
+                  version:
+                    type: string
+                    description: the version of ledger apiserver image
+                  size:
+                    type: integer
+                    description: the replica size of ledger apiserver
+                  env:
+                    type: object
+                    description: the free property:value
+                    x-kubernetes-preserve-unknown-fields: true
+                  region:
+                    type: string
+                    description: the region of ledger reside at
+                  sa:
+                    type: object
+                    description: the service account configuration
+                    properties:
+                      create:
+                        type: boolean
+                        description: determine create this service account or not
+                      annotation:
+                        type: object
+                        description: the service account's annotations
+                        x-kubernetes-preserve-unknown-fields: true
+                  extVersion:
+                    type: string
+                    description: the version of ledger extension
               app:
                 type: object
                 description: The configuration of application
@@ -96,7 +147,7 @@ spec:
                     x-kubernetes-preserve-unknown-fields: true
                   image:
                     type: string
-                    description: the core image
+                    description: the core image's link
                   version:
                     type: string
                     description: the version of core application
@@ -109,6 +160,7 @@ spec:
                 required:
                   - adminEmail
                   - adminPassword
+
               extensions:
                 type: array
                 items:

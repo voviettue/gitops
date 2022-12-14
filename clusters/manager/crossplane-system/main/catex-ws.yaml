@@ -30,7 +30,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.1.2
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -46,8 +46,6 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: internal-template-song
@@ -70,14 +68,14 @@ spec:
   deletionProtection: true
 
   actions:
-    chartVersion: 0.1.0
+    chartVersion: 0.1.4
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.3
-    chartVersion: 0.1.2
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -89,8 +87,6 @@ spec:
       version: 1.0.0
     - name: "@giga-extensions/hipgnosis"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.0.2-dev
 
   webapp:
     version: dev
@@ -118,14 +114,14 @@ spec:
   deletionProtection: true
 
   actions:
-    chartVersion: 0.1.0
+    chartVersion: 0.1.4
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
 
   webapp:
@@ -161,14 +157,14 @@ spec:
   deletionProtection: true
 
   actions:
-    chartVersion: 0.1.0
+    chartVersion: 0.1.4
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -183,8 +179,6 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: template-sales
@@ -217,14 +211,13 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.2.12
+    chartVersion: 0.4.1
     size: 1
 
   webapp:
     version: dev
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: false
-    chartVersion: 0.1.1
 
   extensions:
     - name: "@giga-extensions/base"
@@ -263,21 +256,20 @@ spec:
   deletionProtection: true
 
   actions:
-    chartVersion: 0.1.0
+    chartVersion: 0.1.4
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
 
   webapp:
     version: dev
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: false
-    chartVersion: 0.1.1
 
   extensions:
     - name: "@giga-extensions/base"
@@ -310,7 +302,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 3
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -327,8 +319,6 @@ spec:
       version: 1.0.0
     - name: "@giga-extensions/hipgnosis"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: hipgnosis
@@ -356,7 +346,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
 
   extensions:
@@ -398,7 +388,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
 
   webapp:
@@ -438,7 +428,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -453,8 +443,6 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: demo-bjorn
@@ -481,7 +469,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -496,8 +484,6 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: demo-abba
@@ -525,7 +511,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
 
   extensions:
@@ -567,7 +553,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
 
   webapp:
@@ -607,7 +593,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.1.1
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -622,8 +608,6 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: catex-lido
@@ -651,7 +635,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.0
-    chartVersion: 0.3.4
+    chartVersion: 0.4.1
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -666,8 +650,6 @@ spec:
       version: 1.0.2
     - name: "@giga-extensions/pro"
       version: 1.0.0
-    - name: "@giga-extensions/front-office"
-      version: 1.1.0
 
   writeConnectionSecretToRef:
     name: catex-bjorn

@@ -266,7 +266,7 @@ spec:
             tags:
             - key: Name
 
-    # ResourceRecord: ACM Validate CNAME
+    # ACM Verification
     - name: route53-record-acm-validate
       patches:
         - fromFieldPath: status.acm.recordValue
@@ -292,6 +292,7 @@ spec:
             type: CNAME
             ttl: 30
 
+    # ACM Verification
     - name: route53-record-acm-validate-webapp
       patches:
         - fromFieldPath: status.acm.recordValueWebapp
@@ -316,128 +317,6 @@ spec:
           forProvider:
             type: CNAME
             ttl: 30
-
-    # Release :: Webapp
-    - name: release-frontoffice
-      patches:
-        - fromFieldPath: spec.orgRefName
-          toFieldPath: spec.providerConfigRef.name
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.subdomain
-              - fromFieldPath: spec.domain
-            strategy: string
-            string:
-              fmt: "https://app.%s.%s"
-          toFieldPath: spec.forProvider.values.env[NUXT_PUBLIC_URL]
-        - fromFieldPath: spec.webapp.enabled
-          toFieldPath: spec.forProvider.values.enabled
-        - fromFieldPath: spec.webapp.chartVersion
-          toFieldPath: spec.forProvider.chart.version
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.webapp.image
-              - fromFieldPath: spec.webapp.version
-            strategy: string
-            string:
-              fmt: "%s:%s"
-          toFieldPath: spec.forProvider.values.image
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "%s-%s"
-          toFieldPath: spec.forProvider.namespace
-
-        # PATCHING: INGRESS & SERVICE & DOMAIN
-        - fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.values.serviceAccount.name
-          transforms:
-            - type: string
-              string:
-                fmt: "%s-frontoffice"
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "app-%s-%s"
-          toFieldPath: spec.forProvider.values.ingress.annotations[alb.ingress.kubernetes.io/load-balancer-name]
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.subdomain
-              - fromFieldPath: spec.domain
-            strategy: string
-            string:
-              fmt: "app.%s.%s"
-          toFieldPath: spec.forProvider.values.ingress.annotations[external-dns.alpha.kubernetes.io/hostname]
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.subdomain
-              - fromFieldPath: spec.domain
-            strategy: string
-            string:
-              fmt: "app.%s.%s"
-          toFieldPath: spec.forProvider.values.ingress.hostname
-
-        # EXTEND ENV
-        - fromFieldPath: spec.webapp.env
-          toFieldPath: spec.forProvider.values.extendEnv
-      base:
-        apiVersion: helm.crossplane.io/v1beta1
-        kind: Release
-        spec:
-          deletionPolicy: Delete
-          forProvider:
-            chart:
-              name: giga-frontoffice
-              repository: oci://public.ecr.aws/catext
-              version: 0.1.1
-            skipCreateNamespace: false
-            wait: true
-            values:
-              fullnameOverride: frontoffice
-              replicaCount: 1
-              pullPolicy: Always
-              serviceAccount:
-                create: true
-              service:
-                type: NodePort
-                port: 3000
-              readiness:
-                enable: true
-                initialDelaySeconds: 10
-                periodSeconds: 60
-              liveness:
-                enable: true
-                initialDelaySeconds: 10
-                periodSeconds: 60
-              ingress:
-                enabled: true
-                annotations:
-                  kubernetes.io/ingress.class: alb
-                  alb.ingress.kubernetes.io/healthcheck-path: /
-                  alb.ingress.kubernetes.io/scheme: internet-facing
-                  alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-                  alb.ingress.kubernetes.io/ssl-redirect: '443'
-                  alb.ingress.kubernetes.io/healthcheck-interval-seconds: "45"
-                  alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "30"
-                path: /*
-                backend:
-                  serviceName: frontoffice
-                  servicePort: 3000
-              env:
-                NUXT_URL: localhost:3000
-                NUXT_PUBLIC_API_BASE_URL: http://backoffice:8055
 
     # Release :: Install actions for workspace
     - name: release-action
@@ -568,7 +447,7 @@ spec:
         - fromFieldPath: spec.orgRefName
           toFieldPath: spec.providerConfigRef.name
 
-        # PATCHING: CHART VERSION AND APP VERSION
+        # BACKOFFICE
         - fromFieldPath: spec.app.chartVersion
           toFieldPath: spec.forProvider.chart.version
         - fromFieldPath: spec.app.size
@@ -583,7 +462,18 @@ spec:
               fmt: "%s:%s"
           toFieldPath: spec.forProvider.values.image
 
-        # PATCHING: INGRESS & SERVICE & DOMAIN
+        # NAMESPACE
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.forProvider.namespace
+
+        # INGRESS
         - fromFieldPath: spec.name
           toFieldPath: spec.forProvider.values.serviceAccount.name
           transforms:
@@ -604,9 +494,11 @@ spec:
             variables:
               - fromFieldPath: spec.subdomain
               - fromFieldPath: spec.domain
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
             strategy: string
             string:
-              fmt: "%s.%s"
+              fmt: "%s.%s,app.%s.%s"
           toFieldPath: spec.forProvider.values.ingress.annotations[external-dns.alpha.kubernetes.io/hostname]
         - type: CombineFromComposite
           combine:
@@ -624,19 +516,19 @@ spec:
               - fromFieldPath: spec.domain
             strategy: string
             string:
-              fmt: "https://%s.%s"
-          toFieldPath: spec.forProvider.values.env[NUXT_PUBLIC_API_BASE_URL]
+              fmt: "app.%s.%s"
+          toFieldPath: spec.forProvider.values.ingress.extraHosts[0].name
+
+        # ENV
         - type: CombineFromComposite
           combine:
             variables:
-              - fromFieldPath: spec.orgRefName
-              - fromFieldPath: spec.name
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
             strategy: string
             string:
-              fmt: "%s-%s"
-          toFieldPath: spec.forProvider.namespace
-
-        # PATCHING: ADMIN CONFIG
+              fmt: "https://%s.%s"
+          toFieldPath: spec.forProvider.values.env[NUXT_PUBLIC_API_BASE_URL]
         - fromFieldPath: spec.app.adminEmail
           toFieldPath: spec.forProvider.values.env[ADMIN_EMAIL]
         - fromFieldPath: spec.app.adminPassword
@@ -658,7 +550,10 @@ spec:
               string:
                 fmt: "arn:aws:iam::221168245729:role/org-%s-s3"
           toFieldPath: spec.forProvider.values.serviceAccount.annotations[eks.amazonaws.com/role-arn]
-        #  PATCHING: DATABASE CONNECTION FROM SECRETS
+        - fromFieldPath: spec.app.env
+          toFieldPath: spec.forProvider.values.extendEnv
+
+        # DATABASE CONNECTION FROM SECRETS
         - type: CombineFromComposite
           combine:
             variables:
@@ -710,11 +605,7 @@ spec:
               fmt: "%s-%s-%s"
           toFieldPath: spec.forProvider.set[3].valueFrom.secretKeyRef.name
 
-        # EXTEND ENV
-        - fromFieldPath: spec.app.env
-          toFieldPath: spec.forProvider.values.extendEnv
-
-        # PATCH Extensions
+        # EXTENSIONS
         - fromFieldPath: spec.extensions
           toFieldPath: spec.forProvider.values.extensions
         - fromFieldPath: spec.webapp
@@ -722,7 +613,7 @@ spec:
         - fromFieldPath: spec.includeWebapp
           toFieldPath: spec.forProvider.values.includeWebapp
 
-        # PATCH Publish Template
+        # PUBLISH TEMPLATE
         - fromFieldPath: spec.publishTpl.enabled
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.enabled
         - fromFieldPath: spec.publishTpl.s3Bucket
@@ -734,7 +625,7 @@ spec:
         - fromFieldPath: spec.publishTpl.schedule
           toFieldPath: spec.forProvider.values.actions.cronPublishTpl.schedule
 
-        # PATCH install from template
+        # INSTALL FROM TEMPLATE
         - fromFieldPath: spec.installFromTpl.enabled
           toFieldPath: spec.forProvider.values.installFromTpl.enabled
         - fromFieldPath: spec.installFromTpl.s3Bucket
@@ -743,6 +634,73 @@ spec:
           toFieldPath: spec.forProvider.values.installFromTpl.name
         - fromFieldPath: spec.installFromTpl.version
           toFieldPath: spec.forProvider.values.installFromTpl.version
+
+        # WEBAPP
+        - fromFieldPath: spec.webapp.enabled
+          toFieldPath: spec.forProvider.values.webapp.enabled
+        - fromFieldPath: spec.webapp.extVersion
+          toFieldPath: spec.forProvider.values.webapp.ext.version
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.webapp.image
+              - fromFieldPath: spec.webapp.version
+            strategy: string
+            string:
+              fmt: "%s:%s"
+          toFieldPath: spec.forProvider.values.webapp.image
+        - fromFieldPath: spec.webapp.size
+          toFieldPath: spec.forProvider.values.webapp.replicaCount
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "https://app.%s.%s"
+          toFieldPath: spec.forProvider.values.webapp.env[NUXT_PUBLIC_URL]
+        - fromFieldPath: spec.webapp.env
+          toFieldPath: spec.forProvider.values.webapp.env
+
+        # LEDGER
+        - fromFieldPath: spec.ledger.enabled
+          toFieldPath: spec.forProvider.values.ledger.enabled
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.ledger.image
+              - fromFieldPath: spec.ledger.version
+            strategy: string
+            string:
+              fmt: "%s:%s"
+          toFieldPath: spec.forProvider.values.ledger.image
+        - fromFieldPath: spec.ledger.size
+          toFieldPath: spec.forProvider.values.ledger.replicaCount
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - fromFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "%s-%s"
+          toFieldPath: spec.forProvider.values.ledger.env[LEDGER_NAME]
+        - fromFieldPath: spec.ledger.region
+          toFieldPath: spec.forProvider.values.ledger.env[LEDGER_REGION]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.orgRefName
+              - toFieldPath: spec.name
+            strategy: string
+            string:
+              fmt: "arn:aws:iam::221168245729:role/org-%s-%s-ledger"
+          toFieldPath: spec.forProvider.values.ledger.sa.annotations[eks.amazonaws.com/role-arn]
+        - fromFieldPath: spec.ledger.extVersion
+          toFieldPath: spec.forProvider.values.ledger.ext.version
+        - fromFieldPath: spec.ledger.env
+          toFieldPath: spec.forProvider.values.ledger.env
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -787,6 +745,12 @@ spec:
                 backend:
                   serviceName: backoffice
                   servicePort: 8055
+                extraHosts:
+                  - name: sample
+                    path: /*
+                    backend:
+                      serviceName: frontoffice
+                      servicePort: 3000
               installFromTpl:
                 enabled: false
                 s3Bucket: catex-templates
@@ -814,12 +778,35 @@ spec:
                 STORAGE_S3_REGION:
               redis:
                 fullnameOverride: redis
-
               npm:
                 repo: gigapress
                 domain: catex
                 owner: "221168245729"
                 scope: "@giga-extensions"
+              webapp:
+                replicaCount: 1
+                svc:
+                  name: frontoffice
+                  type: NodePort
+                  port: 3000
+                readiness:
+                  enable: true
+                  initialDelaySeconds: 10
+                  periodSeconds: 60
+                liveness:
+                  enable: true
+                  initialDelaySeconds: 10
+                  periodSeconds: 60
+                ingress:
+                  enabled: true
+                  path: /*
+                  backend:
+                    serviceName: frontoffice
+                    servicePort: 3000
+                env:
+                  NUXT_URL: localhost:3000
+                  NUXT_PUBLIC_API_BASE_URL: http://backoffice:8055
+                extVersion: stable
               actions:
                 cronPublishTpl:
                   name:

@@ -1,5 +1,3 @@
-# MAIN SERVICE ACCOUNT
-
 {{- if .Values.serviceAccount.create -}}
 apiVersion: v1
 kind: ServiceAccount
