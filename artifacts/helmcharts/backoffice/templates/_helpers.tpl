@@ -73,11 +73,11 @@ Transform extensions array to string
   Prepare extension for extra services
   */}}
   {{- if .Values.ledger.enabled }}
-  {{ print .Values.ledger.ext.name "@" .Values.ledger.ext.version " "}}
+  {{ print "@giga-extensions/" .Values.ledger.ext.name "@" .Values.ledger.ext.version " "}}
   {{- end }}
 
   {{- if .Values.webapp.enabled }}
-  {{ print .Values.webapp.ext.name "@" .Values.webapp.ext.version " "}}
+  {{ print "@giga-extensions/" .Values.webapp.ext.name "@" .Values.webapp.ext.version " "}}
   {{- end }}
 
 {{- else }}

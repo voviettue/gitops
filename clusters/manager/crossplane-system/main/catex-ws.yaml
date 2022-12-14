@@ -1,7 +1,60 @@
 ###########################################
+# EXPERTISE
+# ########################################
+---
+# default.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: catex-default
+  namespace: realm-catex
+spec:
+  name: default
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: default
+  domain: catex.se
+
+  deletionProtection: true
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.0.2
+    chartVersion: 0.4.3
+    size: 1
+
+  webapp:
+    version: dev
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: true
+    extVersion: 1.1.0
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  publishTpl:
+    enabled: true
+    name: "default"
+    runAt: "manual23"
+
+  actions:
+    chartVersion: 0.1.4
+    snapshot:
+      enabled: true
+      runAt: "trigger"
+  writeConnectionSecretToRef:
+    name: catex-default
+
+###########################################
 # DEV & INTERNAL
 # ########################################
-
 ---
 ### song.template.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
@@ -30,7 +83,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -75,7 +128,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.3
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -121,7 +174,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
 
   webapp:
@@ -164,7 +217,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -186,57 +239,6 @@ spec:
 ###########################################
 # SOLO PLAN
 # ########################################
-
-
----
-# default.catex.se
-apiVersion: gigapress.catex.se/v1alpha1
-kind: Workspace
-metadata:
-  name: catex-default
-  namespace: realm-catex
-spec:
-  name: default
-  dbRefName: primary
-  orgRefName: catex
-
-  region: eu-north-1
-  subdomain: default
-  domain: catex.se
-
-  deletionProtection: true
-
-  app:
-    adminEmail: admin@catex.se
-    adminPassword: admin123
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
-    chartVersion: 0.4.1
-    size: 1
-
-  webapp:
-    version: dev
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
-
-  extensions:
-    - name: "@giga-extensions/base"
-      version: 1.0.2
-    - name: "@giga-extensions/pro"
-      version: 1.0.0
-
-  publishTpl:
-    enabled: true
-    name: "default"
-    runAt: "manual23"
-
-  actions:
-    chartVersion: 0.1.4
-    snapshot:
-      enabled: true
-      runAt: "trigger"
-  writeConnectionSecretToRef:
-    name: catex-default
 ---
 # baoanh.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
@@ -263,7 +265,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
 
   webapp:
@@ -302,7 +304,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 3
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -346,7 +348,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
 
   extensions:
@@ -388,7 +390,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
 
   webapp:
@@ -428,7 +430,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -469,7 +471,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -511,7 +513,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
 
   extensions:
@@ -553,7 +555,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
 
   webapp:
@@ -593,7 +595,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -635,7 +637,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.0
-    chartVersion: 0.4.1
+    chartVersion: 0.4.3
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
