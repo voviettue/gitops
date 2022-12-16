@@ -772,6 +772,12 @@ spec:
                 STORAGE_S3_DRIVER: s3
                 STORAGE_S3_BUCKET:
                 STORAGE_S3_REGION:
+
+                EMAIL_TRANSPORT: mailgun
+                EMAIL_MAILGUN_API_KEY: 70182244c2fcf4ed3e31eac85ca037e2-4dd50799-24351bfe
+                EMAIL_MAILGUN_DOMAIN: mail.catex.se
+                EMAIL_MAILGUN_HOST: api.eu.mailgun.net
+                EMAIL_FROM: no-reply@catex.se
               redis:
                 fullnameOverride: redis
               npm:
