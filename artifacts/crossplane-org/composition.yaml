@@ -962,7 +962,7 @@ spec:
             fromFieldPath: Required
 
     # IAM :: Role - Attachment
-    - name: role-attach-policy
+    - name: role-attach-policy-ledger
       base:
         apiVersion: iam.aws.crossplane.io/v1beta1
         kind: RolePolicyAttachment
