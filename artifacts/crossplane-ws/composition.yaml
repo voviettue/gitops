@@ -529,6 +529,15 @@ spec:
             string:
               fmt: "https://%s.%s"
           toFieldPath: spec.forProvider.values.env[NUXT_PUBLIC_API_BASE_URL]
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.subdomain
+              - fromFieldPath: spec.domain
+            strategy: string
+            string:
+              fmt: "https://%s.%s"
+          toFieldPath: spec.forProvider.values.env[PUBLIC_URL]
         - fromFieldPath: spec.app.adminEmail
           toFieldPath: spec.forProvider.values.env[ADMIN_EMAIL]
         - fromFieldPath: spec.app.adminPassword
