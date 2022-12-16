@@ -24,7 +24,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   webapp:
@@ -83,7 +83,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.0
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -128,7 +128,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.3
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -174,7 +174,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   webapp:
@@ -217,7 +217,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -265,7 +265,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   webapp:
@@ -304,7 +304,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 3
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -348,7 +348,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   extensions:
@@ -390,7 +390,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   webapp:
@@ -430,7 +430,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -471,7 +471,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -513,7 +513,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   extensions:
@@ -555,7 +555,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.2
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
 
   webapp:
@@ -595,7 +595,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.0.5
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"
@@ -637,7 +637,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.0
-    chartVersion: 0.4.5
+    chartVersion: 0.4.8
     size: 1
     env:
       HIDDEN_COLLECTION_PREFIXES: "cms_"

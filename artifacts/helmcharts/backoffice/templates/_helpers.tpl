@@ -67,19 +67,7 @@ Create the name of the service account to use
 Transform extensions array to string
 */}}
 {{- define "extensionList" -}}
-{{- if .Values.extensions }}
-  {{- range .Values.extensions }}{{ print .name "@" .version " "}} {{- end}}
-  {{/*
-  Prepare extension for extra services
-  */}}
-  {{- if .Values.ledger.enabled }}
-  {{ print "@giga-extensions/" .Values.ledger.ext.name "@" .Values.ledger.ext.version " "}}
-  {{- end }}
-
-  {{- if .Values.webapp.enabled }}
-  {{ print "@giga-extensions/" .Values.webapp.ext.name "@" .Values.webapp.ext.version " "}}
-  {{- end }}
-
+{{- if .Values.extensions }}{{- range .Values.extensions }}{{ print .name "@" .version " " }} {{- end }}{{- if .Values.ledger.enabled }}{{- print "@giga-extensions/" .Values.ledger.ext.name "@" .Values.ledger.ext.version " " }}{{- end }}{{- if .Values.webapp.enabled }}{{- print "@giga-extensions/" .Values.webapp.ext.name "@" .Values.webapp.ext.version " " }}{{- end }}
 {{- else }}
   {{ print "" }}
 {{- end }}

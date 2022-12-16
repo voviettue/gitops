@@ -39,8 +39,8 @@ spec:
     # - 1 vpc
     # - External cluster's manager VPC
     # - VPC Peering between Manager VPC - This VPC
-    # - 2 public subnet
-    # - 2 private subnet
+    # - 3 public subnet
+    # - 3 private subnet
     # - 1 security group
     # - 1 routetable for public subnet
     # - 2 routetable for private subnet
