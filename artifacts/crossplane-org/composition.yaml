@@ -919,6 +919,61 @@ spec:
               matchLabels:
                 ability: s3
 
+    # IAM :: Role
+    - name: role-ledger
+      base:
+        apiVersion: iam.aws.crossplane.io/v1beta1
+        kind: Role
+        metadata:
+          labels:
+            ability: ledger
+      patches:
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+        - fromFieldPath: spec.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "org-%s-ledger"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: status.s3.ownerId
+              - fromFieldPath: status.eks.oidc
+            strategy: string
+            string:
+              fmt: |
+                {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "arn:aws:iam::%s:oidc-provider/%s"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {}
+                    }
+                  ]
+                }
+          toFieldPath: spec.forProvider.assumeRolePolicyDocument
+          policy:
+            fromFieldPath: Required
+
+    # IAM :: Role - Attachment
+    - name: role-attach-policy
+      base:
+        apiVersion: iam.aws.crossplane.io/v1beta1
+        kind: RolePolicyAttachment
+        spec:
+          forProvider:
+            policyArn: arn:aws:iam::221168245729:policy/LedgerFullAccess
+            roleNameSelector:
+              matchControllerRef: true
+              matchLabels:
+                ability: ledger
+
     # Helm :: Config
     - name: helm-provider-config
       base:

@@ -684,14 +684,11 @@ spec:
           toFieldPath: spec.forProvider.values.ledger.env[LEDGER_NAME]
         - fromFieldPath: spec.ledger.region
           toFieldPath: spec.forProvider.values.ledger.env[LEDGER_REGION]
-        - type: CombineFromComposite
-          combine:
-            variables:
-              - fromFieldPath: spec.orgRefName
-              - toFieldPath: spec.name
-            strategy: string
-            string:
-              fmt: "arn:aws:iam::221168245729:role/org-%s-%s-ledger"
+        - fromFieldPath: spec.orgRefName
+          transforms:
+            - type: string
+              string:
+                fmt: "arn:aws:iam::221168245729:role/org-%s-ledger"
           toFieldPath: spec.forProvider.values.ledger.sa.annotations[eks.amazonaws.com/role-arn]
         - fromFieldPath: spec.ledger.extVersion
           toFieldPath: spec.forProvider.values.ledger.ext.version
