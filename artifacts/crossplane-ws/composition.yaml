@@ -608,10 +608,6 @@ spec:
         # EXTENSIONS
         - fromFieldPath: spec.extensions
           toFieldPath: spec.forProvider.values.extensions
-        - fromFieldPath: spec.webapp
-          toFieldPath: spec.forProvider.values.webapp
-        - fromFieldPath: spec.includeWebapp
-          toFieldPath: spec.forProvider.values.includeWebapp
 
         # PUBLISH TEMPLATE
         - fromFieldPath: spec.publishTpl.enabled
@@ -661,7 +657,7 @@ spec:
               fmt: "https://app.%s.%s"
           toFieldPath: spec.forProvider.values.webapp.env[NUXT_PUBLIC_URL]
         - fromFieldPath: spec.webapp.env
-          toFieldPath: spec.forProvider.values.webapp.env
+          toFieldPath: spec.forProvider.values.webapp.extendEnv
 
         # LEDGER
         - fromFieldPath: spec.ledger.enabled
@@ -700,7 +696,7 @@ spec:
         - fromFieldPath: spec.ledger.extVersion
           toFieldPath: spec.forProvider.values.ledger.ext.version
         - fromFieldPath: spec.ledger.env
-          toFieldPath: spec.forProvider.values.ledger.env
+          toFieldPath: spec.forProvider.values.ledger.extendEnv
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release

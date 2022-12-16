@@ -2,19 +2,19 @@
 # EXPERTISE
 # ########################################
 ---
-# default.catex.se
+# test.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
-  name: catex-default
+  name: test
   namespace: realm-catex
 spec:
-  name: default
-  dbRefName: primary
+  name: test
+  dbRefName: sec
   orgRefName: catex
 
   region: eu-north-1
-  subdomain: default
+  subdomain: test
   domain: catex.se
 
   deletionProtection: true
@@ -50,7 +50,7 @@ spec:
       enabled: true
       runAt: "trigger"
   writeConnectionSecretToRef:
-    name: catex-default
+    name: test
 
 ###########################################
 # DEV & INTERNAL
