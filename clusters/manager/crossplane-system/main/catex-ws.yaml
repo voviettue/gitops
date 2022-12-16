@@ -23,7 +23,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -134,7 +134,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.3
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
     env:
@@ -180,7 +180,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -223,7 +223,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.5
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
     env:
@@ -271,7 +271,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -310,7 +310,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.5
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 3
     env:
@@ -354,7 +354,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -396,7 +396,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -436,7 +436,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.5
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
     env:
@@ -477,7 +477,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.5
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
     env:
@@ -519,7 +519,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -561,7 +561,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.2
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
 
@@ -601,7 +601,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.0.5
+    version: 2.1.0
     chartVersion: 0.4.10
     size: 1
     env:
