@@ -480,8 +480,8 @@ spec:
     version: 2.1.0
     chartVersion: 0.4.12
     size: 1
-    env:
-      HIDDEN_COLLECTION_PREFIXES: "cms_"
+    # env:
+    #   HIDDEN_COLLECTION_PREFIXES: "cms_"
 
   webapp:
     version: 1.1.0
