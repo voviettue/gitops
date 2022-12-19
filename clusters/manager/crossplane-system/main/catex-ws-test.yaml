@@ -19,13 +19,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.0
-    chartVersion: 0.3.4
-
-  webapp:
-    version: dev
-    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
-    chartVersion: 0.1.1
+    chartVersion: 0.4.12
 
   installFromTpl:
     enabled: true

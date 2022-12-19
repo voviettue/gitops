@@ -7,8 +7,6 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
   {{- with .Values.webapp.sa.annotations }}
   annotations:
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "-10"
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- with .Values.webapp.sa.imagePullSecrets }}
