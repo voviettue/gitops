@@ -643,7 +643,7 @@ spec:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.1.0
+    version: 2.1.1
     chartVersion: 0.4.12
     size: 1
     env:
@@ -654,7 +654,7 @@ spec:
   webapp:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
-    enabled: false
+    enabled: true
 
   extensions:
     - name: "@giga-extensions/base"
