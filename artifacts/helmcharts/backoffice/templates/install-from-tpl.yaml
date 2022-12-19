@@ -30,10 +30,30 @@ spec:
             - "-c"
             - |
               # Install awscli to connect to s3
+              apk add mysql-client
+              count=$(mysql -h$DB_HOST -u$DB_USER -p$DB_PASSWORD -se "select count(*) from information_schema.tables where table_schema = '$DB_DATABASE'" --skip-column-names)
+
+              if [ $count != "0" ]; then
+                exit 0
+              fi
+
               curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
               unzip awscliv2.zip && ./aws/install
               # Download template from s3
               aws s3 cp s3://{{ .Values.installFromTpl.s3Bucket }}/{{ .Values.installFromTpl.name }}/{{ .Values.installFromTpl.version }}.json /tpl/tpl.json
+
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+
+            {{- if .Values.extendEnv }}
+            {{- range $key, $value := .Values.extendEnv }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
 
           volumeMounts:
             - name: shared
@@ -48,9 +68,11 @@ spec:
             - "-c"
             - |
               # Restore from snapshot
-              npm install
-              unset CACHE_ENABLED CACHE_STORE CACHE_REDIS_HOST CACHE_REDIS_PORT
-              npx directus schema apply --yes /tpl/tpl.json
+              if [ -f "/tpl/tpl.json"]; then
+                npm install
+                unset CACHE_ENABLED CACHE_STORE CACHE_REDIS_HOST CACHE_REDIS_PORT
+                npx directus schema apply --yes /tpl/tpl.json
+              fi
 
           {{- if .Values.appSecretName }}
           envFrom:
