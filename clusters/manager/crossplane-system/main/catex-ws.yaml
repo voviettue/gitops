@@ -403,7 +403,7 @@ spec:
     version: staging
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
-    extVersion: 1.2.0
+    extVersion: 1.2.0-dev
 
   writeConnectionSecretToRef:
     name: internal-app-latest
@@ -524,6 +524,7 @@ spec:
     version: 1.1.0
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
     enabled: true
+    extVersion: 1.1.0
 
   extensions:
     - name: "@giga-extensions/base"
