@@ -534,3 +534,43 @@ spec:
 
   writeConnectionSecretToRef:
     name: catex-bjorn
+---
+# ern371.ddex.catex.se
+apiVersion: gigapress.catex.se/v1alpha1
+kind: Workspace
+metadata:
+  name: ddex-ern371
+  namespace: realm-catex
+spec:
+  name: ddex-ern371
+  dbRefName: primary
+  orgRefName: catex
+
+  region: eu-north-1
+  subdomain: ern371.ddex
+  domain: catex.se
+
+  deletionProtection: true
+
+  app:
+    adminEmail: admin@catex.se
+    adminPassword: admin123
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
+    version: 2.1.1
+    chartVersion: 0.4.12
+    size: 1
+
+  webapp:
+    version: 1.1.0
+    image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/front-office
+    enabled: false
+    extVersion: 1.1.0
+
+  extensions:
+    - name: "@giga-extensions/base"
+      version: 1.0.2
+    - name: "@giga-extensions/pro"
+      version: 1.0.0
+
+  writeConnectionSecretToRef:
+    name: ddex-ern371
