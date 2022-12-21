@@ -256,4 +256,8 @@ spec:
                 description: Freeform field - infor eks
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
+              ledger:
+                description: Ledger status
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
             type: object
