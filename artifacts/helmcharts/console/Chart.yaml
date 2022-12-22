@@ -1,0 +1,15 @@
+apiVersion: v2
+name: giga-console
+description: Gigapress console platform
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
+maintainers:
+  - email: dev@catex.se
+    name: Catexer

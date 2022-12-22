@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}-api
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    gigapress.catex.se/app_name: apiserver
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+      gigapress.catex.se/app_name: apiserver
+  template:
+    metadata:
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        gigapress.catex.se/app_name: apiserver
+    spec:
+      serviceAccountName: {{ .Values.api.sa.name }}
+      containers:
+        - name: server
+          image: {{ .Values.api.image }}
+          imagePullPolicy: {{ .Values.api.pullPolicy }}
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.api.svc.port }}
+              name: http
+          env:
+          {{- range $key, $value := .Values.api.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- if .Values.api.liveness.enable }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.api.liveness.path }}
+              port: {{ .Values.api.svc.port }}
+            periodSeconds: {{ default 180 .Values.api.liveness.periodSeconds }}
+            initialDelaySeconds: {{ default 45 .Values.api.liveness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.api.liveness.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.api.readiness.enable }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.api.readiness.path }}
+              port: {{ .Values.api.svc.port }}
+            periodSeconds: {{ default 60 .Values.api.readiness.periodSeconds }}
+            initialDelaySeconds: {{ default 30 .Values.api.readiness.initialDelaySeconds }}
+            timeoutSeconds: {{ default 5 .Values.api.readiness.timeoutSeconds }}
+            failureThreshold: 1
+          {{- end }}

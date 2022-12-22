@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.api.svc.name }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    gigapress.catex.se/app_name: apiserver
+  {{- with .Values.api.svc.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.api.svc.type }}
+  ports:
+    - port: {{ .Values.api.svc.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "chart.selectorLabels" . | nindent 4 }}
+    gigapress.catex.se/app_name: apiserver

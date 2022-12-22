@@ -1,0 +1,37 @@
+{{- if .Values.api.sa.create -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.api.sa.name }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  {{- with .Values.api.sa.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- with .Values.api.sa.imagePullSecrets }}
+imagePullSecrets:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Values.api.sa.name }}-role
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.api.sa.name }}-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Values.api.sa.name }}-role
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.api.sa.name }}
+{{- end -}}

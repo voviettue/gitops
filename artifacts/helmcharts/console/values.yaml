@@ -1,0 +1,81 @@
+api:
+  replicaCount: 1
+  image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-apiserver@latest
+  pullPolicy: Always
+  sa:
+    create: true
+    annotations: {}
+    name: api
+  svc:
+    name: api
+    type: NodePort
+    port: 8080
+    annotations: {}
+  env:
+  resources:
+    limits:
+      cpu: 1
+      memory: 1280Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  readiness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+  liveness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+
+webapp:
+  replicaCount: 1
+  image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp@latest
+  pullPolicy: Always
+  sa:
+    create: true
+    annotations: {}
+    name: webapp
+  svc:
+    name: webapp
+    type: NodePort
+    port: 3000
+    annotations: {}
+  env:
+  resource:
+    limits:
+      cpu: 1
+      memory: 1280Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  readiness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+  liveness:
+    enable: false
+    path:
+    periodSeconds:
+    timeoutSeconds:
+    initialDelaySeconds:
+
+ingress:
+  enabled: false
+  certManager: false
+  pathType: ImplementationSpecific
+  apiVersion:
+  hostname: sample.local
+  path: /
+  annotations: {}
+  tls: false
+  extraHosts:
+  extraTls: []
+  secrets:
+
