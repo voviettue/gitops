@@ -10,14 +10,14 @@ spec:
   chart:
     spec:
       chart: giga-console
-      version: "0.1.0"
+      version: ">=0.1.0"
       sourceRef:
         kind: HelmRepository
         name: catex
         namespace: flux-system
   values:
     api:
-      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console@0.8.0
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console:0.9.0
       env:
         AWS_REGION: eu-north-1
         AWS_CODEARTIFACT_DOMAIN: catex
@@ -30,14 +30,16 @@ spec:
         name: apiserver
       readiness:
         enable: true
+        path: /healthcheck
         initialDelaySeconds: 10
         periodSeconds: 60
       liveness:
         enable: true
+        path: /healthcheck
         initialDelaySeconds: 10
         periodSeconds: 60
     webapp:
-      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp@0.1.0
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.1
       env:
         NUXT_PUBLIC_URL: https://console.catex.se
         NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
@@ -45,12 +47,14 @@ spec:
         NUXT_PUBLIC_COGNITO_SCOPE: aws.cognito.signin.user.admin+email+openid+phone+profile
         NUXT_API_BASE_URL: http://apiserver
       readiness:
+        path: /api/healthcheck
         enable: true
-        initialDelaySeconds: 10
+        initialDelaySeconds: 20
         periodSeconds: 60
       liveness:
+        path: /api/healthcheck
         enable: true
-        initialDelaySeconds: 10
+        initialDelaySeconds: 20
         periodSeconds: 60
     ingress:
       enable: true
