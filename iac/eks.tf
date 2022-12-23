@@ -12,6 +12,10 @@ data "aws_subnets" "selected" {
   }
 }
 
+data "aws_eks_cluster" "selected" {
+  name = module.eks.cluster_id
+}
+
 resource "aws_iam_user" "eks" {
   name = "eks-manager"
   path = "/"
@@ -34,6 +38,8 @@ module "eks" {
   tags = {
     Project     = "gigapress"
   }
+
+  cloudwatch_log_group_retention_in_days = 3
   cluster_addons = {
     coredns = {
       resolve_conflicts = "OVERWRITE"

@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: aws-load-balancer-controller
+  namespace: default
+spec:
+  interval: 1m
+  releaseName: aws-load-balancer-controller
+  timeout: 10m
+  chart:
+    spec:
+      chart: aws-load-balancer-controller
+      sourceRef:
+        kind: HelmRepository
+        name: eks
+        namespace: flux-system
+  values:
+    clusterName: elektron-default
+    region: eu-central-1
+    serviceAccount:
+      create: true
+      name: aws-alb-ingress-controller
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::221168245729:role/alb-manager-cluster"
