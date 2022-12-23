@@ -1,0 +1,76 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: console
+  namespace: default
+spec:
+  releaseName: console
+  interval: 1m
+  timeout: 5m
+  chart:
+    spec:
+      chart: giga-console
+      version: "0.1.0"
+      sourceRef:
+        kind: HelmRepository
+        name: catex
+        namespace: flux-system
+  values:
+    api:
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console@0.8.0
+      env:
+        AWS_REGION: eu-north-1
+        AWS_CODEARTIFACT_DOMAIN: catex
+        AWS_CODEARTIFACT_REPOSITORY: gigapress
+        AWS_CODEARTIFACT_NAMESPACE: giga-extensions
+      sa:
+        annotations:
+          eks.amazonaws.com/role-arn: "arn:aws:iam::221168245729:role/console"
+      svc:
+        name: apiserver
+      readiness:
+        enable: true
+        initialDelaySeconds: 10
+        periodSeconds: 60
+      liveness:
+        enable: true
+        initialDelaySeconds: 10
+        periodSeconds: 60
+    webapp:
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp@0.1.0
+      env:
+        NUXT_PUBLIC_URL: https://console.catex.se
+        NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
+        NUXT_PUBLIC_COGNITO_CLIENT_ID: 3q9eojr7c7sqgefgsuqpq01gvs
+        NUXT_PUBLIC_COGNITO_SCOPE: aws.cognito.signin.user.admin+email+openid+phone+profile
+        NUXT_API_BASE_URL: http://apiserver
+      readiness:
+        enable: true
+        initialDelaySeconds: 10
+        periodSeconds: 60
+      liveness:
+        enable: true
+        initialDelaySeconds: 10
+        periodSeconds: 60
+    ingress:
+      enable: true
+      hostname: console.catex.se
+      path: /*
+      backend:
+        serviceName: webapp
+        servicePort: 3000
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/load-balancer-name: console
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
+        alb.ingress.kubernetes.io/healthcheck-interval-seconds: "45"
+        alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "30"
+        alb.ingress.kubernetes.io/auth-type: cognito
+        alb.ingress.kubernetes.io/auth-scope: openid
+        alb.ingress.kubernetes.io/auth-session-timeout: '3600'
+        # alb.ingress.kubernetes.io/auth-session-cookie: AWSELBAuthSessionCookie
+        alb.ingress.kubernetes.io/auth-on-unauthenticated-request: authenticate
+        alb.ingress.kubernetes.io/auth-idp-cognito: '{"UserPoolArn": "arn:aws:cognito-idp:eu-north-1:221168245729:userpool/eu-north-1_tGNndVw4A","UserPoolClientId":"3q9eojr7c7sqgefgsuqpq01gvs","UserPoolDomain":"console-internal-catex-se.auth.eu-north-1.amazoncognito.com"}'
+

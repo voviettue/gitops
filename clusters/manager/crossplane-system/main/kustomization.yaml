@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - rm-shared.yaml
   - provider-config.yaml
+  - console.yaml
   # - org-catex.yaml
   # - org-hipnosic.yaml
