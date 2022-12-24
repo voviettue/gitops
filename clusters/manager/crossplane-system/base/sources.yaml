@@ -31,7 +31,6 @@ metadata:
   name: catex
   namespace: flux-system
 spec:
-  interval: 1m
+  interval: 30s
   type: "oci"
-  provider: aws
   url: oci://public.ecr.aws/catext
