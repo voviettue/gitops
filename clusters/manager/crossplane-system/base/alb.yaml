@@ -15,8 +15,8 @@ spec:
         name: eks
         namespace: flux-system
   values:
-    clusterName: elektron-default
-    region: eu-central-1
+    clusterName: cluster-manager
+    region: eu-north-1
     serviceAccount:
       create: true
       name: aws-alb-ingress-controller
