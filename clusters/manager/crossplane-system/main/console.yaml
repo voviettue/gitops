@@ -57,14 +57,17 @@ spec:
         initialDelaySeconds: 20
         periodSeconds: 60
     ingress:
-      enable: true
+      enabled: true
       hostname: console.catex.se
       path: /*
+      pathType: Prefix
       backend:
-        serviceName: webapp
-        servicePort: 3000
+        service:
+          name: webapp
+          port: 3000
       annotations:
         kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-north-1:221168245729:certificate/f60f164d-44a9-4f13-910c-83e990b24212"
         alb.ingress.kubernetes.io/load-balancer-name: console
         alb.ingress.kubernetes.io/scheme: internet-facing
         alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
