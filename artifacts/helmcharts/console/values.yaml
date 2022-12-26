@@ -72,6 +72,9 @@ ingress:
   pathType: ImplementationSpecific
   apiVersion:
   hostname: sample.local
+  backend:
+    name: webapp
+    port: 3000
   path: /
   annotations: {}
   tls: false

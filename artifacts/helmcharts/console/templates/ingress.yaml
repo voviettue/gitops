@@ -32,7 +32,7 @@ spec:
             {{- if eq "true" (include "common.ingress.supportsPathType" .) }}
             pathType: {{ .Values.ingress.pathType }}
             {{- end }}
-            backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" $) "servicePort" "http" "context" $) | nindent 14 }}
+            backend: {{- include "common.ingress.backend" (dict "serviceName" .Values.ingress.backend.name "servicePort" .Values.ingress.backend.port "context" $) | nindent 14 }}
     {{- end }}
 
 
@@ -44,7 +44,7 @@ spec:
             {{- if eq "true" (include "common.ingress.supportsPathType" $) }}
             pathType: {{ default "ImplementationSpecific" .pathType }}
             {{- end }}
-            backend: {{- include "common.ingress.backend" (dict "serviceName" .backend.serviceName "servicePort" "http" "context" $) | nindent 14 }}
+            backend: {{- include "common.ingress.backend" (dict "serviceName" .Values.ingress.backend.name "servicePort" .Values.ingress.backend.port "context" $) | nindent 14 }}
     {{- end }}
 
   {{- if or .Values.ingress.tls .Values.ingress.extraTls }}
