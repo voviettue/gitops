@@ -45,7 +45,7 @@ spec:
         NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
         NUXT_PUBLIC_COGNITO_CLIENT_ID: 3q9eojr7c7sqgefgsuqpq01gvs
         NUXT_PUBLIC_COGNITO_SCOPE: aws.cognito.signin.user.admin+email+openid+phone+profile
-        NUXT_API_BASE_URL: http://apiserver
+        NUXT_API_BASE_URL: http://apiserver:8080
       readiness:
         path: /api/healthcheck
         enable: true
