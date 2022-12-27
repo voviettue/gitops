@@ -1,3 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: default
+  name: cognito-secret
+stringData:
+  clientID: 4nsgmvs1dm0208ccosleiua567
+  clientSecret: l8ssc3mjafbd11lh4u7u3u75qs86k0ae5lh16igp4kgmpjcipto
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -73,10 +82,25 @@ spec:
         alb.ingress.kubernetes.io/healthcheck-interval-seconds: "45"
         alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "30"
         alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-        alb.ingress.kubernetes.io/auth-type: cognito
-        alb.ingress.kubernetes.io/auth-scope: openid
+        # alb.ingress.kubernetes.io/auth-type: cognito
         alb.ingress.kubernetes.io/auth-session-timeout: '3600'
         alb.ingress.kubernetes.io/auth-session-cookie: AWSELBAuthSessionCookie
         alb.ingress.kubernetes.io/auth-on-unauthenticated-request: authenticate
-        alb.ingress.kubernetes.io/auth-idp-cognito: '{"UserPoolArn": "arn:aws:cognito-idp:eu-north-1:221168245729:userpool/eu-north-1_tGNndVw4A","UserPoolClientId":"4nsgmvs1dm0208ccosleiua567","UserPoolDomain":"console-internal-catex-se"}'
+        # alb.ingress.kubernetes.io/auth-idp-cognito: |
+        #   {
+        #     "UserPoolArn": "arn:aws:cognito-idp:eu-north-1:221168245729:userpool/eu-north-1_tGNndVw4A",
+        #     "UserPoolClientId":"4nsgmvs1dm0208ccosleiua567",
+        #     "UserPoolDomain":
+        #     "console-internal-catex-se"
+        #   }
+        alb.ingress.kubernetes.io/auth-type: oidc
+        alb.ingress.kubernetes.io/auth-scope: openid
+        alb.ingress.kubernetes.io/auth-idp-oidc: |
+          {
+            "issuer": "https://cognito-idp.eu-north-1.amazonaws.com/[pool-id]",
+            "authorizationEndpoint": "https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com/oauth2/authorize",
+            "tokenEndpoint": "https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com/oauth2/token",
+            "userInfoEndpoint": "https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com/oauth2/userInfo",
+            "secretName": "cognito-secret"
+          }
 
