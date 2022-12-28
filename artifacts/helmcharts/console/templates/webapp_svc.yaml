@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.webapp.svc.name }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-    gigapress.catex.se/app_name: apiserver
+    gigapress.catex.se/app_name: webapp
   {{- with .Values.webapp.svc.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -18,4 +18,4 @@ spec:
       name: http
   selector:
     {{- include "chart.selectorLabels" . | nindent 4 }}
-    gigapress.catex.se/app_name: apiserver
+    gigapress.catex.se/app_name: webapp
