@@ -29,7 +29,7 @@ metadata:
   name: {{ .Values.api.sa.name }}-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: ClusterRole
   name: {{ .Values.api.sa.name }}-role
 subjects:
 - kind: ServiceAccount
