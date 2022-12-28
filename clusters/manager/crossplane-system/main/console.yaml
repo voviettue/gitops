@@ -86,7 +86,7 @@ spec:
         # alb.ingress.kubernetes.io/auth-type: cognito
         alb.ingress.kubernetes.io/auth-session-timeout: '3600'
         alb.ingress.kubernetes.io/auth-session-cookie: AWSELBAuthSessionCookie
-        alb.ingress.kubernetes.io/auth-on-unauthenticated-request: allow
+        alb.ingress.kubernetes.io/auth-on-unauthenticated-request: authenticate
         # alb.ingress.kubernetes.io/auth-idp-cognito: |
         #   {
         #     "UserPoolArn": "arn:aws:cognito-idp:eu-north-1:221168245729:userpool/eu-north-1_tGNndVw4A",
