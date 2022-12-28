@@ -98,7 +98,7 @@ spec:
         alb.ingress.kubernetes.io/auth-scope: openid
         alb.ingress.kubernetes.io/auth-idp-oidc: |
           {
-            "issuer": "https://cognito-idp.eu-north-1.amazonaws.com/console-internal-catex-se",
+            "issuer": "https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_tGNndVw4A",
             "authorizationEndpoint": "https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com/oauth2/authorize",
             "tokenEndpoint": "https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com/oauth2/token",
             "userInfoEndpoint": "https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com/oauth2/userInfo",
