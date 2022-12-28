@@ -35,6 +35,7 @@ data "aws_iam_policy_document" "alb_management" {
     resources = ["*"]
 
     actions = [
+      "cognito-idp:DescribeUserPoolClient",
       "iam:CreateServiceLinkedRole",
       "ec2:DescribeAccountAttributes",
       "ec2:DescribeAddresses",
