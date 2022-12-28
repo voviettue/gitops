@@ -33,5 +33,6 @@ roleRef:
   name: {{ .Values.api.sa.name }}-role
 subjects:
 - kind: ServiceAccount
+  namespace: {{ .Release.Namespace }}
   name: {{ .Values.api.sa.name }}
 {{- end -}}
