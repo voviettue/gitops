@@ -67,6 +67,17 @@ data "aws_iam_policy_document" "console" {
       "dynamodb:*",
     ]
   }
+
+  # CaF
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = [
+      "codeartifact:*",
+    ]
+  }
+
   # S3
   statement {
     sid       = ""
