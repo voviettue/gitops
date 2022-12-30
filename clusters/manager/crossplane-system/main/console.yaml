@@ -26,6 +26,7 @@ spec:
         namespace: flux-system
   values:
     api:
+      replicaCount: 2
       image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console:0.9.0
       env:
         AWS_REGION: eu-north-1
@@ -49,6 +50,7 @@ spec:
         initialDelaySeconds: 10
         periodSeconds: 60
     webapp:
+      replicaCount: 2
       image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.3
       env:
         NUXT_PUBLIC_URL: https://console.catex.se
