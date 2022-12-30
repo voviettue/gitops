@@ -7,7 +7,7 @@ metadata:
   namespace: realm-catex
 spec:
   name: itest2
-  dbRefName: sec
+  dbRefName: primary
   orgRefName: catex
 
   region: eu-north-1
@@ -19,12 +19,12 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.0
-    chartVersion: 0.4.12
+    chartVersion: 0.4.15
 
   installFromTpl:
     enabled: true
-    name: default
-    version: manual23
+    name: hipgnosis
+    version: "2022-12-29"
     s3Bucket: catex-templates
 
   extensions:
