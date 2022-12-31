@@ -54,9 +54,10 @@ spec:
       image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.4
       env:
         NUXT_PUBLIC_URL: https://console.catex.se
-        NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
-        NUXT_PUBLIC_COGNITO_CLIENT_ID: 3q9eojr7c7sqgefgsuqpq01gvs
-        NUXT_PUBLIC_COGNITO_SCOPE: aws.cognito.signin.user.admin+email+openid+phone+profile
+        # NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
+        NUXT_PUBLIC_COGNITO_DOMAIN: https://console.catex.se
+        # NUXT_PUBLIC_COGNITO_CLIENT_ID: 3q9eojr7c7sqgefgsuqpq01gvs
+        # NUXT_PUBLIC_COGNITO_SCOPE: aws.cognito.signin.user.admin+email+openid+phone+profile
         NUXT_API_BASE_URL: http://apiserver:8080
       readiness:
         path: /api/healthcheck
