@@ -27,7 +27,7 @@ spec:
   values:
     api:
       replicaCount: 2
-      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console:0.10.0
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console:0.11.0
       env:
         AWS_REGION: eu-north-1
         AWS_DYNAMODB_TABLE: console
