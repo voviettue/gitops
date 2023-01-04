@@ -27,7 +27,7 @@ spec:
   values:
     api:
       replicaCount: 2
-      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console:0.11.0
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console:0.12.0
       env:
         AWS_REGION: eu-north-1
         AWS_DYNAMODB_TABLE: console
@@ -51,7 +51,7 @@ spec:
         periodSeconds: 60
     webapp:
       replicaCount: 2
-      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.5
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.6
       env:
         NUXT_PUBLIC_URL: https://console.catex.se
         NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
