@@ -714,6 +714,7 @@ spec:
               repository: oci://public.ecr.aws/catext
             skipCreateNamespace: false
             wait: true
+            waitTimeout: 20m
             values:
               fullnameOverride: backoffice
               replicaCount: 1
