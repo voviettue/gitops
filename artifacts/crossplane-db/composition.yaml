@@ -123,6 +123,18 @@ spec:
               - parameterName: table_definition_cache
                 parameterValue: "1024"
                 applyMethod: immediate
+              - parameterName: character_set_database
+                parameterValue: utf8mb4
+                applyMethod: immediate
+              - parameterName: character_set_server
+                parameterValue: utf8mb4
+                applyMethod: immediate
+              - parameterName: collation_server
+                parameterValue: utf8mb4_unicode_ci
+                applyMethod: immediate
+              - parameterName: collation_database
+                parameterValue: utf8mb4_unicode_ci
+                applyMethod: immediate
       patches:
         - type: PatchSet
           patchSetName: common
