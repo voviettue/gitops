@@ -51,7 +51,7 @@ spec:
         periodSeconds: 60
     webapp:
       replicaCount: 2
-      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.12
+      image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/console-webapp:0.1.13
       env:
         NUXT_PUBLIC_URL: https://console.catex.se
         NUXT_PUBLIC_COGNITO_DOMAIN: https://console-internal-catex-se.auth.eu-north-1.amazoncognito.com
