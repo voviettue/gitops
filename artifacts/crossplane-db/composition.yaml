@@ -121,7 +121,10 @@ spec:
             description: the custom parameter for db instances
             parameters:
               - parameterName: table_definition_cache
-                parameterValue: "1024"
+                parameterValue: "2000"
+                applyMethod: immediate
+              - parameterName: table_open_cache
+                parameterValue: "10000"
                 applyMethod: immediate
               - parameterName: character_set_database
                 parameterValue: utf8mb4
