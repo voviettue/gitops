@@ -55,8 +55,6 @@ spec:
       base:
         apiVersion: mysql.sql.crossplane.io/v1alpha1
         kind: Database
-        spec:
-          deletionPolicy: Orphan
       patches:
         - type: CombineFromComposite
           combine:
