@@ -135,7 +135,7 @@ spec:
               - parameterName: collation_server
                 parameterValue: utf8mb4_unicode_ci
                 applyMethod: immediate
-              - parameterName: collation_database
+              - parameterName: collation_connection
                 parameterValue: utf8mb4_unicode_ci
                 applyMethod: immediate
       patches:
