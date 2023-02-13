@@ -131,6 +131,18 @@ spec:
                   extVersion:
                     type: string
                     description: the version of ledger extension
+
+              meilisearch:
+                type: object
+                description: the configuration of ledger attached
+                properties:
+                  enabled:
+                    type: boolean
+                    description: the flag use determine meilisearch attached
+                  extVersion:
+                    type: string
+                    description: the version of meilisearch extension
+
               app:
                 type: object
                 description: The configuration of application

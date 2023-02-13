@@ -701,6 +701,12 @@ spec:
           toFieldPath: spec.forProvider.values.ledger.ext.version
         - fromFieldPath: spec.ledger.env
           toFieldPath: spec.forProvider.values.ledger.extendEnv
+
+        # MEILISEARCH
+        - fromFieldPath: spec.meilisearch.enabled
+          toFieldPath: spec.forProvider.values.meilisearch.enabled
+        - fromFieldPath: spec.meilisearch.extVersion
+          toFieldPath: spec.forProvider.values.meilisearch.ext.version
       base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -781,6 +787,9 @@ spec:
 
                 LEDGER_URL: http://ledger:8080
                 LEDGER_LIMIT_COLLECTION: 10
+
+                MEILISEARCH_HOST: http://default.meilisearch:7700
+                MEILI_MASTER_KEY: 1rD8#%hqKEo$M&6gH61T
 
                 EMAIL_TRANSPORT: mailgun
                 EMAIL_MAILGUN_API_KEY: 70182244c2fcf4ed3e31eac85ca037e2-4dd50799-24351bfe

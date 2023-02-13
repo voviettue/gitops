@@ -1,37 +1,37 @@
 ---
-# test-install.catex.se
+# itest43.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
-  name: itest34
+  name: itest43
   namespace: realm-catex
 spec:
-  name: itest34
-  dbRefName: primary
+  name: itest43
+  dbRefName: sec
   orgRefName: catex
 
   region: eu-north-1
-  subdomain: itest34
+  subdomain: itest43
   domain: catex.se
 
   app:
     adminEmail: admin@catex.se
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
-    version: 2.1.0
-    chartVersion: 0.4.16
-
-  installFromTpl:
-    enabled: true
-    name: hipgnosis
-    version: "2022-12-29"
-    s3Bucket: catex-templates
+    version: 2.1.4
+    chartVersion: 0.4.18
+    env:
+      MEILISEARCH_API_KEY: W74jflgAqOaAZOfIFbuJ
 
   extensions:
     - name: "@giga-extensions/base"
-      version: 1.0.2
+      version: 1.0.4
     - name: "@giga-extensions/pro"
       version: 1.0.0
 
+  meilisearch:
+    enabled: true
+    extVersion: 1.0.1-dev
+
   writeConnectionSecretToRef:
-    name: itest34
+    name: itest43

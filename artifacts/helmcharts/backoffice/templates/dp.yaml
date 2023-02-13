@@ -98,11 +98,9 @@ spec:
               npm install
               npx directus bootstrap
               npx directus start
-          {{- if .Values.appSecretName }}
           envFrom:
           - secretRef:
-              name: {{ .Values.appSecretName }}
-          {{- end }}
+              name: meilisearch-key
 
           env:
           {{- range $key, $value := .Values.env }}

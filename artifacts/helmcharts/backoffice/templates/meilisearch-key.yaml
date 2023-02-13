@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "chart.fullname" . }}-meilisearch-key
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-7"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      restartPolicy: OnFailure
+
+      volumes:
+        - name: shared
+          emptyDir: {}
+
+      containers:
+        - name: load
+          image: bitnami/kubectl
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: true
+            runAsUser: 0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              # Install jq, curl
+              apt-get update && apt-get upgrade
+              apt-get install -y jq
+              apt-get install -y curl
+
+              # Ceate index name
+              INDEX_NAME=$(curl \
+                -X POST 'http://meilisearch.default:7700/indexes' \
+                -H 'Authorization: Bearer {{ .Values.env.MEILI_MASTER_KEY }}' \
+                -H 'Content-Type: application/json' \
+                --data-binary '{
+                  "uid": "{{ .Release.Namespace }}"
+                }' | jq -r .indexUid)
+              echo $INDEX_NAME
+
+              # Create api key
+              KEY=$(curl \
+                -X POST 'http://meilisearch.default:7700/keys' \
+                -H 'Authorization: Bearer {{ .Values.env.MEILI_MASTER_KEY }}' \
+                -H 'Content-Type: application/json' \
+                --data-binary '{
+                  "description": "Add documents: Products API key",
+                  "actions": ["*"],
+                  "indexes": ["'$INDEX_NAME'"],
+                  "expiresAt": null
+                }' | jq -r .key)
+              echo $KEY
+
+              # Create secret
+              kubectl api-resources --namespaced=true --api-group="" -o wide
+              kubectl get pod -n {{ .Release.Namespace }}
+              kubectl create secret generic meilisearch-key \
+                --from-literal=MEILISEARCH_API_KEY='$KEY' \
+                --from-literal=MEILISEARCH_INDEX_NAME=$INDEX_NAME \
+                --namespace={{ .Release.Namespace }}

@@ -1062,6 +1062,31 @@ spec:
           policy:
             fromFieldPath: Required
 
+    # Helm :: Meilisearch
+    - name: meilisearch
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          forProvider:
+            chart:
+              name: meilisearch
+              repository: https://meilisearch.github.io/meilisearch-kubernetes
+            namespace: default
+            skipCreateNamespace: true
+            values:
+              fullnameOverride: meilisearch
+              environment:
+                MEILI_ENV: production
+                MEILI_MASTER_KEY: 1rD8#%hqKEo$M&6gH61T
+      patches:
+        - fromFieldPath: spec.name
+          toFieldPath: spec.providerConfigRef.name
+        # - fromFieldPath: spec.meilisearch.masterKey
+        #   toFieldPath: spec.forProvider.values.environment[MEILI_MASTER_KEY]
+        #   policy:
+        #     fromFieldPath: Required
+
     # IAM :: Role
     - name: role-alb
       base:

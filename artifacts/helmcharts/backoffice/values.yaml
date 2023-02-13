@@ -140,6 +140,12 @@ ledger:
     name: ledger
     version: stable
 
+meilisearch:
+  enabled: false
+  ext:
+    name: meilisearch
+    version: stable
+
 # External services
 webapp:
   enabled: false

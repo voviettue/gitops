@@ -48,6 +48,13 @@ spec:
                 - eu-north-1
                 - eu-west-1
 
+              meilisearch:
+                type: object
+                properties:
+                  masterKey:
+                    description: meilisearch master key
+                    type: string
+
               eks:
                 type: object
                 properties:
