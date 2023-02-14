@@ -2,7 +2,7 @@ apiVersion: v2
 name: giga-backoffice
 description: Gigapress app power by directus
 type: application
-version: 0.5.12
+version: 0.5.14
 appVersion: 9.15.0
 dependencies:
   - name: common
