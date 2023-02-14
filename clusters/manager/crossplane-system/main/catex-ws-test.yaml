@@ -1,17 +1,17 @@
 ---
-# itest43.catex.se
+# itest61.catex.se
 apiVersion: gigapress.catex.se/v1alpha1
 kind: Workspace
 metadata:
-  name: itest43
+  name: itest61
   namespace: realm-catex
 spec:
-  name: itest43
+  name: itest61
   dbRefName: sec
   orgRefName: catex
 
   region: eu-north-1
-  subdomain: itest43
+  subdomain: itest61
   domain: catex.se
 
   app:
@@ -19,7 +19,7 @@ spec:
     adminPassword: admin123
     image: 221168245729.dkr.ecr.eu-north-1.amazonaws.com/gigapress/core
     version: 2.1.4
-    chartVersion: 0.4.18
+    chartVersion: 0.5.14
     env:
       MEILISEARCH_API_KEY: W74jflgAqOaAZOfIFbuJ
 
@@ -34,4 +34,4 @@ spec:
     extVersion: 1.0.1-dev
 
   writeConnectionSecretToRef:
-    name: itest43
+    name: itest61
